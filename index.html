@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RhythmNator Editor</title>
+    <meta name="description" content="Music mapper Editor for rhythm game">
+    <meta name="author" content="RhythmNator" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Audiowide&display=swap" rel="stylesheet">
+
+    
+    
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:title" content="RhythmNator Edito">
+  <meta name="twitter:title" content="RhythmNator Edito">
+  <meta property="og:description" content="Music mapper Editor for rhythm game">
+  <meta name="twitter:description" content="Music mapper Editor for rhythm game">
+  <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/kYrSOb2mOKcjVO5ZRkYHbDHSygI2/social-images/social-1761253418176-Group 43.png">
+  <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/kYrSOb2mOKcjVO5ZRkYHbDHSygI2/social-images/social-1761253418176-Group 43.png">
+</head>
+
+  <body style="margin: 0; padding: 0; background: hsl(230, 35%, 7%); overflow: hidden;">
+    <!-- Splash Screen -->
+    <div id="splash-screen" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: hsl(230, 35%, 7%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.3s ease-out;
+    ">
+      <div style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+      ">
+        <!-- Logo/Icône -->
+        <div style="
+          width: 120px;
+          height: 120px;
+          border-radius: 24px;
+          overflow: hidden;
+          border: 3px solid hsl(245, 75%, 60%);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 60px hsl(245, 75%, 60%, 0.3);
+          animation: pulse 2s ease-in-out infinite;
+        ">
+          <img src="/logo.png" alt="RhythmNator Logo" style="width: 100%; height: 100%; object-fit: cover;" />
+        </div>
+        
+        <!-- Nom de l'application -->
+        <h1 style="
+          font-family: 'Audiowide', sans-serif;
+          font-size: 28px;
+          font-weight: 700;
+          color: hsl(0, 0%, 98%);
+          margin: 0;
+          letter-spacing: 1px;
+        ">RhythmNator Editor</h1>
+        
+        <!-- Spinner de chargement -->
+        <div style="
+          width: 40px;
+          height: 40px;
+          border: 3px solid hsl(230, 20%, 20%);
+          border-top-color: hsl(230, 70%, 60%);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        "></div>
+      </div>
+    </div>
+    
+    <style>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+    </style>
+    
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

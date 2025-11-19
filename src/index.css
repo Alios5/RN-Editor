@@ -1,0 +1,205 @@
+/* Outfit Font from Google Fonts - Police principale */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 230 35% 7%;
+    --foreground: 0 0% 98%;
+
+    --card: 230 25% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 230 30% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 245 75% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 230 25% 18%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 230 20% 20%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 20 100% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 230 25% 20%;
+    --input: 230 25% 18%;
+    --ring: 245 75% 60%;
+
+    --gradient-start: 245 75% 60%;
+    --gradient-end: 265 70% 55%;
+
+    /* Panel colors - base HSL values */
+    --panel-background: 230 25% 12%;
+    --panel-border: 230 25% 20%;
+    --panel-icon-background: 245 75% 60%;
+    --panel-input-background: 230 25% 18%;
+    --panel-section-background: 230 25% 18%;
+
+    /* Panel colors - final colors with opacity built-in */
+    --panel-background-color: hsl(var(--panel-background) / 0.3);
+    --panel-border-color: hsl(var(--panel-border) / 0.5);
+    --panel-icon-background-color: hsl(var(--panel-icon-background) / 0.1);
+    --panel-input-background-color: hsl(var(--panel-input-background) / 0.5);
+    --panel-section-background-color: hsl(var(--panel-section-background) / 0.2);
+
+    --radius: 0.75rem;
+  }
+
+  :root {
+    /* Custom gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)));
+    --gradient-card: var(--panel-background-color);
+    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(var(--gradient-start) / 0.15), transparent 70%);
+    
+    /* Shadows */
+    --shadow-card: 0 2px 8px hsl(230 35% 5% / 0.3);
+    --shadow-glow: 0 0 40px hsl(245 75% 60% / 0.3);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  html, body {
+    @apply bg-background text-foreground;
+    overscroll-behavior: none;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  
+  #root {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Scrollbar personnalisée */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+    border-radius: 8px;
+    margin: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--secondary));
+    border-radius: 8px;
+    border: 2px solid hsl(var(--background));
+    transition: background 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.7);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: hsl(var(--primary));
+  }
+
+  /* Scrollbar fine pour les éléments avec scroll léger */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    border: 1px solid hsl(var(--background));
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .gradient-glow {
+    background: var(--gradient-glow);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Styling for react-colorful color picker */
+  .react-colorful {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .react-colorful__saturation {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .react-colorful__hue,
+  .react-colorful__alpha {
+    border-radius: 0.25rem;
+    height: 12px;
+  }
+
+  .react-colorful__pointer {
+    width: 20px;
+    height: 20px;
+    border: 2px solid hsl(var(--background));
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  .react-colorful__hue-pointer,
+  .react-colorful__alpha-pointer {
+    width: 20px;
+    height: 20px;
+  }
+}
