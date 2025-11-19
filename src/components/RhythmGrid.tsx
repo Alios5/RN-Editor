@@ -245,10 +245,8 @@ export const RhythmGrid = ({
       return;
     }
     
-    // Calculate new duration
-    const noteWidth = newGridWidth * cellWidth;
-    const trackWidth = width;
-    const newDuration = newGridWidth === 1 ? 0 : (noteWidth / trackWidth) * musicDuration;
+    // Calculate new duration using precise BPM-based calculation
+    const newDuration = newGridWidth === 1 ? 0 : (newGridWidth / subRhythmSync) * (60 / bpm);
     
     // Find and delete overlapping notes
     const noteEnd = note.gridPosition + newGridWidth;
@@ -290,14 +288,10 @@ export const RhythmGrid = ({
       const gridWidth = Math.abs(currentCell - creationStart) + 1;
       
       if (!hasOverlap(gridPosition, gridWidth) && onCreateNote) {
-        // Proportional calculation based on total track width
-        const notePosition = gridPosition * cellWidth; // position in pixels
-        const noteWidth = gridWidth * cellWidth; // width in pixels
-        const trackWidth = width; // total track width
-        
-        const noteTime = (notePosition / trackWidth) * musicDuration;
+        // Precise BPM-based calculation (no drift accumulation)
+        const noteTime = (gridPosition / subRhythmSync) * (60 / bpm);
         // If gridWidth = 1, duration should be 0 (instant note)
-        const noteDuration = gridWidth === 1 ? 0 : (noteWidth / trackWidth) * musicDuration;
+        const noteDuration = gridWidth === 1 ? 0 : (gridWidth / subRhythmSync) * (60 / bpm);
         
         onCreateNote({
           startTime: noteTime,

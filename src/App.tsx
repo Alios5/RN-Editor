@@ -21,7 +21,7 @@ const App = () => {
   useWindowShortcuts();
 
   useEffect(() => {
-    // Retirer le splash screen une fois que React est monté
+    // Remove splash screen once React is mounted
     const removeSplash = () => {
       const splash = document.getElementById('splash-screen');
       if (splash) {
@@ -34,8 +34,30 @@ const App = () => {
       }
     };
     
-    // Attendre un peu pour que tout soit bien chargé
+    // Wait a bit for everything to be loaded
     setTimeout(removeSplash, 100);
+  }, []);
+
+  useEffect(() => {
+    // Restore window state on startup and setup persistence
+    const initWindowState = async () => {
+      try {
+        await restoreWindowState();
+        const cleanup = await setupWindowStatePersistence();
+        (window as any).__windowStateCleanup = cleanup;
+      } catch (error) {
+        console.error('Error initializing window state:', error);
+      }
+    };
+
+    initWindowState();
+
+    return () => {
+      const cleanup = (window as any).__windowStateCleanup;
+      if (cleanup) {
+        cleanup();
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -75,23 +97,6 @@ const App = () => {
     // Apply saved theme on startup
     const savedTheme = loadTheme();
     applyTheme(savedTheme);
-  }, []);
-
-  useEffect(() => {
-    // Restore window state on startup
-    restoreWindowState();
-
-    // Setup automatic window state persistence
-    let cleanup: (() => void) | undefined;
-    setupWindowStatePersistence().then((cleanupFn) => {
-      cleanup = cleanupFn;
-    });
-
-    return () => {
-      if (cleanup) {
-        cleanup();
-      }
-    };
   }, []);
 
   return (

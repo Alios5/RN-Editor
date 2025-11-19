@@ -246,20 +246,14 @@ const Editor = () => {
   useEffect(() => {
     if (audioDuration === 0) return;
 
-    const cellWidth = 24;
-    const trackWidth = audioMetrics.waveformWidth;
-
     setTracks(prevTracks => 
       prevTracks.map(track => ({
         ...track,
         notes: track.notes?.map(note => {
-          // Calculate position without startOffset for time
-          const notePosition = note.gridPosition * cellWidth;
-          const noteWidth = note.gridWidth * cellWidth;
-          
-          // Time is based on relative position compared to total width
-          const noteTime = (notePosition / trackWidth) * audioDuration;
-          const noteDuration = (noteWidth / trackWidth) * audioDuration;
+          // Calculate time using precise BPM-based calculations
+          // This avoids drift accumulation on long tracks
+          const noteTime = (note.gridPosition / subRhythmSync) * (60 / bpm);
+          const noteDuration = note.gridWidth === 1 ? 0 : (note.gridWidth / subRhythmSync) * (60 / bpm);
           
           return {
             ...note,
@@ -269,7 +263,7 @@ const Editor = () => {
         })
       }))
     );
-  }, [startOffset, audioDuration, audioMetrics.waveformWidth]);
+  }, [startOffset, audioDuration, bpm, subRhythmSync]);
 
   // Automatic history save with debounce (500ms)
   useEffect(() => {
@@ -1114,6 +1108,8 @@ const Editor = () => {
     currentTime,
     audioDuration,
     waveformWidth: audioMetrics.waveformWidth,
+    bpm,
+    subRhythmSync,
     onCreateNote: handleCreateNote,
   });
 
@@ -2342,6 +2338,8 @@ const Editor = () => {
                       audioDuration={audioDuration}
                       waveformWidth={audioMetrics.waveformWidth}
                       startOffset={startOffset}
+                      bpm={bpm}
+                      subRhythmSync={subRhythmSync}
                     />
                   )}
 

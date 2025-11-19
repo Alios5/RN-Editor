@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Track } from '@/types/track';
 import { Note } from '@/types/note';
+import { timeToPixelPosition, timeToGridPosition } from '@/utils/gridPositionCalculator';
 
 interface RealtimeNoteCreationOptions {
   tracks: Track[];
@@ -9,6 +10,8 @@ interface RealtimeNoteCreationOptions {
   currentTime: number;
   audioDuration: number;
   waveformWidth: number;
+  bpm: number;
+  subRhythmSync: number;
   onCreateNote: (trackId: string, note: Omit<Note, 'id' | 'trackId' | 'trackName'>) => void;
 }
 
@@ -34,6 +37,8 @@ export const useRealtimeNoteCreation = ({
   currentTime,
   audioDuration,
   waveformWidth,
+  bpm,
+  subRhythmSync,
   onCreateNote,
 }: RealtimeNoteCreationOptions) => {
   // Map pour suivre les touches actuellement enfoncées
@@ -67,8 +72,8 @@ export const useRealtimeNoteCreation = ({
     const previews: PreviewNote[] = [];
 
     pressedKeysRef.current.forEach((pressedKey) => {
-      const startPosition = (pressedKey.startTime / audioDuration) * waveformWidth;
-      const currentPosition = (currentTime / audioDuration) * waveformWidth;
+      const startPosition = timeToPixelPosition(pressedKey.startTime, bpm, subRhythmSync);
+      const currentPosition = timeToPixelPosition(currentTime, bpm, subRhythmSync);
       const widthInPixels = Math.max(cellWidth, currentPosition - startPosition);
       const gridWidth = Math.max(1, Math.round(widthInPixels / cellWidth));
 
@@ -83,9 +88,7 @@ export const useRealtimeNoteCreation = ({
   }, [currentTime, isRealtimeMode, audioDuration, waveformWidth]);
 
   const createShortNote = (trackId: string, currentTime: number) => {
-    const cellWidth = 24;
-    const position = (currentTime / audioDuration) * waveformWidth;
-    const gridPosition = Math.floor(position / cellWidth);
+    const gridPosition = timeToGridPosition(currentTime, bpm, subRhythmSync);
 
     onCreateNote(trackId, {
       startTime: currentTime,
@@ -105,8 +108,8 @@ export const useRealtimeNoteCreation = ({
       return;
     }
 
-    const startPosition = (pressedKey.startTime / audioDuration) * waveformWidth;
-    const endPosition = (endTime / audioDuration) * waveformWidth;
+    const startPosition = timeToPixelPosition(pressedKey.startTime, bpm, subRhythmSync);
+    const endPosition = timeToPixelPosition(endTime, bpm, subRhythmSync);
     const widthInPixels = endPosition - startPosition;
     const gridWidth = Math.max(1, Math.round(widthInPixels / cellWidth));
 

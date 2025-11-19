@@ -1,21 +1,26 @@
 import { memo } from 'react';
+import { timeToPixelPosition } from '@/utils/gridPositionCalculator';
 
 interface PlayheadLineProps {
   currentTime: number;
   audioDuration: number;
   waveformWidth: number;
   startOffset?: number;
+  bpm: number;
+  subRhythmSync: number;
 }
 
 export const PlayheadLine = memo(({ 
   currentTime, 
   audioDuration, 
   waveformWidth,
-  startOffset = 0
+  startOffset = 0,
+  bpm,
+  subRhythmSync
 }: PlayheadLineProps) => {
-  // Calculate line position based on current time, including startOffset
+  // Calculate line position using BPM-based precision (no drift accumulation)
   const position = audioDuration > 0 
-    ? ((currentTime / audioDuration) * waveformWidth) + startOffset 
+    ? timeToPixelPosition(currentTime, bpm, subRhythmSync) + startOffset
     : startOffset;
 
   return (

@@ -34,41 +34,21 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
   const audioRef = useRef<HTMLAudioElement>(null);
   const animationFrameRef = useRef<number>();
 
-  // Mise à jour du temps avec requestAnimationFrame et FPS adaptatif (60 FPS → 30 FPS selon performances)
+  // Mise à jour du temps avec requestAnimationFrame - optimisé pour éviter les dérives
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     let lastUpdateTime = 0;
-    let frameCount = 0;
-    let lastFpsCheck = performance.now();
-    let targetInterval = 1000 / 60; // Commencer à 60 FPS
-    let currentFps = 60;
+    const UPDATE_INTERVAL = 1000 / 60; // 60 FPS fixe pour cohérence
 
     const updateTime = () => {
       if (audio && !audio.paused && !audio.ended) {
         const now = performance.now();
         
-        // Mesurer les FPS réels toutes les secondes
-        frameCount++;
-        const elapsed = now - lastFpsCheck;
-        if (elapsed >= 1000) {
-          currentFps = (frameCount / elapsed) * 1000;
-          frameCount = 0;
-          lastFpsCheck = now;
-          
-          // Adapter le taux de rafraîchissement si les performances sont faibles
-          if (currentFps < 55) {
-            // Si on est en dessous de 55 FPS, réduire la cible à 30 FPS
-            targetInterval = 1000 / 30;
-          } else if (currentFps >= 58) {
-            // Si on est stable au-dessus de 58 FPS, rester à 60 FPS
-            targetInterval = 1000 / 60;
-          }
-        }
-        
-        // Mettre à jour seulement si l'intervalle cible est dépassé
-        if (now - lastUpdateTime >= targetInterval) {
+        // Mettre à jour au maximum à 60 FPS pour éviter les sauts visuels
+        if (now - lastUpdateTime >= UPDATE_INTERVAL) {
+          // Utiliser directement audio.currentTime (source de vérité)
           const time = audio.currentTime;
           setCurrentTime(time);
           onTimeUpdate?.(time);
