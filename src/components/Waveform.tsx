@@ -14,11 +14,16 @@ interface WaveformProps {
 export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek, onDragSeek, width }: WaveformProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Get waveform color from CSS variable (theme-aware)
+  const waveformColor = getComputedStyle(document.documentElement).getPropertyValue('--waveform-color').trim();
+  const waveformColorHSL = waveformColor ? `hsl(${waveformColor})` : "hsl(230, 20%, 25%)";
+
   const { wavesurfer, isReady } = useWavesurfer({
     container: containerRef,
     url: audioUrl,
-    waveColor: "hsl(230, 20%, 25%)",
-    progressColor: "hsl(245, 75%, 60%)",
+    waveColor: waveformColorHSL,
+    progressColor: waveformColorHSL, // Même couleur que waveColor (la ligne de position indique déjà la progression)
+    cursorWidth: 0, // Cacher la ligne de lecture de WaveSurfer (on utilise PlayheadLine à la place)
     height: 100,
     barWidth: 2,
     barGap: 1,

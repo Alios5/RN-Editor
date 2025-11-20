@@ -167,6 +167,7 @@ const Editor = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(false);
+  const isInitialLoadRef = useRef(true); // Track if we're loading a project for the first time
 
   // Calculate audio metrics based on parameters
   const audioMetrics = useMemo(() => {
@@ -247,6 +248,11 @@ const Editor = () => {
   useEffect(() => {
     if (audioDuration === 0) return;
 
+    // Convert startOffset (pixels) to time (seconds) using BPM
+    const cellWidth = 24; // pixels per cell
+    const offsetInCells = startOffset / cellWidth;
+    const offsetTime = gridPositionToTime(offsetInCells, bpm, subRhythmSync);
+
     setTracks(prevTracks => 
       prevTracks.map(track => ({
         ...track,
@@ -258,7 +264,7 @@ const Editor = () => {
           
           return {
             ...note,
-            startTime: noteTime,
+            startTime: noteTime + offsetTime, // Add offset time to all notes
             duration: noteDuration
           };
         })
@@ -319,7 +325,14 @@ const Editor = () => {
         setHistoryIndex(prev => prev + 1);
         return newHistory;
       });
-      setHasUnsavedChanges(true);
+      
+      // Only mark as unsaved if this is not the initial load
+      if (!isInitialLoadRef.current) {
+        setHasUnsavedChanges(true);
+      } else {
+        // After first history save, consider future changes as real modifications
+        isInitialLoadRef.current = false;
+      }
     }, 500);
 
     return () => {
@@ -629,6 +642,10 @@ const Editor = () => {
   }, [hasUnsavedChanges]);
 
   const loadProjectData = (project: Project) => {
+    // Reset unsaved changes state for new project load
+    isInitialLoadRef.current = true;
+    setHasUnsavedChanges(false);
+    
     // Load saved audio parameters
     if (project.bpm) setBpm(project.bpm);
     if (project.rhythmSync) setRhythmSync(project.rhythmSync);

@@ -65,7 +65,7 @@ const COLOR_CATEGORIES: Record<ColorCategory, Array<keyof Theme['colors']>> = {
   status: ["muted", "mutedForeground", "destructive", "destructiveForeground"],
   borders: ["border", "input", "ring", "popover", "popoverForeground"],
   panels: ["panelBackground", "panelBorder", "panelIconBackground", "panelInputBackground", "panelSectionBackground"],
-  tracks: ["trackBorder", "trackGridLine", "trackMeasureLine"],
+  tracks: ["trackBorder", "trackGridLine", "trackMeasureLine", "waveformColor"],
 };
 
 export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {

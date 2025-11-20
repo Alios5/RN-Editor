@@ -473,7 +473,7 @@ export const RhythmGrid = ({
         <div
           className="absolute top-2 bottom-2 bg-white/50 rounded border border-dashed border-primary pointer-events-none"
           style={{
-            left: `${ghostNote.gridPosition * cellWidth}px`,
+            left: `${ghostNote.gridPosition * cellWidth + startOffset}px`,
             width: `${ghostNote.gridWidth * cellWidth}px`,
           }}
         />
@@ -484,7 +484,7 @@ export const RhythmGrid = ({
         <div
           className="absolute top-2 bottom-2 rounded border-2 border-primary pointer-events-none animate-pulse"
           style={{
-            left: `${previewNote.gridPosition * cellWidth}px`,
+            left: `${previewNote.gridPosition * cellWidth + startOffset}px`,
             width: `${previewNote.gridWidth * cellWidth}px`,
             backgroundColor: trackColor,
             opacity: 0.6,
@@ -497,7 +497,7 @@ export const RhythmGrid = ({
         <div
           className="absolute top-0 bottom-0 pointer-events-none z-40 transition-all duration-100 ease-out"
           style={{
-            left: `${hoverCell * cellWidth}px`,
+            left: `${hoverCell * cellWidth + startOffset}px`,
             width: `${cellWidth}px`,
             backgroundColor: `hsl(var(--primary) / 0.15)`,
             borderLeft: `2px solid hsl(var(--primary) / 0.5)`,

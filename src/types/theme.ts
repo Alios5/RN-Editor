@@ -32,6 +32,8 @@ export interface Theme {
     trackBorder: string;
     trackGridLine: string;
     trackMeasureLine: string;
+    // Waveform colors
+    waveformColor: string;
   };
 }
 
@@ -69,6 +71,8 @@ export const DEFAULT_THEME: Theme = {
     trackBorder: "230 25% 25%",
     trackGridLine: "230 25% 22%",
     trackMeasureLine: "245 60% 50%",
+    // Waveform colors
+    waveformColor: "230 20% 25%",
   },
 };
 
@@ -106,6 +110,8 @@ export const LIGHT_THEME: Theme = {
     trackBorder: "231 22% 64%",
     trackGridLine: "229 12% 72%",
     trackMeasureLine: "245 60% 50%",
+    // Waveform colors
+    waveformColor: "230 20% 60%",
   },
 };
 

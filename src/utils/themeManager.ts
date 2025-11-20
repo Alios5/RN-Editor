@@ -25,7 +25,8 @@ export const loadTheme = (): Theme => {
         !theme.colors?.panelSectionBackground ||
         !theme.colors?.trackBorder ||
         !theme.colors?.trackGridLine ||
-        !theme.colors?.trackMeasureLine;
+        !theme.colors?.trackMeasureLine ||
+        !theme.colors?.waveformColor;
         
       if (needsMigration) {
         // Detect if it's a light or dark theme by checking background lightness
@@ -141,7 +142,8 @@ export const importTheme = async (): Promise<Theme | null> => {
         !theme.colors.panelSectionBackground ||
         !theme.colors.trackBorder ||
         !theme.colors.trackGridLine ||
-        !theme.colors.trackMeasureLine;
+        !theme.colors.trackMeasureLine ||
+        !theme.colors.waveformColor;
         
       if (needsMigration) {
         return {
@@ -191,7 +193,8 @@ export const getSavedThemes = (): Theme[] => {
         !theme.colors?.panelSectionBackground ||
         !theme.colors?.trackBorder ||
         !theme.colors?.trackGridLine ||
-        !theme.colors?.trackMeasureLine;
+        !theme.colors?.trackMeasureLine ||
+        !theme.colors?.waveformColor;
         
       if (needsMigration) {
         return {

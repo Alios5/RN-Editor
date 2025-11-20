@@ -82,8 +82,8 @@ const NoteBlockComponent = ({
   // Use resizedWidth during resize, otherwise normal width
   const width = resizedWidth !== undefined ? resizedWidth : note.gridWidth * cellWidth;
   // Use draggedPosition during drag, otherwise normal position
-  // Note: Don't add startOffset here because the parent container already has paddingLeft: startOffset
-  const left = (draggedPosition !== undefined ? draggedPosition : note.gridPosition) * cellWidth;
+  // Add startOffset because position:absolute ignores parent's paddingLeft
+  const left = (draggedPosition !== undefined ? draggedPosition : note.gridPosition) * cellWidth + startOffset;
   
   // Determine if the playhead is on this note
   // For notes with duration 0, use a small tolerance window for visual effect
