@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { panelColors } from '@/lib/panelColors';
+import { panelColors, trackColors } from '@/lib/panelColors';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Clipboard } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Note } from "@/types/note";
 import { NoteBlock } from "./NoteBlock";
 import { PreviewNote } from "@/hooks/useRealtimeNoteCreation";
+import { gridPositionToTime } from '@/utils/gridPositionCalculator';
 
 interface RhythmGridProps {
-  width: number;
+  width: number; // waveformWidth in pixels
   totalTime: number;
   rhythmSync: number;
   subRhythmSync: number;
@@ -93,8 +94,16 @@ export const RhythmGrid = ({
   previewNote
 }: RhythmGridProps) => {
   const { t } = useTranslation();
-  const cellWidth = 24; // pixels
-  const cells = Math.floor(totalTime);
+  
+  const cellWidth = 24; // Fixed cell width in pixels
+  
+  // Calculate total subdivisions based on BPM and duration
+  // This ensures each subdivision gets exactly one cell
+  const totalBeats = (bpm * musicDuration) / 60;
+  const totalSubdivisions = totalBeats * subRhythmSync;
+  
+  // Use exact number of subdivisions (cells) from BPM calculation
+  const cells = totalSubdivisions;
   const cellsPerMeasure = rhythmSync * subRhythmSync;
   
   const [isCreating, setIsCreating] = useState(false);
@@ -245,8 +254,8 @@ export const RhythmGrid = ({
       return;
     }
     
-    // Calculate new duration using precise BPM-based calculation
-    const newDuration = newGridWidth === 1 ? 0 : (newGridWidth / subRhythmSync) * (60 / bpm);
+    // Calculate new duration using standardized function for perfect consistency
+    const newDuration = newGridWidth === 1 ? 0 : gridPositionToTime(newGridWidth, bpm, subRhythmSync);
     
     // Find and delete overlapping notes
     const noteEnd = note.gridPosition + newGridWidth;
@@ -288,10 +297,10 @@ export const RhythmGrid = ({
       const gridWidth = Math.abs(currentCell - creationStart) + 1;
       
       if (!hasOverlap(gridPosition, gridWidth) && onCreateNote) {
-        // Precise BPM-based calculation (no drift accumulation)
-        const noteTime = (gridPosition / subRhythmSync) * (60 / bpm);
+        // Use standardized function for perfect consistency (no drift accumulation)
+        const noteTime = gridPositionToTime(gridPosition, bpm, subRhythmSync);
         // If gridWidth = 1, duration should be 0 (instant note)
-        const noteDuration = gridWidth === 1 ? 0 : (gridWidth / subRhythmSync) * (60 / bpm);
+        const noteDuration = gridWidth === 1 ? 0 : gridPositionToTime(gridWidth, bpm, subRhythmSync);
         
         onCreateNote({
           startTime: noteTime,
@@ -354,10 +363,16 @@ export const RhythmGrid = ({
   return (
     <div 
       ref={containerRef}
-      className={`relative h-[80px] border border-border rounded-lg select-none ${
+      className={`relative h-[80px] rounded-lg select-none ${
         isRightClickDeleting ? 'cursor-not-allowed' : isResizing ? 'cursor-ew-resize' : editorMode === 'edit' ? 'cursor-crosshair' : 'cursor-default'
       }`}
-      style={{ width: `${width}px`, paddingLeft: `${startOffset}px`, boxSizing: 'border-box', backgroundColor: panelColors.sectionBackground() }}
+      style={{ 
+        width: `${width}px`, 
+        paddingLeft: `${startOffset}px`, 
+        boxSizing: 'border-box', 
+        backgroundColor: panelColors.sectionBackground(),
+        border: `1px solid ${trackColors.border()}`
+      }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -370,8 +385,8 @@ export const RhythmGrid = ({
         style={{
           width: `${cells * cellWidth}px`,
           backgroundImage: `
-            linear-gradient(90deg, hsl(var(--border) / 0.4) 2px, transparent 2px),
-            linear-gradient(90deg, transparent ${cellWidth - 1}px, hsl(var(--border) / 0.3) ${cellWidth - 1}px, hsl(var(--border) / 0.3) ${cellWidth}px),
+            linear-gradient(90deg, ${trackColors.measureLine()} 2px, transparent 2px),
+            linear-gradient(90deg, transparent ${cellWidth - 1}px, ${trackColors.gridLine()} ${cellWidth - 1}px, ${trackColors.gridLine()} ${cellWidth}px),
             linear-gradient(90deg, ${panelColors.sectionBackground()} 50%, ${panelColors.inputBackground()} 50%)
           `,
           backgroundSize: `
@@ -478,15 +493,15 @@ export const RhythmGrid = ({
       )}
 
       {/* Indicateur de cellule survolée */}
-      {hoverCell !== null && !isCreating && !isDraggingNotes && !isResizing && (
+      {hoverCell !== null && !isCreating && !isDraggingNotes && !isResizing && editorMode === 'edit' && !isNoteMenuOpen && !isGridMenuOpen && (
         <div
-          className="absolute top-0 bottom-0 pointer-events-none z-40"
+          className="absolute top-0 bottom-0 pointer-events-none z-40 transition-all duration-100 ease-out"
           style={{
             left: `${hoverCell * cellWidth}px`,
             width: `${cellWidth}px`,
-            backgroundColor: 'rgba(59, 130, 246, 0.15)',
-            borderLeft: '2px solid rgba(59, 130, 246, 0.5)',
-            borderRight: '2px solid rgba(59, 130, 246, 0.5)',
+            backgroundColor: `hsl(var(--primary) / 0.15)`,
+            borderLeft: `2px solid hsl(var(--primary) / 0.5)`,
+            borderRight: `2px solid hsl(var(--primary) / 0.5)`,
           }}
         />
       )}

@@ -57,7 +57,7 @@ interface ThemeEditorProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type ColorCategory = "base" | "interactive" | "status" | "borders" | "panels";
+type ColorCategory = "base" | "interactive" | "status" | "borders" | "panels" | "tracks";
 
 const COLOR_CATEGORIES: Record<ColorCategory, Array<keyof Theme['colors']>> = {
   base: ["background", "foreground", "card", "cardForeground"],
@@ -65,6 +65,7 @@ const COLOR_CATEGORIES: Record<ColorCategory, Array<keyof Theme['colors']>> = {
   status: ["muted", "mutedForeground", "destructive", "destructiveForeground"],
   borders: ["border", "input", "ring", "popover", "popoverForeground"],
   panels: ["panelBackground", "panelBorder", "panelIconBackground", "panelInputBackground", "panelSectionBackground"],
+  tracks: ["trackBorder", "trackGridLine", "trackMeasureLine"],
 };
 
 export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
@@ -365,12 +366,13 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
 
         <div className="flex-1 overflow-hidden">
           <Tabs defaultValue="base" className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="base">{t("theme.categoryBase")}</TabsTrigger>
               <TabsTrigger value="interactive">{t("theme.categoryInteractive")}</TabsTrigger>
               <TabsTrigger value="status">{t("theme.categoryStatus")}</TabsTrigger>
               <TabsTrigger value="borders">{t("theme.categoryBorders")}</TabsTrigger>
               <TabsTrigger value="panels">{t("theme.categoryPanels")}</TabsTrigger>
+              <TabsTrigger value="tracks">{t("theme.categoryTracks") || "Pistes"}</TabsTrigger>
             </TabsList>
 
             <div className="flex-1 overflow-y-auto mt-4">
@@ -379,6 +381,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
               <TabsContent value="status">{renderCategoryColors("status")}</TabsContent>
               <TabsContent value="borders">{renderCategoryColors("borders")}</TabsContent>
               <TabsContent value="panels">{renderCategoryColors("panels")}</TabsContent>
+              <TabsContent value="tracks">{renderCategoryColors("tracks")}</TabsContent>
             </div>
           </Tabs>
         </div>

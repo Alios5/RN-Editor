@@ -28,6 +28,10 @@ export interface Theme {
     panelIconBackground: string;
     panelInputBackground: string;
     panelSectionBackground: string;
+    // Track colors
+    trackBorder: string;
+    trackGridLine: string;
+    trackMeasureLine: string;
   };
 }
 
@@ -61,6 +65,10 @@ export const DEFAULT_THEME: Theme = {
     panelIconBackground: "245 75% 60%",
     panelInputBackground: "230 25% 18%",
     panelSectionBackground: "230 25% 18%",
+    // Track colors
+    trackBorder: "230 25% 25%",
+    trackGridLine: "230 25% 22%",
+    trackMeasureLine: "245 60% 50%",
   },
 };
 
@@ -94,6 +102,10 @@ export const LIGHT_THEME: Theme = {
     panelIconBackground: "245 75% 60%",
     panelInputBackground: "0 0% 100%",
     panelSectionBackground: "210 40% 96%",
+    // Track colors
+    trackBorder: "231 22% 64%",
+    trackGridLine: "229 12% 72%",
+    trackMeasureLine: "245 60% 50%",
   },
 };
 

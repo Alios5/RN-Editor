@@ -34,26 +34,18 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
   const audioRef = useRef<HTMLAudioElement>(null);
   const animationFrameRef = useRef<number>();
 
-  // Mise à jour du temps avec requestAnimationFrame - optimisé pour éviter les dérives
+  // Mise à jour du temps avec requestAnimationFrame - synchronisé avec audio.currentTime
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    let lastUpdateTime = 0;
-    const UPDATE_INTERVAL = 1000 / 60; // 60 FPS fixe pour cohérence
-
     const updateTime = () => {
       if (audio && !audio.paused && !audio.ended) {
-        const now = performance.now();
-        
-        // Mettre à jour au maximum à 60 FPS pour éviter les sauts visuels
-        if (now - lastUpdateTime >= UPDATE_INTERVAL) {
-          // Utiliser directement audio.currentTime (source de vérité)
-          const time = audio.currentTime;
-          setCurrentTime(time);
-          onTimeUpdate?.(time);
-          lastUpdateTime = now;
-        }
+        // Utiliser directement audio.currentTime (source de vérité absolue)
+        // Sans throttling artificiel pour éviter les désynchronisations sur ordinateurs moins performants
+        const time = audio.currentTime;
+        setCurrentTime(time);
+        onTimeUpdate?.(time);
       }
       animationFrameRef.current = requestAnimationFrame(updateTime);
     };

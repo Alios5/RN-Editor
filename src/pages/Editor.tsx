@@ -28,6 +28,7 @@ import { useRealtimeNoteCreation } from "@/hooks/useRealtimeNoteCreation";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { calculateAudioMetrics } from "@/utils/audioCalculations";
 import { exportToJson, exportToJsonFile } from "@/utils/exportJson";
+import { gridPositionToTime } from "@/utils/gridPositionCalculator";
 import { CloseHandler } from "@/utils/closeHandler";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { CreateTrackDialog } from "@/components/CreateTrackDialog";
@@ -250,10 +251,10 @@ const Editor = () => {
       prevTracks.map(track => ({
         ...track,
         notes: track.notes?.map(note => {
-          // Calculate time using precise BPM-based calculations
-          // This avoids drift accumulation on long tracks
-          const noteTime = (note.gridPosition / subRhythmSync) * (60 / bpm);
-          const noteDuration = note.gridWidth === 1 ? 0 : (note.gridWidth / subRhythmSync) * (60 / bpm);
+          // Calculate time using standardized functions from gridPositionCalculator
+          // This guarantees perfect consistency and avoids drift accumulation on long tracks
+          const noteTime = gridPositionToTime(note.gridPosition, bpm, subRhythmSync);
+          const noteDuration = note.gridWidth === 1 ? 0 : gridPositionToTime(note.gridWidth, bpm, subRhythmSync);
           
           return {
             ...note,

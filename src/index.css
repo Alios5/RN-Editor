@@ -49,12 +49,22 @@ All colors MUST be HSL.
     --panel-input-background: 230 25% 18%;
     --panel-section-background: 230 25% 18%;
 
+    /* Track-specific colors - base HSL values */
+    --track-border: 230 25% 25%;
+    --track-grid-line: 230 25% 22%;
+    --track-measure-line: 245 60% 50%;
+
     /* Panel colors - final colors with opacity built-in */
     --panel-background-color: hsl(var(--panel-background) / 0.3);
     --panel-border-color: hsl(var(--panel-border) / 0.5);
     --panel-icon-background-color: hsl(var(--panel-icon-background) / 0.1);
     --panel-input-background-color: hsl(var(--panel-input-background) / 0.5);
     --panel-section-background-color: hsl(var(--panel-section-background) / 0.2);
+
+    /* Track colors - final colors with opacity built-in */
+    --track-border-color: hsl(var(--track-border) / 0.6);
+    --track-grid-line-color: hsl(var(--track-grid-line) / 0.3);
+    --track-measure-line-color: hsl(var(--track-measure-line) / 0.4);
 
     --radius: 0.75rem;
   }

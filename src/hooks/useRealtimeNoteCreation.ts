@@ -85,7 +85,7 @@ export const useRealtimeNoteCreation = ({
     });
 
     setPreviewNotes(previews);
-  }, [currentTime, isRealtimeMode, audioDuration, waveformWidth]);
+  }, [currentTime, isRealtimeMode, bpm, subRhythmSync]);
 
   const createShortNote = (trackId: string, currentTime: number) => {
     const gridPosition = timeToGridPosition(currentTime, bpm, subRhythmSync);
@@ -144,9 +144,8 @@ export const useRealtimeNoteCreation = ({
 
       // Si la touche n'est pas encore enfoncée, l'enregistrer
       if (!pressedKeysRef.current.has(key)) {
-        const cellWidth = 24;
-        const position = (currentTime / audioDuration) * waveformWidth;
-        const gridPosition = Math.floor(position / cellWidth);
+        // Use standardized function for perfect consistency
+        const gridPosition = timeToGridPosition(currentTime, bpm, subRhythmSync);
 
         pressedKeysRef.current.set(key, {
           trackId: track.id,
@@ -189,7 +188,7 @@ export const useRealtimeNoteCreation = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [isRealtimeMode, tracks, currentTime, audioDuration, waveformWidth, onCreateNote]);
+  }, [isRealtimeMode, tracks, currentTime, bpm, subRhythmSync, onCreateNote]);
 
   return {
     isRealtimeMode,

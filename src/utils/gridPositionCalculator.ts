@@ -3,13 +3,11 @@
  * Évite les erreurs d'accumulation sur de longues durées
  */
 
-const CELL_WIDTH = 24; // pixels
-
 /**
- * Calcule la position en pixels à partir du temps en secondes
+ * Calcule le nombre de cellules (subdivisions) à partir du temps en secondes
  * Utilise le BPM pour un calcul précis sans dérive
  */
-export const timeToPixelPosition = (
+export const timeToCellPosition = (
   timeInSeconds: number,
   bpm: number,
   subRhythmSync: number
@@ -18,22 +16,35 @@ export const timeToPixelPosition = (
   const beatsElapsed = (bpm * timeInSeconds) / 60;
   
   // Calculer le nombre de cellules (chaque beat contient subRhythmSync cellules)
-  const cellsElapsed = beatsElapsed * subRhythmSync;
-  
-  // Convertir en pixels
-  return cellsElapsed * CELL_WIDTH;
+  return beatsElapsed * subRhythmSync;
+};
+
+/**
+ * Calcule la position en pixels à partir du temps en secondes
+ * cellWidth doit être fourni pour la conversion pixels
+ */
+export const timeToPixelPosition = (
+  timeInSeconds: number,
+  bpm: number,
+  subRhythmSync: number,
+  cellWidth: number = 24
+): number => {
+  const cellsElapsed = timeToCellPosition(timeInSeconds, bpm, subRhythmSync);
+  return cellsElapsed * cellWidth;
 };
 
 /**
  * Calcule le temps en secondes à partir de la position en pixels
+ * cellWidth doit être fourni pour la conversion pixels
  */
 export const pixelPositionToTime = (
   positionInPixels: number,
   bpm: number,
-  subRhythmSync: number
+  subRhythmSync: number,
+  cellWidth: number = 24
 ): number => {
   // Convertir les pixels en cellules
-  const cells = positionInPixels / CELL_WIDTH;
+  const cells = positionInPixels / cellWidth;
   
   // Convertir les cellules en beats
   const beats = cells / subRhythmSync;
@@ -44,13 +55,15 @@ export const pixelPositionToTime = (
 
 /**
  * Calcule la largeur totale de la forme d'onde en pixels
+ * cellWidth doit être fourni pour la conversion pixels (par défaut 24)
  */
 export const calculateWaveformWidth = (
   audioDuration: number,
   bpm: number,
-  subRhythmSync: number
+  subRhythmSync: number,
+  cellWidth: number = 24
 ): number => {
-  return timeToPixelPosition(audioDuration, bpm, subRhythmSync);
+  return timeToPixelPosition(audioDuration, bpm, subRhythmSync, cellWidth);
 };
 
 /**

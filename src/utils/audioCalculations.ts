@@ -1,5 +1,3 @@
-import { calculateWaveformWidth, timeToGridPosition } from './gridPositionCalculator';
-
 export interface AudioCalculations {
   totalBeats: number;
   totalMeasures: number;
@@ -13,17 +11,23 @@ export const calculateAudioMetrics = (
   syncMeasure: number,
   subSyncMeasure: number
 ): AudioCalculations => {
+  const CELL_WIDTH = 24; // pixels
+  
   // Calculate total number of beats
   const totalBeats = (bpm * durationInSeconds) / 60;
   
   // Calculate total number of measures
   const totalMeasures = totalBeats / syncMeasure;
   
-  // Calculate total number of times (cells) using precise BPM calculation
-  const totalTime = timeToGridPosition(durationInSeconds, bpm, subSyncMeasure);
+  // Calculate total number of subdivisions (cells) - exact BPM-based
+  const totalSubdivisions = totalBeats * subSyncMeasure;
   
-  // Calculate waveform width using precise BPM-based calculation (no drift)
-  const waveformWidth = calculateWaveformWidth(durationInSeconds, bpm, subSyncMeasure);
+  // Use totalSubdivisions as totalTime for compatibility
+  const totalTime = totalSubdivisions;
+  
+  // Calculate waveform width as exact multiple of cell width
+  // This ensures perfect alignment: waveformWidth = number of subdivisions * cellWidth
+  const waveformWidth = totalSubdivisions * CELL_WIDTH;
   
   return {
     totalBeats,
