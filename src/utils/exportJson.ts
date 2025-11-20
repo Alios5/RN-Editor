@@ -4,6 +4,13 @@ import { Note } from "@/types/note";
 import { save } from "@tauri-apps/plugin-dialog";
 import { writeTextFile } from "@tauri-apps/plugin-fs";
 
+/**
+ * Formate un nombre avec exactement 3 décimales
+ */
+const formatTimeValue = (value: number): number => {
+  return Math.round(value * 1000) / 1000;
+};
+
 interface ExportNote {
   trackName: string;
   startTime: number;
@@ -42,8 +49,8 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
       track.notes.forEach(note => {
         const exportNote: ExportNote = {
           trackName: note.trackName,
-          startTime: note.startTime,
-          duration: note.duration
+          startTime: formatTimeValue(note.startTime),
+          duration: formatTimeValue(note.duration)
         };
         if (note.specificAction) {
           exportNote.specificAction = note.specificAction.name; // Just the name
@@ -62,7 +69,7 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
   // 4. Create JSON structure
   const exportData: ExportData = {
     bpm,
-    musicDuration,
+    musicDuration: formatTimeValue(musicDuration),
     ...notesByGroup
   };
 
@@ -108,8 +115,8 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
         track.notes.forEach(note => {
           const exportNote: ExportNote = {
             trackName: note.trackName,
-            startTime: note.startTime,
-            duration: note.duration
+            startTime: formatTimeValue(note.startTime),
+            duration: formatTimeValue(note.duration)
           };
           if (note.specificAction) {
             exportNote.specificAction = note.specificAction.name; // Just the name
@@ -128,7 +135,7 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
     // 4. Create JSON structure
     const exportData: ExportData = {
       bpm,
-      musicDuration,
+      musicDuration: formatTimeValue(musicDuration),
       ...notesByGroup
     };
 

@@ -364,39 +364,36 @@ export const RhythmGrid = ({
       onMouseLeave={handleMouseLeave}
       onContextMenu={handleContextMenu}
     >
-      {/* Grille de cellules */}
-      <div className="flex h-full pointer-events-none">
-        {Array.from({ length: cells }).map((_, index) => {
-          const beatIndex = Math.floor(index / subRhythmSync);
-          const isAlternate = beatIndex % 2 === 0;
-          const isMeasureLine = index % cellsPerMeasure === 0;
-          const measureNumber = Math.floor(index / cellsPerMeasure);
-          
-          // All cells have a visible right border (reduced opacity)
-          // Measure starts also have a thick left border
-          const borderClass = isMeasureLine 
-            ? 'border-l-2 border-r border-border/40' 
-            : 'border-r border-border/30';
-          
-          return (
-            <div
-              key={index}
-              className={`h-full ${borderClass}`}
-              style={{ 
-                width: `${cellWidth}px`, 
-                minWidth: `${cellWidth}px`,
-                boxSizing: 'border-box',
-                backgroundColor: isAlternate ? panelColors.sectionBackground() : panelColors.inputBackground()
-              }}
-            >
-              {isMeasureLine && (
-                <div className="text-xs text-muted-foreground px-1 pt-1">
-                  {measureNumber}
-                </div>
-              )}
-            </div>
-          );
-        })}
+      {/* Grille de cellules optimisée avec CSS */}
+      <div 
+        className="relative h-full pointer-events-none"
+        style={{
+          width: `${cells * cellWidth}px`,
+          backgroundImage: `
+            linear-gradient(90deg, hsl(var(--border) / 0.4) 2px, transparent 2px),
+            linear-gradient(90deg, transparent ${cellWidth - 1}px, hsl(var(--border) / 0.3) ${cellWidth - 1}px, hsl(var(--border) / 0.3) ${cellWidth}px),
+            linear-gradient(90deg, ${panelColors.sectionBackground()} 50%, ${panelColors.inputBackground()} 50%)
+          `,
+          backgroundSize: `
+            ${cellsPerMeasure * cellWidth}px 100%,
+            ${cellWidth}px 100%,
+            ${subRhythmSync * cellWidth * 2}px 100%
+          `
+        }}
+      >
+        {/* Numéros de mesure */}
+        {Array.from({ length: Math.ceil(cells / cellsPerMeasure) }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute top-0 text-xs text-muted-foreground px-1 pt-1"
+            style={{
+              left: `${i * cellsPerMeasure * cellWidth}px`,
+              width: `${cellsPerMeasure * cellWidth}px`
+            }}
+          >
+            {i}
+          </div>
+        ))}
       </div>
 
       {/* Notes existantes */}
