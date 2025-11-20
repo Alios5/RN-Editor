@@ -2193,74 +2193,64 @@ const Editor = () => {
               
               <Separator orientation="vertical" className="h-8" />
               
-              <ContextMenu>
-                <ContextMenuTrigger asChild>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+              <DropdownMenu>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuTrigger asChild>
                         <Button
                           variant="ghost"
                           size="icon"
                           className={`rounded-lg transition-opacity ${!hasUnsavedChanges ? 'opacity-40 cursor-not-allowed' : ''}`}
                           disabled={!hasUnsavedChanges}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            if (hasUnsavedChanges) {
-                              handleSave();
-                            }
-                          }}
                         >
                           <Save className={`h-5 w-5 ${hasUnsavedChanges ? 'text-primary' : 'text-muted-foreground'}`} />
                         </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">
-                        <p>{hasUnsavedChanges ? t("editor.saveTooltip") : t("editor.noChangesToSave")}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </ContextMenuTrigger>
-                <ContextMenuContent>
-                  <ContextMenuItem onClick={handleSave} disabled={!hasUnsavedChanges}>
+                      </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>{hasUnsavedChanges ? t("editor.saveTooltip") : t("editor.noChangesToSave")}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleSave} disabled={!hasUnsavedChanges}>
                     {t("actions.save")}
-                  </ContextMenuItem>
-                  <ContextMenuItem onClick={handleSaveAs}>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSaveAs}>
                     {t("actions.saveAs")}
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               
-              <ContextMenu>
-                <ContextMenuTrigger asChild>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+              <DropdownMenu>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuTrigger asChild>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="rounded-lg"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleExportJson();
-                          }}
                         >
                           <Download className="h-5 w-5" />
                         </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">
-                        <p>{t("editor.exportTooltip")}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </ContextMenuTrigger>
-                <ContextMenuContent>
-                  <ContextMenuItem onClick={handleExportJson}>
+                      </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>{t("editor.exportTooltip")}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleExportJson}>
                     {t("actions.export")}
-                  </ContextMenuItem>
-                  <ContextMenuItem onClick={handleExportJsonAs}>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleExportJsonAs}>
                     {t("actions.exportAs")}
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               
               <Separator orientation="vertical" className="h-6 mx-1" />
               
