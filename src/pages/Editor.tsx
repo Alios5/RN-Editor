@@ -2479,7 +2479,7 @@ const Editor = () => {
 
           {/* Right Panel */}
           {isSidebarVisible && (
-            <ResizablePanel defaultSize={25} minSize={20} maxSize={35}>
+            <ResizablePanel defaultSize={20} minSize={20} maxSize={35}>
             <div className="h-full overflow-y-auto">
               <TracksPanel
                 onCreateTrack={() => {

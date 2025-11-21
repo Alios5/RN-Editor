@@ -18,7 +18,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
 
 // Import version from package.json
-const APP_VERSION = "0.2.5 dev";
+const APP_VERSION = "0.2.5";
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -91,7 +91,6 @@ const Projects = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold leading-tight" style={{ fontFamily: 'Audiowide, sans-serif' }}>{t("app.name")}</h1>
-                <p className="text-xs text-muted-foreground">{t("project.recent")}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">

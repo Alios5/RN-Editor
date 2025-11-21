@@ -42,7 +42,7 @@ export const DEFAULT_THEME: Theme = {
   colors: {
     background: "230 35% 7%",
     foreground: "0 0% 98%",
-    card: "230 25% 12%",
+    card: "228 23% 17%",
     cardForeground: "0 0% 98%",
     popover: "230 30% 10%",
     popoverForeground: "0 0% 98%",
@@ -56,13 +56,13 @@ export const DEFAULT_THEME: Theme = {
     accentForeground: "0 0% 100%",
     destructive: "0 84.2% 60.2%",
     destructiveForeground: "0 0% 100%",
-    border: "230 25% 20%",
+    border: "227 29% 13%",
     input: "230 25% 18%",
     ring: "245 75% 60%",
     gradientStart: "245 75% 60%",
     gradientEnd: "265 70% 55%",
     // Panel colors
-    panelBackground: "230 25% 12%",
+    panelBackground: "228 22% 18%",
     panelBorder: "230 25% 20%",
     panelIconBackground: "245 75% 60%",
     panelInputBackground: "230 25% 18%",
@@ -72,7 +72,7 @@ export const DEFAULT_THEME: Theme = {
     trackGridLine: "230 25% 22%",
     trackMeasureLine: "245 60% 50%",
     // Waveform colors
-    waveformColor: "230 20% 25%",
+    waveformColor: "245 41% 49%",
   },
 };
 
@@ -107,11 +107,11 @@ export const LIGHT_THEME: Theme = {
     panelInputBackground: "0 0% 100%",
     panelSectionBackground: "210 40% 96%",
     // Track colors
-    trackBorder: "231 22% 64%",
-    trackGridLine: "229 12% 72%",
+    trackBorder: "230 15% 47%",
+    trackGridLine: "230 16% 70%",
     trackMeasureLine: "245 60% 50%",
     // Waveform colors
-    waveformColor: "230 20% 60%",
+    waveformColor: "231 33% 61%",
   },
 };
 
