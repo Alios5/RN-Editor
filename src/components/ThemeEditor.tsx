@@ -200,8 +200,13 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
     try {
       const importedTheme = await importTheme();
       if (importedTheme) {
-        setTheme(importedTheme);
-        setSaveThemeName(importedTheme.name);
+        // Generate a unique name if the theme name already exists
+        const { generateUniqueThemeName } = await import('@/utils/themeManager');
+        const uniqueName = generateUniqueThemeName(importedTheme.name, savedThemes);
+        const themeWithUniqueName = { ...importedTheme, name: uniqueName };
+        
+        setTheme(themeWithUniqueName);
+        setSaveThemeName(uniqueName);
         setShowSaveDialog(true);
         toast.success(t("theme.importSuccess"));
       }

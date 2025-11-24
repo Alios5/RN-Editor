@@ -220,7 +220,14 @@
     "dontShowAgain": "Don't show this warning again",
     "missingMusicTitle": "Audio File Missing",
     "missingMusicDescription": "The audio file for this project could not be found. Please reload the audio file.",
-    "reloadMusic": "Reload Music"
+    "reloadMusic": "Reload Music",
+    "metronomeSection": "Metronome",
+    "metronome": "Metronome",
+    "metronomeVolume": "Metronome Volume",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "uiControls": "UI Controls",
+    "mouseIndicator": "Mouse Indicator"
   },
   "editor": {
     "title": "EDITOR",

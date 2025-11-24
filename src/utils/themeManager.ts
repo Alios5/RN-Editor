@@ -110,6 +110,29 @@ export const exportTheme = async (theme: Theme): Promise<void> => {
 };
 
 /**
+ * Generate a unique theme name by adding a number suffix if the name already exists
+ */
+export const generateUniqueThemeName = (baseName: string, existingThemes: Theme[]): string => {
+  const existingNames = existingThemes.map(t => t.name);
+  
+  // If name doesn't exist, return as is
+  if (!existingNames.includes(baseName)) {
+    return baseName;
+  }
+  
+  // Find the next available number
+  let counter = 1;
+  let newName = `${baseName} ${counter}`;
+  
+  while (existingNames.includes(newName)) {
+    counter++;
+    newName = `${baseName} ${counter}`;
+  }
+  
+  return newName;
+};
+
+/**
  * Import theme from a JSON file
  */
 export const importTheme = async (): Promise<Theme | null> => {

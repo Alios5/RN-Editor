@@ -1,5 +1,5 @@
 import { useState, memo } from "react";
-import { Plus, Pen, MousePointer2, Zap, ListMusic } from "lucide-react";
+import { Plus, Pen, MousePointer2, ListMusic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,19 @@ import { SpecificAction } from "@/types/specificAction";
 import { TrackGroupItem } from "./TrackGroupItem";
 import { CreateGroupDialog } from "./CreateGroupDialog";
 import { EditGroupDialog } from "./EditGroupDialog";
-import { SpecificActionsDialog } from "./SpecificActionsDialog";
+import { SpecificActionItem } from "./SpecificActionItem";
+import { CreateActionDialog } from "./CreateActionDialog";
+import { EditActionDialog } from "./EditActionDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
 import { toast } from "sonner";
@@ -48,7 +60,11 @@ export const TracksPanel = memo(({
   const [isCreateGroupDialogOpen, setIsCreateGroupDialogOpen] = useState(false);
   const [isEditGroupDialogOpen, setIsEditGroupDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<TrackGroup | null>(null);
-  const [isActionsDialogOpen, setIsActionsDialogOpen] = useState(false);
+  const [isCreateActionDialogOpen, setIsCreateActionDialogOpen] = useState(false);
+  const [isEditActionDialogOpen, setIsEditActionDialogOpen] = useState(false);
+  const [editingAction, setEditingAction] = useState<SpecificAction | null>(null);
+  const [isDeleteActionDialogOpen, setIsDeleteActionDialogOpen] = useState(false);
+  const [actionToDelete, setActionToDelete] = useState<SpecificAction | null>(null);
 
   const handleEditGroup = (groupId: string) => {
     const group = groups.find(g => g.id === groupId);
@@ -71,6 +87,38 @@ export const TracksPanel = memo(({
     const group = groups.find(g => g.id === groupId);
     if (group) {
       onUpdateGroup(groupId, { visible: !group.visible });
+    }
+  };
+
+  const handleEditAction = (actionId: string) => {
+    const action = specificActions.find(a => a.id === actionId);
+    if (action) {
+      setEditingAction(action);
+      setIsEditActionDialogOpen(true);
+    }
+  };
+
+  const handleEditActionSubmit = (name: string, icon: string) => {
+    if (editingAction) {
+      onEditAction(editingAction.id, name, icon);
+      setIsEditActionDialogOpen(false);
+      setEditingAction(null);
+    }
+  };
+
+  const handleDeleteAction = (actionId: string) => {
+    const action = specificActions.find(a => a.id === actionId);
+    if (action) {
+      setActionToDelete(action);
+      setIsDeleteActionDialogOpen(true);
+    }
+  };
+
+  const handleConfirmDeleteAction = () => {
+    if (actionToDelete) {
+      onDeleteAction(actionToDelete.id);
+      setActionToDelete(null);
+      setIsDeleteActionDialogOpen(false);
     }
   };
 
@@ -207,20 +255,37 @@ export const TracksPanel = memo(({
 
         {/* Actions Section */}
         <div className="space-y-3">
-          <Label className="text-xs font-medium text-muted-foreground block">
-            {t("action.title")}
-          </Label>
-          <Button
-            variant="outline"
-            className="w-full justify-start h-9 text-sm"
-            onClick={() => setIsActionsDialogOpen(true)}
-          >
-            <Zap className="h-4 w-4 mr-2" />
-            {t("action.manageActions")}
-            <span className="ml-auto text-xs text-muted-foreground">
-              ({specificActions.length})
-            </span>
-          </Button>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs font-medium text-muted-foreground">
+              {t("action.title")}
+            </Label>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCreateActionDialogOpen(true)}
+              className="h-7 text-xs -mr-2"
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              {t("actions.create")}
+            </Button>
+          </div>
+
+          {specificActions.length === 0 ? (
+            <div className="text-center py-4 text-muted-foreground text-xs">
+              {t("action.noActions")}
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {specificActions.map(action => (
+                <SpecificActionItem
+                  key={action.id}
+                  action={action}
+                  onEdit={() => handleEditAction(action.id)}
+                  onDelete={() => handleDeleteAction(action.id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -240,14 +305,44 @@ export const TracksPanel = memo(({
       existingGroupNames={groups.map(g => g.name)}
     />
 
-    <SpecificActionsDialog
-      open={isActionsDialogOpen}
-      onOpenChange={setIsActionsDialogOpen}
-      actions={specificActions}
-      onCreateAction={onCreateAction}
-      onEditAction={onEditAction}
-      onDeleteAction={onDeleteAction}
+    <CreateActionDialog
+      open={isCreateActionDialogOpen}
+      onOpenChange={setIsCreateActionDialogOpen}
+      onCreate={onCreateAction}
+      existingActionNames={specificActions.map(a => a.name)}
     />
+
+    <EditActionDialog
+      open={isEditActionDialogOpen}
+      onOpenChange={setIsEditActionDialogOpen}
+      actionId={editingAction?.id || null}
+      currentName={editingAction?.name || ''}
+      currentIcon={editingAction?.icon || ''}
+      onSave={handleEditActionSubmit}
+    />
+
+    <AlertDialog open={isDeleteActionDialogOpen} onOpenChange={setIsDeleteActionDialogOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("action.deleteAction")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t("action.deleteConfirm")}
+            {actionToDelete && (
+              <span className="block mt-2 font-semibold">Action : {actionToDelete.name}</span>
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirmDeleteAction}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {t("actions.delete")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </>
   );
 });

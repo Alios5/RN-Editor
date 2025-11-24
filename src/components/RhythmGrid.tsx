@@ -51,6 +51,7 @@ interface RhythmGridProps {
   onGridMouseMove?: (cellPosition: number) => void;
   hasCopiedNotes?: boolean;
   previewNote?: PreviewNote;
+  showMouseIndicator?: boolean;
 }
 
 export const RhythmGrid = ({
@@ -94,7 +95,8 @@ export const RhythmGrid = ({
   onDragEnd,
   onGridMouseMove,
   hasCopiedNotes = false,
-  previewNote
+  previewNote,
+  showMouseIndicator = true
 }: RhythmGridProps) => {
   const { t } = useTranslation();
 
@@ -583,7 +585,7 @@ export const RhythmGrid = ({
       )}
 
       {/* Indicateur de cellule survolée */}
-      {hoverCell !== null && !isCreating && !isDraggingNotes && !isResizing && editorMode === 'edit' && !isNoteMenuOpen && !isGridMenuOpen && (
+      {showMouseIndicator && hoverCell !== null && !isCreating && !isDraggingNotes && !isResizing && editorMode === 'edit' && !isNoteMenuOpen && !isGridMenuOpen && (
         <div
           className="absolute top-0 bottom-0 pointer-events-none z-40 transition-all duration-100 ease-out"
           style={{

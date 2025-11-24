@@ -26,6 +26,8 @@ import { Waveform } from "@/components/Waveform";
 import { AudioPlayer, AudioPlayerRef } from "@/components/AudioPlayer";
 import { useShortcuts } from "@/hooks/useShortcuts";
 import { useRealtimeNoteCreation } from "@/hooks/useRealtimeNoteCreation";
+import { useMetronome } from "@/hooks/useMetronome";
+
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { calculateAudioMetrics } from "@/utils/audioCalculations";
 import { exportToJson, exportToJsonFile } from "@/utils/exportJson";
@@ -74,7 +76,7 @@ const Editor = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [project, setProject] = useState<Project | null>(null);
-  
+
   // Audio controls state
   const [audioUrl, setAudioUrl] = useState<string>(""); // URL for playback
   const [musicFilePath, setMusicFilePath] = useState<string>(""); // File path for saving
@@ -85,7 +87,7 @@ const Editor = () => {
   const [volume, setVolume] = useState(70);
   const [pitch, setPitch] = useState(1);
   const [startOffset, setStartOffset] = useState(0);
-  
+
   // Playback state for synchronization
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -94,6 +96,13 @@ const Editor = () => {
   const [dragSeekTime, setDragSeekTime] = useState<number | null>(null);
   const [autoFollowPlayback, setAutoFollowPlayback] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
+
+
+
+  // UI state
+  const [showMouseIndicator, setShowMouseIndicator] = useState(true);
+  const [metronomeEnabled, setMetronomeEnabled] = useState(false);
+  const [metronomeVolume, setMetronomeVolume] = useState(0.5);
 
   // Tracks state
   const [tracks, setTracks] = useState<Track[]>([]);
@@ -130,26 +139,26 @@ const Editor = () => {
   const lassoContainerRef = useRef<HTMLDivElement | null>(null);
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
   const [hasModifiedSelectedNotes, setHasModifiedSelectedNotes] = useState(false);
-  
+
   // Global drag state for multi-track dragging
   const [isDraggingNotes, setIsDraggingNotes] = useState(false);
   const [dragStartCell, setDragStartCell] = useState(0);
   const [dragClickOffset, setDragClickOffset] = useState(0); // Offset du clic dans la note
   const [dragOffset, setDragOffset] = useState(0);
-  
+
   // Sidebar visibility
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
-  
+
   // Ref pour l'AudioPlayer
   const audioPlayerRef = useRef<AudioPlayerRef>(null);
-  
+
   // Ref pour le conteneur scrollable
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  
+
   // Hook de raccourcis
   const { matchesShortcut } = useShortcuts();
-  
+
   // Copy/Paste state
   const [copiedNotes, setCopiedNotes] = useState<{ trackId: string; notes: Note[] }[]>([]);
   const [mouseGridPosition, setMouseGridPosition] = useState<{ trackId: string; cellPosition: number } | null>(null);
@@ -163,7 +172,7 @@ const Editor = () => {
 
   // State for save and export paths
   const [lastExportPath, setLastExportPath] = useState<string | undefined>(undefined);
-  
+
   // State to track unsaved changes (for navigation only)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
@@ -180,7 +189,7 @@ const Editor = () => {
         waveformWidth: 800 // Default width
       };
     }
-    
+
     return calculateAudioMetrics(bpm, audioDuration, rhythmSync, subRhythmSync);
   }, [bpm, audioDuration, rhythmSync, subRhythmSync]);
 
@@ -200,7 +209,7 @@ const Editor = () => {
   // Calculate notes that overlap with other notes
   const overlappingNotes = useMemo(() => {
     const overlaps = new Set<string>();
-    
+
     tracks.forEach(track => {
       const selectedNotesInTrack = Array.from(selectedNotes)
         .filter(key => key.startsWith(`${track.id}:`))
@@ -238,7 +247,7 @@ const Editor = () => {
           handleSave();
         }
       }
-      
+
       // CTRL+E to export
       if (event.ctrlKey && event.key === 'e') {
         event.preventDefault();
@@ -247,7 +256,7 @@ const Editor = () => {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
@@ -261,7 +270,7 @@ const Editor = () => {
     const offsetInCells = startOffset / cellWidth;
     const offsetTime = gridPositionToTime(offsetInCells, bpm, subRhythmSync);
 
-    setTracks(prevTracks => 
+    setTracks(prevTracks =>
       prevTracks.map(track => ({
         ...track,
         notes: track.notes?.map(note => {
@@ -269,7 +278,7 @@ const Editor = () => {
           // This guarantees perfect consistency and avoids drift accumulation on long tracks
           const noteTime = gridPositionToTime(note.gridPosition, bpm, subRhythmSync);
           const noteDuration = note.gridWidth === 1 ? 0 : gridPositionToTime(note.gridWidth, bpm, subRhythmSync);
-          
+
           return {
             ...note,
             startTime: noteTime + offsetTime, // Add offset time to all notes
@@ -333,7 +342,7 @@ const Editor = () => {
         setHistoryIndex(prev => prev + 1);
         return newHistory;
       });
-      
+
       // Only mark as unsaved if this is not the initial load
       if (!isInitialLoadRef.current) {
         setHasUnsavedChanges(true);
@@ -409,7 +418,7 @@ const Editor = () => {
       const waveformWidth = audioMetrics.waveformWidth;
       const progress = currentTime / audioDuration;
       const targetScrollLeft = progress * waveformWidth - container.clientWidth / 2;
-      
+
       // Instant scroll (auto) to avoid stuttering on low-end devices
       container.scrollTo({
         left: Math.max(0, targetScrollLeft),
@@ -454,13 +463,13 @@ const Editor = () => {
       // E : switch to Edit mode
       if (e.key === 'e' && !isTyping && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
-        
+
         // Save if notes have been modified before changing mode
         if (hasModifiedSelectedNotes && selectedNotes.size > 0) {
           // History is now automatic via useEffect with debounce
           setHasModifiedSelectedNotes(false);
         }
-        
+
         setEditorMode('edit');
         setSelectedNotes(new Set()); // Deselect all when switching to Edit mode
       }
@@ -534,13 +543,13 @@ const Editor = () => {
             notes: track.notes?.map(note => {
               if (selectedNotesInTrack.includes(note.id)) {
                 const newPosition = Math.max(0, note.gridPosition + moveAmount);
-                
+
                 // Recalculate startTime and duration based on new position
                 const notePosition = newPosition * cellWidth;
                 const noteWidth = note.gridWidth * cellWidth;
                 const newStartTime = (notePosition / trackWidth) * audioDuration;
                 const newDuration = note.gridWidth === 1 ? 0 : (noteWidth / trackWidth) * audioDuration;
-                
+
                 return {
                   ...note,
                   gridPosition: newPosition,
@@ -555,7 +564,7 @@ const Editor = () => {
 
         // Mark that notes have been modified
         setHasModifiedSelectedNotes(true);
-        
+
         // Do not save to history during movement
         // History will be updated on deselection
       }
@@ -568,16 +577,16 @@ const Editor = () => {
   useEffect(() => {
     const loadProject = async () => {
       if (!id) return;
-      
+
       console.log('=== CHARGEMENT DU PROJET ===');
       console.log('ID du projet:', id);
-      
+
       const projects = getProjects();
       console.log('Projets dans localStorage:', projects);
-      
+
       const found = projects.find((p) => p.id === id);
       console.log('Projet trouvé:', found);
-      
+
       if (!found) {
         console.error('Projet non trouvé dans localStorage');
         toast.error(t("project.notFound"));
@@ -594,7 +603,7 @@ const Editor = () => {
           console.log('Vérification existence du fichier...');
           const fileExists = await exists(found.filePath);
           console.log('Fichier existe:', fileExists);
-          
+
           if (!fileExists) {
             console.error("Fichier introuvable:", found.filePath);
             toast.error(t("project.fileNotFound", { name: found.name }));
@@ -605,7 +614,7 @@ const Editor = () => {
           console.log('Chargement du projet depuis le fichier...');
           const loadedProject = await loadProjectFromFile(found.filePath);
           console.log('Projet chargé:', loadedProject);
-          
+
           if (loadedProject) {
             setProject(loadedProject);
             loadProjectData(loadedProject);
@@ -653,7 +662,7 @@ const Editor = () => {
     // Reset unsaved changes state for new project load
     isInitialLoadRef.current = true;
     setHasUnsavedChanges(false);
-    
+
     // Load saved audio parameters
     if (project.bpm) setBpm(project.bpm);
     if (project.rhythmSync) setRhythmSync(project.rhythmSync);
@@ -665,7 +674,7 @@ const Editor = () => {
       import('@tauri-apps/plugin-fs').then(async ({ exists }) => {
         try {
           const musicExists = await exists(project.musicPath!);
-          
+
           if (musicExists) {
             setMusicFilePath(project.musicPath!);
             setAudioUrl(convertFilePathToAudioUrl(project.musicPath!));
@@ -687,7 +696,7 @@ const Editor = () => {
     if (project.trackGroups) setTrackGroups(project.trackGroups);
     // Load specific actions
     if (project.specificActions) setSpecificActions(project.specificActions);
-    
+
     // Initialize history with loaded state
     setTimeout(() => {
       const initialState: EditorState = {
@@ -810,7 +819,7 @@ const Editor = () => {
     setHasUnsavedChanges(false);
     const wasPendingNavigation = pendingNavigation;
     setPendingNavigation(false);
-    
+
     // Check if we're trying to close the window or just navigate back
     if (wasPendingNavigation) {
       navigate("/");
@@ -830,10 +839,10 @@ const Editor = () => {
     setShowUnsavedChangesDialog(false);
     const wasPendingNavigation = pendingNavigation;
     setPendingNavigation(false);
-    
+
     // Save the project first
     await handleSave();
-    
+
     // Then close window or navigate
     if (wasPendingNavigation) {
       navigate("/");
@@ -1025,7 +1034,7 @@ const Editor = () => {
   };
 
   const handleUpdateGroup = (groupId: string, updates: Partial<TrackGroup>) => {
-    setTrackGroups(trackGroups.map(group => 
+    setTrackGroups(trackGroups.map(group =>
       group.id === groupId ? { ...group, ...updates } : group
     ));
 
@@ -1034,12 +1043,12 @@ const Editor = () => {
 
   const handleDeleteGroup = (groupId: string) => {
     const group = trackGroups.find(g => g.id === groupId);
-    
+
     // Remove groupId from all tracks in this group
-    setTracks(tracks.map(track => 
+    setTracks(tracks.map(track =>
       track.groupId === groupId ? { ...track, groupId: undefined } : track
     ));
-    
+
     setTrackGroups(trackGroups.filter(g => g.id !== groupId));
     toast.success(t("group.deleteSuccess"));
     // History is now automatic via useEffect with debounce
@@ -1139,6 +1148,15 @@ const Editor = () => {
     onCreateNote: handleCreateNote,
   });
 
+  // Metronome
+  useMetronome({
+    bpm,
+    isPlaying,
+    enabled: metronomeEnabled,
+    volume: metronomeVolume,
+    currentTime,
+  });
+
   const handleDeleteNote = (trackId: string, noteId: string) => {
     setTracks(tracks.map(track => {
       if (track.id === trackId) {
@@ -1224,7 +1242,7 @@ const Editor = () => {
 
   const handleGlobalMoveNotes = (offset: number) => {
     if (offset === 0) return;
-    
+
     const cellWidth = 24;
     const trackWidth = audioMetrics.waveformWidth;
 
@@ -1282,9 +1300,9 @@ const Editor = () => {
               notes: track.notes?.map(note =>
                 notesInTrack.includes(note.id)
                   ? {
-                      ...note,
-                      specificAction: action ? { name: action.name, icon: action.icon } : undefined
-                    }
+                    ...note,
+                    specificAction: action ? { name: action.name, icon: action.icon } : undefined
+                  }
                   : note
               )
             };
@@ -1300,9 +1318,9 @@ const Editor = () => {
               notes: track.notes?.map(note =>
                 note.id === noteToAssignAction.noteId
                   ? {
-                      ...note,
-                      specificAction: action ? { name: action.name, icon: action.icon } : undefined
-                    }
+                    ...note,
+                    specificAction: action ? { name: action.name, icon: action.icon } : undefined
+                  }
                   : note
               )
             };
@@ -1422,7 +1440,7 @@ const Editor = () => {
 
     // Capturer les notes à supprimer immédiatement pour éviter les problèmes de closure
     const notesToDeleteByTrack = new Map<string, string[]>();
-    
+
     Array.from(selectedNotes).forEach(noteKey => {
       const [trackId, noteId] = noteKey.split(':');
       if (!notesToDeleteByTrack.has(trackId)) {
@@ -1460,7 +1478,7 @@ const Editor = () => {
 
     const cellWidth = 24;
     const trackWidth = audioMetrics.waveformWidth;
-    
+
     // Trouver la position de fin la plus à droite parmi toutes les notes sélectionnées
     let maxEndPosition = 0;
     tracks.forEach(track => {
@@ -1487,7 +1505,7 @@ const Editor = () => {
       const selectedNotesInTrack = notesToDuplicate
         .filter(key => key.startsWith(`${track.id}:`))
         .map(key => key.split(':')[1]);
-      
+
       track.notes?.forEach(note => {
         if (selectedNotesInTrack.includes(note.id)) {
           if (note.gridPosition < minPosition) {
@@ -1548,7 +1566,7 @@ const Editor = () => {
     // Sélectionner uniquement cette note et la dupliquer
     const noteKey = `${trackId}:${noteId}`;
     setSelectedNotes(new Set([noteKey]));
-    
+
     // Utiliser setTimeout pour permettre à l'état de se mettre à jour avant la duplication
     setTimeout(() => {
       duplicateSelectedNotes();
@@ -1558,10 +1576,10 @@ const Editor = () => {
   const handleDuplicateSelected = () => {
     // Vérifier qu'il y a des notes sélectionnées
     if (selectedNotes.size === 0) return;
-    
+
     // Capturer immédiatement l'état actuel pour éviter la perte lors de la fermeture du menu
     const notesToDuplicateNow = new Set(selectedNotes);
-    
+
     // Exécuter la duplication de manière asynchrone pour éviter les conflits avec la fermeture du menu
     requestAnimationFrame(() => {
       duplicateSelectedNotes(notesToDuplicateNow);
@@ -1573,7 +1591,7 @@ const Editor = () => {
 
     const cellWidth = 24;
     const trackWidth = audioMetrics.waveformWidth;
-    
+
     // Regrouper les notes sélectionnées par piste
     const notesByTrack = new Map<string, string[]>();
     Array.from(selectedNotes).forEach(noteKey => {
@@ -1590,7 +1608,7 @@ const Editor = () => {
     // Pour chaque piste, fusionner les notes sélectionnées
     setTracks(tracks.map(track => {
       const selectedNoteIds = notesByTrack.get(track.id);
-      
+
       if (!selectedNoteIds || selectedNoteIds.length === 0) {
         return track;
       }
@@ -1601,12 +1619,12 @@ const Editor = () => {
       }
 
       // Récupérer les notes sélectionnées
-      const selectedNotesInTrack = (track.notes || []).filter(note => 
+      const selectedNotesInTrack = (track.notes || []).filter(note =>
         selectedNoteIds.includes(note.id)
       );
 
       // Trouver la note avec le plus petit startTime
-      const firstNote = selectedNotesInTrack.reduce((min, note) => 
+      const firstNote = selectedNotesInTrack.reduce((min, note) =>
         note.startTime < min.startTime ? note : min
       );
 
@@ -1644,11 +1662,11 @@ const Editor = () => {
         if (selectedNoteIds.includes(note.id)) {
           return false;
         }
-        
+
         // Sinon, vérifier si la note se trouve dans l'intervalle de fusion
         const noteStart = note.startTime;
         const noteEnd = note.startTime + note.duration;
-        
+
         // Supprimer si la note commence entre mergedStartTime et mergedEndTime
         // OU si la note se chevauche avec l'intervalle de fusion
         const isInMergeRange = (
@@ -1656,7 +1674,7 @@ const Editor = () => {
           (noteEnd > mergedStartTime && noteEnd <= mergedEndTime) ||
           (noteStart <= mergedStartTime && noteEnd >= mergedEndTime)
         );
-        
+
         return !isInMergeRange; // Garder la note seulement si elle n'est PAS dans l'intervalle
       });
 
@@ -1674,7 +1692,7 @@ const Editor = () => {
     if (selectedNotes.size === 0) return;
 
     const notesToCopy: { trackId: string; notes: Note[] }[] = [];
-    
+
     tracks.forEach(track => {
       const trackNotes: Note[] = [];
       track.notes?.forEach(note => {
@@ -1683,7 +1701,7 @@ const Editor = () => {
           trackNotes.push({ ...note });
         }
       });
-      
+
       if (trackNotes.length > 0) {
         notesToCopy.push({ trackId: track.id, notes: trackNotes });
       }
@@ -1918,21 +1936,21 @@ const Editor = () => {
     }
 
     const notesInLasso = new Set<string>();
-    
+
     // Obtenir le conteneur pour conversion des coordonnées
     const container = document.querySelector('[data-lasso-container]');
     if (!container) return;
-    
+
     const containerRect = container.getBoundingClientRect();
     const scrollLeft = (container as HTMLElement).scrollLeft;
     const scrollTop = (container as HTMLElement).scrollTop;
-    
+
     // Détecter les notes dans le lasso
     const noteElements = document.querySelectorAll('[data-note-block]');
-    
+
     noteElements.forEach((element) => {
       const rect = element.getBoundingClientRect();
-      
+
       // Convertir les positions viewport des notes en coordonnées relatives au conteneur
       const noteLeft = rect.left - containerRect.left + scrollLeft;
       const noteRight = rect.right - containerRect.left + scrollLeft;
@@ -1941,7 +1959,7 @@ const Editor = () => {
 
       // Vérifier si la note intersecte le rectangle de lasso
       const intersects = !(noteRight < minX || noteLeft > maxX || noteBottom < minY || noteTop > maxY);
-      
+
       if (intersects) {
         // Extraire trackId et noteId des attributs data
         const noteData = element.getAttribute('data-note-id');
@@ -1972,12 +1990,12 @@ const Editor = () => {
 
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (!lassoContainerRef.current) return;
-      
+
       const container = lassoContainerRef.current;
       const rect = container.getBoundingClientRect();
       const relativeX = e.clientX - rect.left + container.scrollLeft;
       const relativeY = e.clientY - rect.top + container.scrollTop;
-      
+
       setLassoEnd({ x: relativeX, y: relativeY });
     };
 
@@ -2083,11 +2101,11 @@ const Editor = () => {
     if (project?.filePath) {
       try {
         const folderPath = await dirname(project.filePath);
-        
+
         // Ouvrir le dossier via la commande Tauri personnalisée
         const { invoke } = await import('@tauri-apps/api/core');
         await invoke('open_folder', { folderPath });
-        
+
         toast.success(t("project.folderOpened") || "Dossier ouvert");
       } catch (error) {
         console.error("Error opening project folder:", error);
@@ -2164,7 +2182,7 @@ const Editor = () => {
                 <p className="text-xs text-muted-foreground">{project?.name}</p>
               </div>
             </div>
-            
+
             {/* Right side - All buttons */}
             <div className="flex items-center gap-2">
               <TooltipProvider>
@@ -2179,14 +2197,14 @@ const Editor = () => {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              
+
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={handleOpenProjectFolder} 
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleOpenProjectFolder}
                       className="rounded-lg"
                       disabled={!project?.filePath}
                     >
@@ -2198,9 +2216,9 @@ const Editor = () => {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              
+
               <Separator orientation="vertical" className="h-8" />
-              
+
               <DropdownMenu>
                 <TooltipProvider>
                   <Tooltip>
@@ -2230,7 +2248,7 @@ const Editor = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              
+
               <DropdownMenu>
                 <TooltipProvider>
                   <Tooltip>
@@ -2259,18 +2277,18 @@ const Editor = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              
+
               <Separator orientation="vertical" className="h-6 mx-1" />
-              
+
               {/* History controls group */}
               <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ backgroundColor: panelColors.sectionBackground() }}>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-md" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-md"
                         onClick={handleUndo}
                         disabled={historyIndex <= 0}
                       >
@@ -2282,12 +2300,12 @@ const Editor = () => {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                
+
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="icon"
                         className="h-8 w-8 rounded-md"
                         onClick={handleRedo}
@@ -2302,15 +2320,15 @@ const Editor = () => {
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              
+
               <Separator orientation="vertical" className="h-6 mx-1" />
-              
+
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="h-9 w-9 rounded-lg"
                       onClick={() => setIsSidebarVisible(!isSidebarVisible)}
                     >
@@ -2340,9 +2358,9 @@ const Editor = () => {
               {/* Waveform Area - Zone de travail avec scroll horizontal */}
               <div ref={scrollContainerRef} className="flex-1 p-6 overflow-x-auto overflow-y-auto">
                 {/* Conteneur interne avec largeur dynamique */}
-                <div 
+                <div
                   data-lasso-container
-                  style={{ width: `${audioMetrics.waveformWidth}px`, minWidth: '100%' }} 
+                  style={{ width: `${audioMetrics.waveformWidth}px`, minWidth: '100%' }}
                   className="relative"
                   onMouseDown={handleLassoMouseDown}
                   onMouseMove={handleLassoMouseMove}
@@ -2363,13 +2381,13 @@ const Editor = () => {
                   {isLassoActive && lassoStart && lassoEnd && (
                     <LassoSelection startPoint={lassoStart} endPoint={lassoEnd} />
                   )}
-                  
+
                   <div className="space-y-6">
                     <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm pb-4">
                       <div className="sticky left-0 h-[32px] w-fit px-4 py-1 flex items-center mb-3 rounded-lg border border-border/30" style={{ backgroundColor: panelColors.sectionBackground() }}>
                         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">{t("editor.waveform")}</h2>
                       </div>
-                      <Waveform 
+                      <Waveform
                         audioUrl={audioUrl}
                         currentTime={currentTime}
                         isPlaying={isPlaying}
@@ -2381,7 +2399,7 @@ const Editor = () => {
                         width={audioMetrics.waveformWidth}
                       />
                     </div>
-                    
+
                     {/* Système de pistes */}
                     <div className="space-y-4">
                       <div className="sticky left-0 h-[32px] w-fit px-4 py-1 flex items-center mb-3 rounded-lg border border-border/30" style={{ backgroundColor: panelColors.sectionBackground() }}>
@@ -2391,13 +2409,13 @@ const Editor = () => {
                       {displayedTracks.length > 0 ? (
                         <div className="space-y-2">
                           {displayedTracks.map(track => {
-                            const trackGroup = track.groupId 
+                            const trackGroup = track.groupId
                               ? trackGroups.find(g => g.id === track.groupId)
                               : undefined;
-                            
+
                             // Trouver la preview note pour cette piste
                             const trackPreviewNote = previewNotes.find(pn => pn.trackId === track.id);
-                            
+
                             return (
                               <TrackRow
                                 key={track.id}
@@ -2414,41 +2432,42 @@ const Editor = () => {
                                 selectedNotes={selectedNotes}
                                 overlappingNotes={overlappingNotes}
                                 scrollContainerRef={scrollContainerRef}
-                              onEdit={() => {
-                                setEditingTrack(track);
-                                setShowEditTrackDialog(true);
-                              }}
-                              onToggleVisibility={() => handleToggleTrackVisibility(track.id)}
-                              onDelete={() => setTrackToDelete(track)}
-                              onAssignToGroup={() => {
-                                setTrackToAssign(track);
-                                setShowAssignGroupDialog(true);
-                              }}
-                              onCreateNote={handleCreateNote}
-                              onDeleteNote={handleDeleteNote}
-                              onDeleteNotes={handleDeleteNotes}
-                              onMoveNotes={handleMoveNotes}
-                              onResizeNote={handleResizeNote}
-                              onDeleteSelected={deleteSelectedNotes}
-                              onDuplicate={handleDuplicate}
-                              onDuplicateSelected={handleDuplicateSelected}
-                              onMergeSelected={mergeSelectedNotes}
-                              onCopy={handleCopy}
-                              onCut={handleCut}
-                              onPaste={handlePaste}
-                              onAssignActionToNote={handleAssignActionToNote}
-                              onAssignActionToSelected={handleAssignActionToSelectedNotes}
-                              onNoteClick={handleNoteClick}
-                              onContextMenuOpenChange={setIsContextMenuOpen}
-                              isDraggingNotes={isDraggingNotes}
-                              dragOffset={dragOffset}
-                              onStartDrag={handleStartDrag}
-                              onDragMove={handleDragMove}
-                              onDragEnd={handleDragEnd}
-                              onGridMouseMove={handleGridMouseMove}
-                              hasCopiedNotes={copiedNotes.length > 0}
-                              previewNote={trackPreviewNote}
-                            />
+                                onEdit={() => {
+                                  setEditingTrack(track);
+                                  setShowEditTrackDialog(true);
+                                }}
+                                onToggleVisibility={() => handleToggleTrackVisibility(track.id)}
+                                onDelete={() => setTrackToDelete(track)}
+                                onAssignToGroup={() => {
+                                  setTrackToAssign(track);
+                                  setShowAssignGroupDialog(true);
+                                }}
+                                onCreateNote={handleCreateNote}
+                                onDeleteNote={handleDeleteNote}
+                                onDeleteNotes={handleDeleteNotes}
+                                onMoveNotes={handleMoveNotes}
+                                onResizeNote={handleResizeNote}
+                                onDeleteSelected={deleteSelectedNotes}
+                                onDuplicate={handleDuplicate}
+                                onDuplicateSelected={handleDuplicateSelected}
+                                onMergeSelected={mergeSelectedNotes}
+                                onCopy={handleCopy}
+                                onCut={handleCut}
+                                onPaste={handlePaste}
+                                onAssignActionToNote={handleAssignActionToNote}
+                                onAssignActionToSelected={handleAssignActionToSelectedNotes}
+                                onNoteClick={handleNoteClick}
+                                onContextMenuOpenChange={setIsContextMenuOpen}
+                                isDraggingNotes={isDraggingNotes}
+                                dragOffset={dragOffset}
+                                onStartDrag={handleStartDrag}
+                                onDragMove={handleDragMove}
+                                onDragEnd={handleDragEnd}
+                                onGridMouseMove={handleGridMouseMove}
+                                hasCopiedNotes={copiedNotes.length > 0}
+                                previewNote={trackPreviewNote}
+                                showMouseIndicator={showMouseIndicator}
+                              />
                             );
                           })}
                         </div>
@@ -2467,9 +2486,9 @@ const Editor = () => {
               </div>
 
               {/* Audio Player */}
-              <AudioPlayer 
+              <AudioPlayer
                 ref={audioPlayerRef}
-                audioUrl={audioUrl} 
+                audioUrl={audioUrl}
                 volume={volume}
                 pitch={pitch}
                 onTimeUpdate={setCurrentTime}
@@ -2489,65 +2508,65 @@ const Editor = () => {
           {/* Right Panel */}
           {isSidebarVisible && (
             <ResizablePanel defaultSize={20} minSize={20} maxSize={35}>
-            <div className="h-full overflow-y-auto">
-              <TracksPanel
-                onCreateTrack={() => {
-                  if (audioDuration === 0) {
-                    toast.error(t("track.noMusicError"));
-                  } else {
-                    setShowCreateTrackDialog(true);
-                  }
-                }}
-                editorMode={editorMode}
-                onModeChange={handleModeChange}
-                groups={trackGroups}
-                tracks={tracks}
-                specificActions={specificActions}
-                onCreateGroup={handleCreateGroup}
-                onUpdateGroup={handleUpdateGroup}
-                onDeleteGroup={handleDeleteGroup}
-                onCreateAction={handleCreateAction}
-                onEditAction={handleEditAction}
-                onDeleteAction={handleDeleteAction}
-              />
-              <AudioPanel
-                audioFile={audioFileName || project.musicFileName || t("audio.noAudio")}
-                bpm={bpm}
-                setBpm={(value) => {
-                  setBpm(value);
-                  // History is now automatic via useEffect with debounce
-                }}
-                rhythmSync={rhythmSync}
-                setRhythmSync={(value) => {
-                  setRhythmSync(value);
-                  // History is now automatic via useEffect with debounce
-                }}
-                subRhythmSync={subRhythmSync}
-                setSubRhythmSync={(value) => {
-                  setSubRhythmSync(value);
-                  // History is now automatic via useEffect with debounce
-                }}
-                volume={volume}
-                setVolume={(value) => {
-                  setVolume(value);
-                  // History is now automatic via useEffect with debounce
-                }}
-                pitch={pitch}
-                setPitch={(value) => {
-                  setPitch(value);
-                  // History is now automatic via useEffect with debounce
-                }}
-                startOffset={startOffset}
-                setStartOffset={(value) => {
-                  setStartOffset(value);
-                  // History is now automatic via useEffect with debounce
-                }}
-                onLoadAudio={handleLoadAudio}
-                onDetectBPM={handleDetectBPM}
-                isDetectingBPM={isDetectingBPM}
-              />
-            </div>
-          </ResizablePanel>
+              <div className="h-full overflow-y-auto">
+                <TracksPanel
+                  onCreateTrack={() => {
+                    if (audioDuration === 0) {
+                      toast.error(t("track.noMusicError"));
+                    } else {
+                      setShowCreateTrackDialog(true);
+                    }
+                  }}
+                  editorMode={editorMode}
+                  onModeChange={handleModeChange}
+                  groups={trackGroups}
+                  tracks={tracks}
+                  specificActions={specificActions}
+                  onCreateGroup={handleCreateGroup}
+                  onUpdateGroup={handleUpdateGroup}
+                  onDeleteGroup={handleDeleteGroup}
+                  onCreateAction={handleCreateAction}
+                  onEditAction={handleEditAction}
+                  onDeleteAction={handleDeleteAction}
+                />
+                <AudioPanel
+                  audioFile={audioFileName || project.musicFileName || t("audio.noAudio")}
+                  bpm={bpm}
+                  setBpm={(value) => {
+                    setBpm(value);
+                    // History is now automatic via useEffect with debounce
+                  }}
+                  rhythmSync={rhythmSync}
+                  setRhythmSync={(value) => {
+                    setRhythmSync(value);
+                    // History is now automatic via useEffect with debounce
+                  }}
+                  subRhythmSync={subRhythmSync}
+                  setSubRhythmSync={(value) => {
+                    setSubRhythmSync(value);
+                    // History is now automatic via useEffect with debounce
+                  }}
+                  volume={volume}
+                  setVolume={(value) => {
+                    setVolume(value);
+                    // History is now automatic via useEffect with debounce
+                  }}
+                  pitch={pitch}
+                  setPitch={(value) => {
+                    setPitch(value);
+                    // History is now automatic via useEffect with debounce
+                  }}
+                  startOffset={startOffset}
+                  setStartOffset={(value) => {
+                    setStartOffset(value);
+                    // History is now automatic via useEffect with debounce
+                  }}
+                  onLoadAudio={handleLoadAudio}
+                  showMouseIndicator={showMouseIndicator}
+                  setShowMouseIndicator={setShowMouseIndicator}
+                />
+              </div>
+            </ResizablePanel>
           )}
         </ResizablePanelGroup>
       </div>
@@ -2585,7 +2604,7 @@ const Editor = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={() => trackToDelete && handleDeleteTrack(trackToDelete.id)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
@@ -2646,13 +2665,13 @@ const Editor = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex items-center space-x-2 py-4">
-            <Checkbox 
-              id="dont-show-warning" 
+            <Checkbox
+              id="dont-show-warning"
               checked={dontShowMusicWarning}
               onCheckedChange={(checked) => setDontShowMusicWarning(checked === true)}
             />
-            <Label 
-              htmlFor="dont-show-warning" 
+            <Label
+              htmlFor="dont-show-warning"
               className="text-sm font-normal cursor-pointer"
             >
               {t("audio.dontShowAgain")}
@@ -2691,8 +2710,8 @@ const Editor = () => {
         currentActionName={
           noteToAssignAction
             ? tracks
-                .find((t) => t.id === noteToAssignAction.trackId)
-                ?.notes?.find((n) => n.id === noteToAssignAction.noteId)?.specificAction?.name
+              .find((t) => t.id === noteToAssignAction.trackId)
+              ?.notes?.find((n) => n.id === noteToAssignAction.noteId)?.specificAction?.name
             : undefined
         }
         onSelect={handleSelectActionForNote}
