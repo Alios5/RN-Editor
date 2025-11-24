@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Home, Save, Download, Music, RotateCcw, RotateCw, PanelLeftClose, PanelLeftOpen, FolderOpen } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useVisibleTracks } from "@/hooks/useVisibleTracks";
 import { panelColors } from "@/lib/panelColors";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { Button } from "@/components/ui/button";
@@ -183,11 +184,18 @@ const Editor = () => {
     return calculateAudioMetrics(bpm, audioDuration, rhythmSync, subRhythmSync);
   }, [bpm, audioDuration, rhythmSync, subRhythmSync]);
 
-  // Display all tracks - visibility will be managed at the TrackRow level
-  // (label always visible, only the grid is hidden/shown)
+  // Calculate which tracks are visible in the viewport (with 300px buffer)
+  const visibleTrackIds = useVisibleTracks({
+    tracks,
+    scrollContainerRef,
+    trackHeight: 131, // TrackLabel (35px + 8px mb) + RhythmGrid (80px) + space-y-2 (8px)
+    bufferSize: 300,
+  });
+
+  // Display only visible tracks for performance optimization
   const displayedTracks = useMemo(() => {
-    return tracks;
-  }, [tracks]);
+    return tracks.filter(track => visibleTrackIds.has(track.id));
+  }, [tracks, visibleTrackIds]);
 
   // Calculate notes that overlap with other notes
   const overlappingNotes = useMemo(() => {
@@ -2405,6 +2413,7 @@ const Editor = () => {
                                 editorMode={editorMode}
                                 selectedNotes={selectedNotes}
                                 overlappingNotes={overlappingNotes}
+                                scrollContainerRef={scrollContainerRef}
                               onEdit={() => {
                                 setEditingTrack(track);
                                 setShowEditTrackDialog(true);

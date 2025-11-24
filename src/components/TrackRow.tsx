@@ -20,6 +20,7 @@ interface TrackRowProps {
   editorMode: 'edit' | 'select';
   selectedNotes?: Set<string>;
   overlappingNotes?: Set<string>;
+  scrollContainerRef?: React.RefObject<HTMLDivElement>;
   onEdit: () => void;
   onToggleVisibility: () => void;
   onDelete: () => void;
@@ -63,6 +64,7 @@ export const TrackRow = ({
   editorMode,
   selectedNotes,
   overlappingNotes,
+  scrollContainerRef,
   onEdit,
   onToggleVisibility,
   onDelete,
@@ -126,6 +128,7 @@ export const TrackRow = ({
           editorMode={editorMode}
           selectedNotes={selectedNotes}
           overlappingNotes={overlappingNotes}
+          scrollContainerRef={scrollContainerRef}
           onCreateNote={(note) => onCreateNote?.(track.id, note)}
           onDeleteNote={(noteId) => onDeleteNote?.(track.id, noteId)}
           onDeleteNotes={(noteIds) => onDeleteNotes?.(track.id, noteIds)}

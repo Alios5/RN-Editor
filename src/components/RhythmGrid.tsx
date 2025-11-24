@@ -7,6 +7,7 @@ import { Note } from "@/types/note";
 import { NoteBlock } from "./NoteBlock";
 import { PreviewNote } from "@/hooks/useRealtimeNoteCreation";
 import { gridPositionToTime } from '@/utils/gridPositionCalculator';
+import { useVisibleNotes } from '@/hooks/useVisibleNotes';
 
 interface RhythmGridProps {
   width: number; // waveformWidth in pixels
@@ -25,6 +26,7 @@ interface RhythmGridProps {
   editorMode: 'edit' | 'select';
   selectedNotes?: Set<string>;
   overlappingNotes?: Set<string>;
+  scrollContainerRef?: React.RefObject<HTMLDivElement>;
   onCreateNote?: (note: Omit<Note, 'id' | 'trackId' | 'trackName'>) => void;
   onDeleteNote?: (noteId: string) => void;
   onDeleteNotes?: (noteIds: string[]) => void;
@@ -68,6 +70,7 @@ export const RhythmGrid = ({
   editorMode,
   selectedNotes = new Set(),
   overlappingNotes = new Set(),
+  scrollContainerRef,
   onCreateNote,
   onDeleteNote,
   onDeleteNotes,
@@ -96,6 +99,15 @@ export const RhythmGrid = ({
   const { t } = useTranslation();
   
   const cellWidth = 24; // Fixed cell width in pixels
+  
+  // Calculate visible notes with 300px buffer for performance optimization
+  const visibleNoteIds = useVisibleNotes({
+    notes,
+    cellWidth,
+    startOffset,
+    containerRef: scrollContainerRef || { current: null },
+    bufferSize: 300,
+  });
   
   // Calculate total subdivisions based on BPM and duration
   // This ensures each subdivision gets exactly one cell
@@ -411,8 +423,8 @@ export const RhythmGrid = ({
         ))}
       </div>
 
-      {/* Notes existantes */}
-      {notes.map((note) => {
+      {/* Notes existantes - Only render notes visible in viewport + buffer */}
+      {notes.filter(note => visibleNoteIds.has(note.id)).map((note) => {
         const noteKey = `${trackId}:${note.id}`;
         const isSelected = selectedNotes.has(noteKey);
         const isOverlapping = overlappingNotes.has(noteKey);
