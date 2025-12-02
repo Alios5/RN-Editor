@@ -4,6 +4,7 @@ import { TrackLabel } from "./TrackLabel";
 import { RhythmGrid } from "./RhythmGrid";
 import { AudioCalculations } from "@/utils/audioCalculations";
 import { PreviewNote } from "@/hooks/useRealtimeNoteCreation";
+import { useSortable } from "@dnd-kit/sortable";
 
 import { Note } from "@/types/note";
 
@@ -101,8 +102,28 @@ export const TrackRow = ({
   // The label is disabled if the group exists and is hidden
   const isLabelDisabled = trackGroup && !trackGroup.visible;
 
+  // dnd-kit sortable hook for the entire row
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: track.id, disabled: isLabelDisabled });
+
+  // Only apply Y translation to avoid deformation when grid is hidden
+  const style = {
+    transform: transform ? `translateY(${transform.y}px)` : undefined,
+    transition,
+  };
+
   return (
-    <div>
+    <div 
+      ref={setNodeRef} 
+      style={style}
+      className={`${isDragging ? 'opacity-50 z-50' : ''}`}
+    >
       <TrackLabel
         track={track}
         trackGroup={trackGroup}
@@ -111,6 +132,7 @@ export const TrackRow = ({
         onToggleVisibility={onToggleVisibility}
         onDelete={onDelete}
         onAssignToGroup={onAssignToGroup}
+        dragHandleProps={{ attributes, listeners }}
       />
       {isGridVisible && (
         <RhythmGrid

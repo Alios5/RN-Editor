@@ -29,6 +29,8 @@ import { useRealtimeNoteCreation } from "@/hooks/useRealtimeNoteCreation";
 import { useMetronome } from "@/hooks/useMetronome";
 
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { calculateAudioMetrics } from "@/utils/audioCalculations";
 import { exportToJson, exportToJsonFile } from "@/utils/exportJson";
 import { gridPositionToTime } from "@/utils/gridPositionCalculator";
@@ -100,7 +102,7 @@ const Editor = () => {
 
 
   // UI state
-  const [showMouseIndicator, setShowMouseIndicator] = useState(true);
+  const [showMouseIndicator, setShowMouseIndicator] = useState(false);
   const [metronomeEnabled, setMetronomeEnabled] = useState(false);
   const [metronomeVolume, setMetronomeVolume] = useState(0.5);
 
@@ -1019,6 +1021,33 @@ const Editor = () => {
     toast.success(t("track.deleteSuccess"));
     // History is now automatic via useEffect with debounce
   };
+
+  // dnd-kit sensors for track reordering
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // 5px movement required before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle track reordering via dnd-kit
+  const handleTrackDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      const oldIndex = tracks.findIndex(t => t.id === active.id);
+      const newIndex = tracks.findIndex(t => t.id === over.id);
+      
+      if (oldIndex !== -1 && newIndex !== -1) {
+        setTracks(arrayMove(tracks, oldIndex, newIndex));
+        // History is now automatic via useEffect with debounce
+      }
+    }
+  }, [tracks]);
 
   // Track Groups Management
   const handleCreateGroup = (name: string) => {
@@ -2407,70 +2436,81 @@ const Editor = () => {
                       </div>
 
                       {displayedTracks.length > 0 ? (
-                        <div className="space-y-2">
-                          {displayedTracks.map(track => {
-                            const trackGroup = track.groupId
-                              ? trackGroups.find(g => g.id === track.groupId)
-                              : undefined;
+                        <DndContext
+                          sensors={sensors}
+                          collisionDetection={closestCenter}
+                          onDragEnd={handleTrackDragEnd}
+                        >
+                          <SortableContext
+                            items={tracks.map(t => t.id)}
+                            strategy={verticalListSortingStrategy}
+                          >
+                            <div className="space-y-2">
+                              {displayedTracks.map(track => {
+                                const trackGroup = track.groupId
+                                  ? trackGroups.find(g => g.id === track.groupId)
+                                  : undefined;
 
-                            // Trouver la preview note pour cette piste
-                            const trackPreviewNote = previewNotes.find(pn => pn.trackId === track.id);
+                                // Trouver la preview note pour cette piste
+                                const trackPreviewNote = previewNotes.find(pn => pn.trackId === track.id);
 
-                            return (
-                              <TrackRow
-                                key={track.id}
-                                track={track}
-                                trackGroup={trackGroup}
-                                audioMetrics={audioMetrics}
-                                rhythmSync={rhythmSync}
-                                subRhythmSync={subRhythmSync}
-                                startOffset={startOffset}
-                                bpm={bpm}
-                                musicDuration={audioDuration}
-                                currentTime={currentTime}
-                                editorMode={editorMode}
-                                selectedNotes={selectedNotes}
-                                overlappingNotes={overlappingNotes}
-                                scrollContainerRef={scrollContainerRef}
-                                onEdit={() => {
-                                  setEditingTrack(track);
-                                  setShowEditTrackDialog(true);
-                                }}
-                                onToggleVisibility={() => handleToggleTrackVisibility(track.id)}
-                                onDelete={() => setTrackToDelete(track)}
-                                onAssignToGroup={() => {
-                                  setTrackToAssign(track);
-                                  setShowAssignGroupDialog(true);
-                                }}
-                                onCreateNote={handleCreateNote}
-                                onDeleteNote={handleDeleteNote}
-                                onDeleteNotes={handleDeleteNotes}
-                                onMoveNotes={handleMoveNotes}
-                                onResizeNote={handleResizeNote}
-                                onDeleteSelected={deleteSelectedNotes}
-                                onDuplicate={handleDuplicate}
-                                onDuplicateSelected={handleDuplicateSelected}
-                                onMergeSelected={mergeSelectedNotes}
-                                onCopy={handleCopy}
-                                onCut={handleCut}
-                                onPaste={handlePaste}
-                                onAssignActionToNote={handleAssignActionToNote}
-                                onAssignActionToSelected={handleAssignActionToSelectedNotes}
-                                onNoteClick={handleNoteClick}
-                                onContextMenuOpenChange={setIsContextMenuOpen}
-                                isDraggingNotes={isDraggingNotes}
-                                dragOffset={dragOffset}
-                                onStartDrag={handleStartDrag}
-                                onDragMove={handleDragMove}
-                                onDragEnd={handleDragEnd}
-                                onGridMouseMove={handleGridMouseMove}
-                                hasCopiedNotes={copiedNotes.length > 0}
-                                previewNote={trackPreviewNote}
-                                showMouseIndicator={showMouseIndicator}
-                              />
-                            );
-                          })}
-                        </div>
+                                return (
+                                  <TrackRow
+                                    key={track.id}
+                                    track={track}
+                                    trackGroup={trackGroup}
+                                    audioMetrics={audioMetrics}
+                                    rhythmSync={rhythmSync}
+                                    subRhythmSync={subRhythmSync}
+                                    startOffset={startOffset}
+                                    bpm={bpm}
+                                    musicDuration={audioDuration}
+                                    currentTime={currentTime}
+                                    editorMode={editorMode}
+                                    selectedNotes={selectedNotes}
+                                    overlappingNotes={overlappingNotes}
+                                    scrollContainerRef={scrollContainerRef}
+                                    onEdit={() => {
+                                      setEditingTrack(track);
+                                      setShowEditTrackDialog(true);
+                                    }}
+                                    onToggleVisibility={() => handleToggleTrackVisibility(track.id)}
+                                    onDelete={() => setTrackToDelete(track)}
+                                    onAssignToGroup={() => {
+                                      setTrackToAssign(track);
+                                      setShowAssignGroupDialog(true);
+                                    }}
+                                    onCreateNote={handleCreateNote}
+                                    onDeleteNote={handleDeleteNote}
+                                    onDeleteNotes={handleDeleteNotes}
+                                    onMoveNotes={handleMoveNotes}
+                                    onResizeNote={handleResizeNote}
+                                    onDeleteSelected={deleteSelectedNotes}
+                                    onDuplicate={handleDuplicate}
+                                    onDuplicateSelected={handleDuplicateSelected}
+                                    onMergeSelected={mergeSelectedNotes}
+                                    onCopy={handleCopy}
+                                    onCut={handleCut}
+                                    onPaste={handlePaste}
+                                    onAssignActionToNote={handleAssignActionToNote}
+                                    onAssignActionToSelected={handleAssignActionToSelectedNotes}
+                                    onNoteClick={handleNoteClick}
+                                    onContextMenuOpenChange={setIsContextMenuOpen}
+                                    isDraggingNotes={isDraggingNotes}
+                                    dragOffset={dragOffset}
+                                    onStartDrag={handleStartDrag}
+                                    onDragMove={handleDragMove}
+                                    onDragEnd={handleDragEnd}
+                                    onGridMouseMove={handleGridMouseMove}
+                                    hasCopiedNotes={copiedNotes.length > 0}
+                                    previewNote={trackPreviewNote}
+                                    showMouseIndicator={showMouseIndicator}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </SortableContext>
+                        </DndContext>
                       ) : (
                         <div className="min-h-[200px] rounded-lg border-2 border-dashed border-border bg-secondary/10 flex items-center justify-center">
                           <div className="text-center text-muted-foreground">

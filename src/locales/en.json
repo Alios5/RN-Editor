@@ -106,7 +106,8 @@
     "assignedKeyPlaceholder": "Click to assign a key...",
     "assignedKeyDescription": "Assign a key to create notes in real-time during auto-playback",
     "pressAnyKey": "Press any key...",
-    "errorKeyAlreadyUsed": "This key is already assigned to another track"
+    "errorKeyAlreadyUsed": "This key is already assigned to another track",
+    "dragToReorder": "Drag to reorder"
   },
   "tools": {
     "title": "Tools",

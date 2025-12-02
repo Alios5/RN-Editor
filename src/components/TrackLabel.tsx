@@ -6,10 +6,17 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Edit2, Eye, EyeOff, Trash2, FolderInput } from "lucide-react";
+import { Edit2, Eye, EyeOff, Trash2, FolderInput, GripVertical } from "lucide-react";
 import { getContrastColor } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useRef } from "react";
+import { DraggableAttributes } from "@dnd-kit/core";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+
+interface DragHandleProps {
+  attributes: DraggableAttributes;
+  listeners: SyntheticListenerMap | undefined;
+}
 
 interface TrackLabelProps {
   track: Track;
@@ -19,9 +26,19 @@ interface TrackLabelProps {
   onToggleVisibility: () => void;
   onDelete: () => void;
   onAssignToGroup: () => void;
+  dragHandleProps?: DragHandleProps;
 }
 
-export const TrackLabel = ({ track, trackGroup, isDisabled, onEdit, onToggleVisibility, onDelete, onAssignToGroup }: TrackLabelProps) => {
+export const TrackLabel = ({ 
+  track, 
+  trackGroup, 
+  isDisabled, 
+  onEdit, 
+  onToggleVisibility, 
+  onDelete, 
+  onAssignToGroup,
+  dragHandleProps,
+}: TrackLabelProps) => {
   const { t } = useTranslation();
   const textColor = getContrastColor(track.color);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -48,34 +65,56 @@ export const TrackLabel = ({ track, trackGroup, isDisabled, onEdit, onToggleVisi
   };
   
   return (
-    <ContextMenu>
-      <ContextMenuTrigger asChild disabled={isDisabled}>
-        <div 
-          ref={triggerRef}
-          onClick={handleClick}
-          className={`sticky left-0 z-10 h-[35px] w-[100px] flex items-center justify-center px-2 transition-opacity mb-2 rounded-lg relative ${
-            isDisabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:opacity-90'
-          }`}
-          style={{ backgroundColor: track.color }}
-        >
-          <span 
-            className="text-xs font-medium truncate text-center"
-            style={{ color: textColor }}
+    <div 
+      className={`flex items-center sticky left-0 z-10 mb-2`}
+    >
+      {/* Drag Handle */}
+      <div
+        {...dragHandleProps?.attributes}
+        {...dragHandleProps?.listeners}
+        title={t("track.dragToReorder")}
+        className={`h-[35px] w-[20px] flex items-center justify-center rounded-l-lg transition-all touch-none ${
+          isDisabled 
+            ? 'opacity-40 cursor-not-allowed' 
+            : 'cursor-grab active:cursor-grabbing hover:brightness-110'
+        }`}
+        style={{ backgroundColor: track.color }}
+      >
+        <GripVertical 
+          className="h-4 w-4" 
+          style={{ color: textColor }}
+        />
+      </div>
+
+      {/* Track Label - Context Menu */}
+      <ContextMenu>
+        <ContextMenuTrigger asChild disabled={isDisabled}>
+          <div 
+            ref={triggerRef}
+            onClick={handleClick}
+            className={`h-[35px] w-[80px] flex items-center justify-center px-2 transition-opacity rounded-r-lg relative ${
+              isDisabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:opacity-90'
+            }`}
+            style={{ backgroundColor: track.color }}
           >
-            {track.name}
-          </span>
-          {track.assignedKey && (
             <span 
-              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-bold rounded-full bg-background border border-border shadow-sm"
-              title={t("track.assignedKey") + ": " + track.assignedKey.toUpperCase()}
+              className="text-xs font-medium truncate text-center"
+              style={{ color: textColor }}
             >
-              {track.assignedKey.toUpperCase()}
+              {track.name}
             </span>
-          )}
-        </div>
-      </ContextMenuTrigger>
+            {track.assignedKey && (
+              <span 
+                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-bold rounded-full bg-background border border-border shadow-sm"
+                title={t("track.assignedKey") + ": " + track.assignedKey.toUpperCase()}
+              >
+                {track.assignedKey.toUpperCase()}
+              </span>
+            )}
+          </div>
+        </ContextMenuTrigger>
       
-      <ContextMenuContent>
+        <ContextMenuContent>
         <ContextMenuItem onClick={onEdit} className="gap-2">
           <Edit2 className="h-4 w-4" />
           {t("track.edit")}
@@ -101,7 +140,8 @@ export const TrackLabel = ({ track, trackGroup, isDisabled, onEdit, onToggleVisi
           <Trash2 className="h-4 w-4" />
           {t("track.delete")}
         </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+        </ContextMenuContent>
+      </ContextMenu>
+    </div>
   );
 };

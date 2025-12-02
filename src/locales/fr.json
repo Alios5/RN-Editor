@@ -106,7 +106,8 @@
     "assignedKeyPlaceholder": "Cliquez pour assigner une touche...",
     "assignedKeyDescription": "Assignez une touche pour créer des notes en temps réel pendant la lecture automatique",
     "pressAnyKey": "Appuyez sur une touche...",
-    "errorKeyAlreadyUsed": "Cette touche est déjà assignée à une autre piste"
+    "errorKeyAlreadyUsed": "Cette touche est déjà assignée à une autre piste",
+    "dragToReorder": "Glisser pour réorganiser"
   },
   "tools": {
     "title": "Outils",

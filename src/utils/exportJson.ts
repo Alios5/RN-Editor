@@ -13,6 +13,7 @@ const formatTimeValue = (value: number): number => {
 
 interface ExportNote {
   trackName: string;
+  rowId: number; // Position of the track in the list (0, 1, 2, ...)
   startTime: number;
   duration: number;
   specificAction?: string; // Just the action name
@@ -38,7 +39,7 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
   let totalNotes = 0;
 
   // 2. Collect and organize notes
-  tracks.forEach(track => {
+  tracks.forEach((track, rowIndex) => {
     if (track.notes && track.notes.length > 0) {
       const groupName = track.groupId 
         ? trackGroups.find(g => g.id === track.groupId)?.name 
@@ -49,6 +50,7 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
       track.notes.forEach(note => {
         const exportNote: ExportNote = {
           trackName: note.trackName,
+          rowId: rowIndex, // Track position in the list
           startTime: formatTimeValue(note.startTime),
           duration: formatTimeValue(note.duration)
         };
@@ -104,7 +106,7 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
     let totalNotes = 0;
 
     // 2. Collect and organize notes
-    tracks.forEach(track => {
+    tracks.forEach((track, rowIndex) => {
       if (track.notes && track.notes.length > 0) {
         const groupName = track.groupId 
           ? trackGroups.find(g => g.id === track.groupId)?.name 
@@ -115,6 +117,7 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
         track.notes.forEach(note => {
           const exportNote: ExportNote = {
             trackName: note.trackName,
+            rowId: rowIndex, // Track position in the list
             startTime: formatTimeValue(note.startTime),
             duration: formatTimeValue(note.duration)
           };
