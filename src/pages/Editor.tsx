@@ -2562,6 +2562,8 @@ const Editor = () => {
                     // History is now automatic via useEffect with debounce
                   }}
                   onLoadAudio={handleLoadAudio}
+                  onDetectBPM={handleDetectBPM}
+                  isDetectingBPM={isDetectingBPM}
                   showMouseIndicator={showMouseIndicator}
                   setShowMouseIndicator={setShowMouseIndicator}
                 />
