@@ -1,4 +1,5 @@
-import { Languages } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,7 +17,7 @@ export const LanguageSelector = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-md" title={t("menu.language")}>
-          <Languages className="h-4 w-4" />
+          <FontAwesomeIcon icon={faGlobe} className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

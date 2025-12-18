@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Plus, Zap } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faBolt } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -108,7 +109,7 @@ export const ProjectPanel = ({
                 onClick={() => setIsCreateDialogOpen(true)}
                 className="h-7 text-xs -mr-2"
               >
-                <Plus className="h-3 w-3 mr-1" />
+                <FontAwesomeIcon icon={faPlus} className="h-3 w-3 mr-1" />
                 {t("actions.create")}
               </Button>
             </div>
@@ -146,7 +147,7 @@ export const ProjectPanel = ({
               className="w-full justify-start h-9 text-sm"
               onClick={() => setIsActionsDialogOpen(true)}
             >
-              <Zap className="h-4 w-4 mr-2" />
+              <FontAwesomeIcon icon={faBolt} className="h-4 w-4 mr-2" />
               {t("action.manageActions")}
               <span className="ml-auto text-xs text-muted-foreground">
                 ({specificActions.length})

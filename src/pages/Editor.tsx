@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Home, Save, Download, Music, RotateCcw, RotateCw, PanelLeftClose, PanelLeftOpen, FolderOpen } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome, faFloppyDisk, faDownload, faMusic, faRotateLeft, faRotateRight, faAnglesLeft, faAnglesRight, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useVisibleTracks } from "@/hooks/useVisibleTracks";
 import { panelColors } from "@/lib/panelColors";
@@ -148,6 +149,35 @@ const Editor = () => {
   const [dragStartCell, setDragStartCell] = useState(0);
   const [dragClickOffset, setDragClickOffset] = useState(0); // Offset du clic dans la note
   const [dragOffset, setDragOffset] = useState(0);
+
+  // Sound for note movement
+  const noteMoveSound = useRef<HTMLAudioElement | null>(null);
+  const previousDragOffset = useRef<number>(0);
+
+  // Sounds for various actions
+  const warningSound = useRef<HTMLAudioElement | null>(null);
+  const createNoteSound = useRef<HTMLAudioElement | null>(null);
+  const deleteNoteSound = useRef<HTMLAudioElement | null>(null);
+  const resizeNoteSound = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize sounds
+  useEffect(() => {
+    noteMoveSound.current = new Audio('/assets/glitch_004.ogg');
+    noteMoveSound.current.volume = 0.05;
+
+    warningSound.current = new Audio('/assets/sound/Warnnig.mp3');
+    warningSound.current.volume = 0.5;
+
+    createNoteSound.current = new Audio('/assets/sound/CreateNote.mp3');
+    createNoteSound.current.volume = 0.5;
+
+    deleteNoteSound.current = new Audio('/assets/sound/Deletnote.mp3');
+    deleteNoteSound.current.volume = 0.5;
+
+    resizeNoteSound.current = new Audio('/assets/glitch_004.ogg');
+    resizeNoteSound.current.volume = 0.05;
+    resizeNoteSound.current.loop = true;
+  }, []);
 
   // Sidebar visibility
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -971,6 +1001,10 @@ const Editor = () => {
       setAudioUrl(convertFilePathToAudioUrl(pendingMusicPath));
       setAudioFileName(pendingMusicFileName);
       toast.warning(t("audio.loadWithAbsolutePath", { name: pendingMusicFileName }));
+      if (warningSound.current) {
+        warningSound.current.currentTime = 0;
+        warningSound.current.play().catch(() => {});
+      }
       // History is now automatic via useEffect with debounce
     }
     setShowCopyMusicDialog(false);
@@ -1191,6 +1225,11 @@ const Editor = () => {
       }
       return track;
     }));
+    // Play create note sound
+    if (createNoteSound.current) {
+      createNoteSound.current.currentTime = 0;
+      createNoteSound.current.play().catch(() => {});
+    }
     // History is now automatic via useEffect with debounce
   }, []);
 
@@ -1226,6 +1265,11 @@ const Editor = () => {
       }
       return track;
     }));
+    // Play delete note sound
+    if (deleteNoteSound.current) {
+      deleteNoteSound.current.currentTime = 0;
+      deleteNoteSound.current.play().catch(() => {});
+    }
     // History is now automatic via useEffect with debounce
   };
 
@@ -1239,6 +1283,11 @@ const Editor = () => {
       }
       return track;
     }));
+    // Play delete note sound
+    if (deleteNoteSound.current) {
+      deleteNoteSound.current.currentTime = 0;
+      deleteNoteSound.current.play().catch(() => {});
+    }
     // History is now automatic via useEffect with debounce
   };
 
@@ -1885,6 +1934,14 @@ const Editor = () => {
     if (isDraggingNotes) {
       // Ajuster l'offset en fonction de l'endroit où l'utilisateur a cliqué dans la note
       const offset = cellPosition - dragStartCell - dragClickOffset;
+      
+      // Play sound when moving to a different cell
+      if (offset !== previousDragOffset.current && noteMoveSound.current) {
+        noteMoveSound.current.currentTime = 0;
+        noteMoveSound.current.play().catch(() => {});
+      }
+      previousDragOffset.current = offset;
+      
       setDragOffset(offset);
     }
   };
@@ -1896,11 +1953,27 @@ const Editor = () => {
     setIsDraggingNotes(false);
     setDragClickOffset(0);
     setDragOffset(0);
+    previousDragOffset.current = 0;
   };
 
   const handleGridMouseMove = (trackId: string, cellPosition: number) => {
     setMouseGridPosition({ trackId, cellPosition });
   };
+
+  // Resize sound handlers
+  const handleResizeStart = useCallback(() => {
+    if (resizeNoteSound.current) {
+      resizeNoteSound.current.currentTime = 0;
+      resizeNoteSound.current.play().catch(() => {});
+    }
+  }, []);
+
+  const handleResizeEnd = useCallback(() => {
+    if (resizeNoteSound.current) {
+      resizeNoteSound.current.pause();
+      resizeNoteSound.current.currentTime = 0;
+    }
+  }, []);
 
   // Keyboard shortcuts for copy/paste and duplication
   useEffect(() => {
@@ -2215,7 +2288,7 @@ const Editor = () => {
       <div className="flex h-full w-full items-center justify-center bg-background">
         <div className="text-center">
           <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full gradient-primary">
-            <Music className="h-8 w-8 text-primary-foreground animate-pulse" />
+            <FontAwesomeIcon icon={faMusic} className="h-8 w-8 text-primary-foreground animate-pulse" />
           </div>
           <p className="text-muted-foreground">Chargement...</p>
         </div>
@@ -2231,11 +2304,7 @@ const Editor = () => {
           <div className="flex items-center justify-between">
             {/* Left side - Logo and Title */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg gradient-primary p-0.5">
-                <div className="w-full h-full bg-background rounded-md overflow-hidden flex items-center justify-center">
-                  <img src="/logo.png" alt="RhythmNator Logo" className="w-8 h-8 object-cover" />
-                </div>
-              </div>
+              <img src="/logo.png" alt="RhythmNator Logo" className="w-10 h-10 object-cover" />
               <div>
                 <h1 className="text-xl font-bold leading-tight" style={{ fontFamily: 'Audiowide, sans-serif' }}>RhythmNator Editor</h1>
                 <p className="text-xs text-muted-foreground">{project?.name}</p>
@@ -2248,7 +2317,7 @@ const Editor = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="ghost" size="icon" onClick={handleBack} className="rounded-lg">
-                      <Home className="h-5 w-5" />
+                      <FontAwesomeIcon icon={faHome} className="h-5 w-5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
@@ -2267,7 +2336,7 @@ const Editor = () => {
                       className="rounded-lg"
                       disabled={!project?.filePath}
                     >
-                      <FolderOpen className="h-5 w-5" />
+                      <FontAwesomeIcon icon={faFolderOpen} className="h-5 w-5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
@@ -2289,7 +2358,7 @@ const Editor = () => {
                           className={`rounded-lg transition-opacity ${!hasUnsavedChanges ? 'opacity-40 cursor-not-allowed' : ''}`}
                           disabled={!hasUnsavedChanges}
                         >
-                          <Save className={`h-5 w-5 ${hasUnsavedChanges ? 'text-primary' : 'text-muted-foreground'}`} />
+                          <FontAwesomeIcon icon={faFloppyDisk} className={`h-5 w-5 ${hasUnsavedChanges ? 'text-primary' : 'text-muted-foreground'}`} />
                         </Button>
                       </DropdownMenuTrigger>
                     </TooltipTrigger>
@@ -2318,7 +2387,7 @@ const Editor = () => {
                           size="icon"
                           className="rounded-lg"
                         >
-                          <Download className="h-5 w-5" />
+                          <FontAwesomeIcon icon={faDownload} className="h-5 w-5" />
                         </Button>
                       </DropdownMenuTrigger>
                     </TooltipTrigger>
@@ -2351,7 +2420,7 @@ const Editor = () => {
                         onClick={handleUndo}
                         disabled={historyIndex <= 0}
                       >
-                        <RotateCcw className="h-4 w-4" />
+                        <FontAwesomeIcon icon={faRotateLeft} className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
@@ -2370,7 +2439,7 @@ const Editor = () => {
                         onClick={handleRedo}
                         disabled={historyIndex >= history.length - 1}
                       >
-                        <RotateCw className="h-4 w-4" />
+                        <FontAwesomeIcon icon={faRotateRight} className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
@@ -2392,9 +2461,9 @@ const Editor = () => {
                       onClick={() => setIsSidebarVisible(!isSidebarVisible)}
                     >
                       {isSidebarVisible ? (
-                        <PanelLeftClose className="h-5 w-5" />
+                        <FontAwesomeIcon icon={faAnglesLeft} className="h-5 w-5" />
                       ) : (
-                        <PanelLeftOpen className="h-5 w-5" />
+                        <FontAwesomeIcon icon={faAnglesRight} className="h-5 w-5" />
                       )}
                     </Button>
                   </TooltipTrigger>
@@ -2535,6 +2604,8 @@ const Editor = () => {
                                     hasCopiedNotes={copiedNotes.length > 0}
                                     previewNote={trackPreviewNote}
                                     showMouseIndicator={showMouseIndicator}
+                                    onResizeStart={handleResizeStart}
+                                    onResizeEnd={handleResizeEnd}
                                   />
                                 );
                               })}
@@ -2544,7 +2615,7 @@ const Editor = () => {
                       ) : (
                         <div className="min-h-[200px] rounded-lg border-2 border-dashed border-border bg-secondary/10 flex items-center justify-center">
                           <div className="text-center text-muted-foreground">
-                            <Music className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                            <FontAwesomeIcon icon={faMusic} className="h-12 w-12 mx-auto mb-2 opacity-50" />
                             <p>{t("editor.noTracks")}</p>
                             <p className="text-sm">{t("editor.noTracksDescription")}</p>
                           </div>

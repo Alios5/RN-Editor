@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { SpecificAction } from "@/types/specificAction";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
-import * as Icons from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { getIconByName } from "@/lib/faIconMap";
 import { cn } from "@/lib/utils";
 
 interface SelectActionDialogProps {
@@ -30,9 +31,8 @@ export const SelectActionDialog = ({
 }: SelectActionDialogProps) => {
   const { t } = useTranslation();
 
-  const getIconComponent = (iconName: string) => {
-    const IconComponent = (Icons as any)[iconName];
-    return IconComponent || Icons.Zap;
+  const getActionIcon = (iconName: string) => {
+    return getIconByName(iconName);
   };
 
   const handleSelect = (action: SpecificAction | null) => {
@@ -73,7 +73,7 @@ export const SelectActionDialog = ({
 
               {/* Liste des actions */}
               {actions.map((action) => {
-                const IconComponent = getIconComponent(action.icon);
+                const actionIcon = getActionIcon(action.icon);
                 return (
                   <Button
                     key={action.id}
@@ -88,7 +88,7 @@ export const SelectActionDialog = ({
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 flex items-center justify-center rounded" style={{ backgroundColor: panelColors.iconBackground() }}>
-                        <IconComponent className="h-4 w-4" />
+                        {actionIcon && <FontAwesomeIcon icon={actionIcon} className="h-4 w-4" />}
                       </div>
                       <span>{action.name}</span>
                     </div>

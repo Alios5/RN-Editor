@@ -51,6 +51,8 @@ interface TrackRowProps {
   hasCopiedNotes?: boolean;
   previewNote?: PreviewNote;
   showMouseIndicator?: boolean;
+  onResizeStart?: () => void;
+  onResizeEnd?: () => void;
 }
 
 export const TrackRow = ({
@@ -95,7 +97,9 @@ export const TrackRow = ({
   onGridMouseMove,
   hasCopiedNotes,
   previewNote,
-  showMouseIndicator
+  showMouseIndicator,
+  onResizeStart,
+  onResizeEnd
 }: TrackRowProps) => {
   // The grid is visible if the track is visible AND if the group (if it exists) is visible
   const isGridVisible = track.visible && (!trackGroup || trackGroup.visible);
@@ -187,6 +191,8 @@ export const TrackRow = ({
           hasCopiedNotes={hasCopiedNotes}
           previewNote={previewNote}
           showMouseIndicator={showMouseIndicator}
+          onResizeStart={onResizeStart}
+          onResizeEnd={onResizeEnd}
         />
       )}
     </div>

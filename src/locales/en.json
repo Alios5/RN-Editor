@@ -384,6 +384,14 @@
     "deleteError": "Error deleting theme",
     "cannotDeleteBuiltin": "Cannot delete built-in themes"
   },
+  "font": {
+    "title": "Fonts",
+    "description": "Customize the application fonts",
+    "textFont": "Text font",
+    "titleFont": "Title font",
+    "textPreview": "Normal text preview - This is sample text.",
+    "titlePreview": "Title preview"
+  },
   "dialog": {
     "confirmQuit": "Are you sure you want to quit?",
     "confirmQuitUnsaved": "Unsaved changes. Quit anyway?",

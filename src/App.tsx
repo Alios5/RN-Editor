@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { FontProvider } from "@/contexts/FontContext";
 import { restoreWindowState, setupWindowStatePersistence } from "@/utils/windowState";
 import { CloseHandler } from "@/utils/closeHandler";
 import { CustomTitleBar } from "@/components/CustomTitleBar";
@@ -103,6 +104,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
+        <FontProvider>
         <CloseHandlerTranslations />
         <TooltipProvider>
           <CustomTitleBar />
@@ -119,6 +121,7 @@ const App = () => {
             </BrowserRouter>
           </div>
         </TooltipProvider>
+      </FontProvider>
       </LanguageProvider>
     </QueryClientProvider>
   );

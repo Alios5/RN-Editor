@@ -1,4 +1,5 @@
-import { Music2, Trash2, FileText } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMusic, faTrash, faFileLines } from "@fortawesome/free-solid-svg-icons";
 import { Project } from "@/types/project";
 import {
   AlertDialog,
@@ -35,9 +36,9 @@ export const ProjectListItem = ({ project, onClick, onDelete }: ProjectListItemP
       >
         <div className="flex h-11 w-11 items-center justify-center rounded-md gradient-primary flex-shrink-0">
           {project.filePath ? (
-            <FileText className="h-5 w-5 text-primary-foreground" />
+            <FontAwesomeIcon icon={faFileLines} className="h-5 w-5 text-primary-foreground" />
           ) : (
-            <Music2 className="h-5 w-5 text-primary-foreground" />
+            <FontAwesomeIcon icon={faMusic} className="h-5 w-5 text-primary-foreground" />
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -64,7 +65,7 @@ export const ProjectListItem = ({ project, onClick, onDelete }: ProjectListItemP
             className="h-9 w-9 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive rounded-md"
             onClick={(e) => e.stopPropagation()}
           >
-            <Trash2 className="h-4 w-4" />
+            <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>

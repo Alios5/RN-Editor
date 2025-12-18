@@ -7,8 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Trash2, Link, Copy, Scissors, Clipboard, Combine } from "lucide-react";
-import * as Icons from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faLink, faCopy, faScissors, faClipboard, faCodeMerge } from "@fortawesome/free-solid-svg-icons";
+import { getIconByName } from "@/lib/faIconMap";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface NoteBlockProps {
@@ -99,12 +100,12 @@ const NoteBlockComponent = ({
     }
   };
 
-  const getIconComponent = (iconName: string) => {
-    const IconComponent = (Icons as any)[iconName];
-    return IconComponent || Icons.Zap;
+  const getActionIcon = (iconName: string) => {
+    const icon = getIconByName(iconName);
+    return icon;
   };
 
-  const ActionIcon = note.specificAction ? getIconComponent(note.specificAction.icon) : null;
+  const actionIcon = note.specificAction ? getActionIcon(note.specificAction.icon) : null;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
@@ -237,9 +238,9 @@ const NoteBlockComponent = ({
               onContextMenu={handleContextMenu}
             >
               {/* Icône de l'action en haut à gauche */}
-              {ActionIcon && (
-                <div className="absolute top-0.5 left-0.5 bg-background/90 rounded p-0.5 shadow-sm">
-                  <ActionIcon className="h-3 w-3" />
+              {actionIcon && (
+                <div className="absolute top-0.5 left-0.5 bg-background/90 rounded p-0.5 shadow-sm flex items-center justify-center w-4 h-4">
+                  <FontAwesomeIcon icon={actionIcon} className="h-3 w-3" style={{ width: '12px', height: '12px' }} />
                 </div>
               )}
               
@@ -286,7 +287,7 @@ const NoteBlockComponent = ({
         >
           {/* Lier action */}
           <DropdownMenuItem onClick={selectedCount > 1 ? onAssignActionToSelected : onAssignAction}>
-            <Link className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faLink} className="mr-2 h-4 w-4" />
             {selectedCount > 1 
               ? t("action.linkActionCount", { count: String(selectedCount) })
               : t("action.selectAction")}
@@ -296,7 +297,7 @@ const NoteBlockComponent = ({
           
           {/* Duplication */}
           <DropdownMenuItem onClick={selectedCount > 1 ? onDuplicateSelected : onDuplicate}>
-            <Copy className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faCopy} className="mr-2 h-4 w-4" />
             <span className="flex-1">
               {selectedCount > 1 
                 ? t("actions.duplicateCount", { count: String(selectedCount) })
@@ -308,7 +309,7 @@ const NoteBlockComponent = ({
           {/* Fusionner (seulement si plusieurs notes sélectionnées) */}
           {selectedCount > 1 && (
             <DropdownMenuItem onClick={onMergeSelected}>
-              <Combine className="mr-2 h-4 w-4" />
+              <FontAwesomeIcon icon={faCodeMerge} className="mr-2 h-4 w-4" />
               <span className="flex-1">
                 {t("actions.mergeCount", { count: String(selectedCount) })}
               </span>
@@ -320,21 +321,21 @@ const NoteBlockComponent = ({
           
           {/* Copier */}
           <DropdownMenuItem onClick={onCopy}>
-            <Copy className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faCopy} className="mr-2 h-4 w-4" />
             <span className="flex-1">{t("actions.copy")}</span>
             <span className="ml-auto pl-4 text-xs text-muted-foreground">Ctrl+C</span>
           </DropdownMenuItem>
           
           {/* Couper */}
           <DropdownMenuItem onClick={onCut}>
-            <Scissors className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faScissors} className="mr-2 h-4 w-4" />
             <span className="flex-1">{t("actions.cut")}</span>
             <span className="ml-auto pl-4 text-xs text-muted-foreground">Ctrl+X</span>
           </DropdownMenuItem>
           
           {/* Coller */}
           <DropdownMenuItem onClick={onPaste}>
-            <Clipboard className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faClipboard} className="mr-2 h-4 w-4" />
             <span className="flex-1">{t("actions.paste")}</span>
             <span className="ml-auto pl-4 text-xs text-muted-foreground">Ctrl+V</span>
           </DropdownMenuItem>
@@ -346,7 +347,7 @@ const NoteBlockComponent = ({
             onClick={selectedCount > 1 ? onDeleteSelected : onDelete} 
             className="text-destructive"
           >
-            <Trash2 className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" />
             <span className="flex-1">
               {selectedCount > 1 
                 ? t("actions.deleteCount", { count: String(selectedCount) })

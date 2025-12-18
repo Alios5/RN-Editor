@@ -6,7 +6,8 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Edit2, Eye, EyeOff, Trash2, FolderInput, GripVertical } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faEye, faEyeSlash, faTrash, faFolderOpen, faGripVertical } from "@fortawesome/free-solid-svg-icons";
 import { getContrastColor } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useRef, useEffect } from "react";
@@ -100,7 +101,7 @@ export const TrackLabel = ({
         }`}
         style={{ backgroundColor: track.color }}
       >
-        <GripVertical 
+        <FontAwesomeIcon icon={faGripVertical} 
           className="h-4 w-4" 
           style={{ color: textColor }}
         />
@@ -136,28 +137,28 @@ export const TrackLabel = ({
       
         <ContextMenuContent>
         <ContextMenuItem onClick={onEdit} className="gap-2">
-          <Edit2 className="h-4 w-4" />
+          <FontAwesomeIcon icon={faPen} className="h-4 w-4" />
           {t("track.edit")}
         </ContextMenuItem>
         <ContextMenuItem onClick={onToggleVisibility} className="gap-2">
           {track.visible ? (
             <>
-              <EyeOff className="h-4 w-4" />
+              <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" />
               {t("actions.hide")}
             </>
           ) : (
             <>
-              <Eye className="h-4 w-4" />
+              <FontAwesomeIcon icon={faEye} className="h-4 w-4" />
               {t("actions.show")}
             </>
           )}
         </ContextMenuItem>
         <ContextMenuItem onClick={onAssignToGroup} className="gap-2">
-          <FolderInput className="h-4 w-4" />
+          <FontAwesomeIcon icon={faFolderOpen} className="h-4 w-4" />
           {t("group.assignToGroup")}
         </ContextMenuItem>
         <ContextMenuItem onClick={onDelete} className="gap-2 text-destructive">
-          <Trash2 className="h-4 w-4" />
+          <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
           {t("track.delete")}
         </ContextMenuItem>
         </ContextMenuContent>

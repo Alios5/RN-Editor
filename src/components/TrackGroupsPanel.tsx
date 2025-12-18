@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrackGroup } from "@/types/trackGroup";
@@ -71,7 +72,7 @@ export const TrackGroupsPanel = ({
               size="sm"
               onClick={() => setIsCreateDialogOpen(true)}
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-1" />
               {t("group.createGroup")}
             </Button>
           </CardTitle>

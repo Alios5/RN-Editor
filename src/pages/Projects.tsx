@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Music, FolderOpen, Package, FileText, Keyboard, Palette } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faMusic, faFolderOpen, faBox, faFileLines, faKeyboard, faPalette } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectListItem } from "@/components/ProjectListItem";
@@ -8,6 +9,7 @@ import { CreateProjectDialog } from "@/components/CreateProjectDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { ThemeEditor } from "@/components/ThemeEditor";
+import { FontSelectorButton } from "@/components/FontSelector";
 import { getProjects, createProject, deleteProject } from "@/utils/localStorage";
 import { openProjectFile, saveProjectToFile } from "@/utils/fileSystem";
 import { copyMusicToProjectFolder } from "@/utils/musicManager";
@@ -32,13 +34,13 @@ const Projects = () => {
     setProjects(getProjects());
   }, []);
 
-  const handleCreateProject = async (name: string, projectFolder?: string, musicPath?: string, musicFileName?: string) => {
+  const handleCreateProject = async (name: string, projectFolder?: string, musicPath?: string, musicFileName?: string, shouldCopyMusic?: boolean) => {
     try {
       let finalMusicPath = musicPath;
       let finalMusicFileName = musicFileName;
       
-      // If music is provided and a project folder is specified
-      if (musicPath && projectFolder) {
+      // If music is provided and user chose to copy it to project folder
+      if (musicPath && projectFolder && shouldCopyMusic) {
         // Copy the music to the project folder
         const copiedPath = await copyMusicToProjectFolder(musicPath, projectFolder);
         if (copiedPath) {
@@ -84,11 +86,7 @@ const Projects = () => {
         <div className="w-full px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg gradient-primary p-0.5">
-                <div className="w-full h-full bg-background rounded-md overflow-hidden flex items-center justify-center">
-                  <img src="/logo.png" alt="RhythmNator Logo" className="w-8 h-8 object-cover" />
-                </div>
-              </div>
+              <img src="/logo.png" alt="RhythmNator Logo" className="w-10 h-10 object-cover" />
               <div>
                 <h1 className="text-xl font-bold leading-tight" style={{ fontFamily: 'Audiowide, sans-serif' }}>{t("app.name")}</h1>
               </div>
@@ -102,7 +100,7 @@ const Projects = () => {
                   onClick={() => setIsThemeEditorOpen(true)}
                   title={t("theme.editor")}
                 >
-                  <Palette className="h-4 w-4" />
+                  <FontAwesomeIcon icon={faPalette} className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
@@ -111,8 +109,9 @@ const Projects = () => {
                   onClick={() => setIsShortcutsDialogOpen(true)}
                   title={t("shortcuts.title")}
                 >
-                  <Keyboard className="h-4 w-4" />
+                  <FontAwesomeIcon icon={faKeyboard} className="h-4 w-4" />
                 </Button>
+                <FontSelectorButton />
                 <LanguageSelector />
               </div>
             </div>
@@ -142,7 +141,7 @@ const Projects = () => {
               <CardHeader className="pb-3 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
                   <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-                    <Music className="h-3.5 w-3.5 text-primary" />
+                    <FontAwesomeIcon icon={faMusic} className="h-3.5 w-3.5 text-primary" />
                   </div>
                   <span className="text-foreground">{t("project.title")}</span>
                 </CardTitle>
@@ -153,7 +152,7 @@ const Projects = () => {
                   variant="default"
                   className="w-full justify-start gap-2"
                 >
-                  <Plus className="h-4 w-4" />
+                  <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
                   {t("project.new")}
                 </Button>
                 <Button
@@ -171,14 +170,14 @@ const Projects = () => {
                   variant="secondary"
                   className="w-full justify-start gap-2"
                 >
-                  <FolderOpen className="h-4 w-4" />
+                  <FontAwesomeIcon icon={faFolderOpen} className="h-4 w-4" />
                   {t("project.open")}
                 </Button>
                 <Button
                   variant="ghost"
                   className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
                 >
-                  <FileText className="h-4 w-4" />
+                  <FontAwesomeIcon icon={faFileLines} className="h-4 w-4" />
                   {t("project.documentation")}
                 </Button>
               </CardContent>
@@ -189,7 +188,7 @@ const Projects = () => {
               <CardHeader className="pb-3 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
                   <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-                    <Package className="h-3.5 w-3.5 text-primary" />
+                    <FontAwesomeIcon icon={faBox} className="h-3.5 w-3.5 text-primary" />
                   </div>
                   <span className="text-foreground">{t("release.title")}</span>
                 </CardTitle>
@@ -208,7 +207,7 @@ const Projects = () => {
               <CardHeader className="pb-3 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
                   <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-                    <Music className="h-3.5 w-3.5 text-primary" />
+                    <FontAwesomeIcon icon={faMusic} className="h-3.5 w-3.5 text-primary" />
                   </div>
                   <span className="text-foreground">{t("project.recent")}</span>
                 </CardTitle>
@@ -218,14 +217,14 @@ const Projects = () => {
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center max-w-md">
                       <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary/20 mx-auto" style={{ backgroundColor: panelColors.iconBackground() }}>
-                        <Music className="h-10 w-10 text-primary" />
+                        <FontAwesomeIcon icon={faMusic} className="h-10 w-10 text-primary" />
                       </div>
                       <h3 className="mb-2 text-xl font-semibold">{t("project.noProjects")}</h3>
                       <p className="mb-6 text-sm text-muted-foreground">
                         {t("project.noProjectsDescription")}
                       </p>
                       <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
-                        <Plus className="h-4 w-4" />
+                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
                         {t("project.createProject")}
                       </Button>
                     </div>

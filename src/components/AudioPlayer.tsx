@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { panelColors } from "@/lib/panelColors";
-import { Play, Pause, SkipBack, SkipForward, Square, Radio, RotateCcw } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay, faPause, faBackwardStep, faForwardStep, faStop, faCircleDot, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -250,19 +251,19 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
 
             <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ backgroundColor: panelColors.sectionBackground() }}>
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleSkipBackward(5)} disabled={!audioUrl} title="Reculer de 5s">
-                    <SkipBack className="h-4 w-4" />
+                    <FontAwesomeIcon icon={faBackwardStep} className="h-4 w-4" />
                 </Button>
 
                 <Button variant="ghost" size="icon" className="h-9 w-9" onClick={togglePlay} disabled={!audioUrl} title={isPlaying ? "Pause" : "Lecture"}>
-                    {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                    {isPlaying ? <FontAwesomeIcon icon={faPause} className="h-5 w-5" /> : <FontAwesomeIcon icon={faPlay} className="h-5 w-5" />}
                 </Button>
 
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleStop} disabled={!audioUrl} title="Arrêter">
-                    <Square className="h-4 w-4" />
+                    <FontAwesomeIcon icon={faStop} className="h-4 w-4" />
                 </Button>
 
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleSkipForward(5)} disabled={!audioUrl} title="Avancer de 5s">
-                    <SkipForward className="h-4 w-4" />
+                    <FontAwesomeIcon icon={faForwardStep} className="h-4 w-4" />
                 </Button>
             </div>
 
@@ -286,7 +287,7 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
                 title={t("editor.resetScroll")}
                 disabled={!audioUrl || scrollPosition === 0}
             >
-                <RotateCcw className="h-5 w-5" />
+                <FontAwesomeIcon icon={faRotateLeft} className="h-5 w-5" />
             </Button>
 
             <Button
@@ -296,7 +297,7 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
                 title={autoFollowPlayback ? t("editor.autoFollowEnabled") : t("editor.autoFollowDisabled")}
                 disabled={!audioUrl}
             >
-                <Radio className="h-5 w-5" />
+                <FontAwesomeIcon icon={faCircleDot} className="h-5 w-5" />
             </Button>
         </div>
     );

@@ -383,6 +383,14 @@
     "deleteError": "Erreur lors de la suppression du thème",
     "cannotDeleteBuiltin": "Impossible de supprimer les thèmes intégrés"
   },
+  "font": {
+    "title": "Polices",
+    "description": "Personnalisez les polices de l'application",
+    "textFont": "Police du texte",
+    "titleFont": "Police des titres",
+    "textPreview": "Aperçu du texte normal - Ceci est un exemple de texte.",
+    "titlePreview": "Aperçu des titres"
+  },
   "dialog": {
     "confirmQuit": "Êtes-vous sûr de vouloir quitter ?",
     "confirmQuitUnsaved": "Des modifications non sauvegardées. Quitter ?",

@@ -1,6 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGripVertical } from "@fortawesome/free-solid-svg-icons";
 import { ReactNode } from "react";
 
 interface SortableSidebarPanelProps {
@@ -34,7 +35,7 @@ export const SortableSidebarPanel = ({ id, children }: SortableSidebarPanelProps
         className="absolute top-4 right-4 z-10 p-1.5 rounded-md cursor-grab active:cursor-grabbing hover:bg-secondary/50 transition-colors"
         title="Glisser pour réorganiser"
       >
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
+        <FontAwesomeIcon icon={faGripVertical} className="h-4 w-4 text-muted-foreground" />
       </div>
       {children}
     </div>

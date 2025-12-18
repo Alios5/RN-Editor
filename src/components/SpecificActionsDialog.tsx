@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Plus, Trash2, Edit } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faTrash, faPen } from "@fortawesome/free-solid-svg-icons";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +24,7 @@ import { CreateActionDialog } from "./CreateActionDialog";
 import { EditActionDialog } from "./EditActionDialog";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
-import * as Icons from "lucide-react";
+import { getIconByName } from "@/lib/faIconMap";
 
 interface SpecificActionsDialogProps {
   open: boolean;
@@ -49,9 +50,8 @@ export const SpecificActionsDialog = ({
   const [actionToDelete, setActionToDelete] = useState<SpecificAction | null>(null);
   const { t } = useTranslation();
 
-  const getIconComponent = (iconName: string) => {
-    const IconComponent = (Icons as any)[iconName];
-    return IconComponent || Icons.Zap;
+  const getActionIcon = (iconName: string) => {
+    return getIconByName(iconName);
   };
 
   return (
@@ -71,7 +71,7 @@ export const SpecificActionsDialog = ({
                 onClick={() => setIsCreateDialogOpen(true)}
                 size="sm"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" />
                 {t("action.newAction")}
               </Button>
             </div>
@@ -83,14 +83,14 @@ export const SpecificActionsDialog = ({
             ) : (
               <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
                 {actions.map((action) => {
-                  const IconComponent = getIconComponent(action.icon);
+                  const actionIcon = getActionIcon(action.icon);
                   return (
                     <div
                       key={action.id}
                       className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                     >
                       <div className="h-10 w-10 flex items-center justify-center rounded-md" style={{ backgroundColor: panelColors.iconBackground() }}>
-                        <IconComponent className="h-5 w-5" />
+                        {actionIcon && <FontAwesomeIcon icon={actionIcon} className="h-5 w-5" />}
                       </div>
                       <span className="flex-1 font-medium truncate">
                         {action.name}
@@ -105,7 +105,7 @@ export const SpecificActionsDialog = ({
                         }}
                         title={t("actions.edit")}
                       >
-                        <Edit className="h-4 w-4" />
+                        <FontAwesomeIcon icon={faPen} className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -117,7 +117,7 @@ export const SpecificActionsDialog = ({
                         }}
                         title={t("actions.delete")}
                       >
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <FontAwesomeIcon icon={faTrash} className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
                   );

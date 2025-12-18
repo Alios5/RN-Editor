@@ -1,5 +1,6 @@
 import { useState, memo } from "react";
-import { Plus, Pen, MousePointer2, ListMusic } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faPen, faArrowPointer, faListUl } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -128,7 +129,7 @@ export const TracksPanel = memo(({
         <CardHeader className="pb-3 pt-4">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-              <ListMusic className="h-3.5 w-3.5 text-primary" />
+              <FontAwesomeIcon icon={faListUl} className="h-3.5 w-3.5 text-primary" />
             </div>
             <span className="text-foreground">{t("tracks.title")}</span>
           </CardTitle>
@@ -149,7 +150,7 @@ export const TracksPanel = memo(({
                   onClick={onCreateTrack}
                   className="w-full justify-start h-9"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" />
                   {t("tracks.createTrack")}
                 </Button>
               </TooltipTrigger>
@@ -179,7 +180,7 @@ export const TracksPanel = memo(({
                     className="h-9 text-xs"
                     onClick={() => onModeChange('edit')}
                   >
-                    <Pen className="h-4 w-4 mr-1.5" />
+                    <FontAwesomeIcon icon={faPen} className="h-4 w-4 mr-1.5" />
                     {t("tracks.edit")}
                   </Button>
                 </TooltipTrigger>
@@ -198,7 +199,7 @@ export const TracksPanel = memo(({
                     className="h-9 text-xs"
                     onClick={() => onModeChange('select')}
                   >
-                    <MousePointer2 className="h-4 w-4 mr-1.5" />
+                    <FontAwesomeIcon icon={faArrowPointer} className="h-4 w-4 mr-1.5" />
                     {t("tracks.select")}
                   </Button>
                 </TooltipTrigger>
@@ -225,7 +226,7 @@ export const TracksPanel = memo(({
               onClick={() => setIsCreateGroupDialogOpen(true)}
               className="h-7 text-xs -mr-2"
             >
-              <Plus className="h-3 w-3 mr-1" />
+              <FontAwesomeIcon icon={faPlus} className="h-3 w-3 mr-1" />
               {t("actions.create")}
             </Button>
           </div>
@@ -265,7 +266,7 @@ export const TracksPanel = memo(({
               onClick={() => setIsCreateActionDialogOpen(true)}
               className="h-7 text-xs -mr-2"
             >
-              <Plus className="h-3 w-3 mr-1" />
+              <FontAwesomeIcon icon={faPlus} className="h-3 w-3 mr-1" />
               {t("actions.create")}
             </Button>
           </div>

@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { Folder, Zap, Music2, Volume2, Eye, EyeOff } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFolder, faBolt, faMusic, faVolumeHigh, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,7 +60,7 @@ export const AudioPanel = memo(({
       <CardHeader className="pb-3 pt-4">
         <CardTitle className="text-sm font-semibold flex items-center gap-2">
           <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-            <Music2 className="h-3.5 w-3.5 text-primary" />
+            <FontAwesomeIcon icon={faMusic} className="h-3.5 w-3.5 text-primary" />
           </div>
           <span className="text-foreground">{t("audio.title")}</span>
         </CardTitle>
@@ -78,7 +79,7 @@ export const AudioPanel = memo(({
               style={{ backgroundColor: panelColors.inputBackground() }}
             />
             <Button variant="outline" size="icon" onClick={onLoadAudio}>
-              <Folder className="h-4 w-4" />
+              <FontAwesomeIcon icon={faFolder} className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -112,7 +113,7 @@ export const AudioPanel = memo(({
                         onClick={onDetectBPM}
                         disabled={!onDetectBPM || isDetectingBPM}
                       >
-                        <Zap className={`h-4 w-4 ${isDetectingBPM ? 'animate-pulse' : ''}`} />
+                        <FontAwesomeIcon icon={faBolt} className={`h-4 w-4 ${isDetectingBPM ? 'animate-pulse' : ''}`} />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -215,7 +216,7 @@ export const AudioPanel = memo(({
           {/* Mouse Indicator Toggle */}
           <div className="flex items-center justify-between">
             <Label className="text-xs text-muted-foreground flex items-center gap-2">
-              {showMouseIndicator ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              {showMouseIndicator ? <FontAwesomeIcon icon={faEye} className="h-4 w-4" /> : <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" />}
               {t("audio.mouseIndicator")}
             </Label>
             <Button

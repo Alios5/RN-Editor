@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { z } from "zod";
-import { Folder, Music } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFolder, faMusic } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   Dialog,
@@ -14,8 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
-import { selectAudioFile } from "@/utils/musicManager";
-import { basename } from "@tauri-apps/api/path";
+import { selectAudioFile, copyMusicToProjectFolder } from "@/utils/musicManager";
+import { basename, dirname } from "@tauri-apps/api/path";
+import { CopyMusicDialog } from "@/components/CopyMusicDialog";
 
 const projectNameSchema = z
   .string()
@@ -26,7 +28,7 @@ const projectNameSchema = z
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (name: string, projectFolder?: string, musicPath?: string, musicFileName?: string) => void;
+  onCreate: (name: string, projectFolder?: string, musicPath?: string, musicFileName?: string, shouldCopyMusic?: boolean) => void;
 }
 
 export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProjectDialogProps) => {
@@ -36,6 +38,10 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
   const [projectFolder, setProjectFolder] = useState<string>("");
   const [musicPath, setMusicPath] = useState<string>("");
   const [musicFileName, setMusicFileName] = useState<string>("");
+  const [showCopyMusicDialog, setShowCopyMusicDialog] = useState(false);
+  const [pendingMusicPath, setPendingMusicPath] = useState<string | null>(null);
+  const [pendingMusicFileName, setPendingMusicFileName] = useState<string | null>(null);
+  const [shouldCopyMusic, setShouldCopyMusic] = useState(false);
   const { t } = useTranslation();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,11 +60,12 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
       return;
     }
 
-    onCreate(result.data, projectFolder, musicPath || undefined, musicFileName || undefined);
+    onCreate(result.data, projectFolder, musicPath || undefined, musicFileName || undefined, shouldCopyMusic);
     setName("");
     setProjectFolder("");
     setMusicPath("");
     setMusicFileName("");
+    setShouldCopyMusic(false);
     setError("");
     setFolderError("");
     onOpenChange(false);
@@ -69,6 +76,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
     setProjectFolder("");
     setMusicPath("");
     setMusicFileName("");
+    setShouldCopyMusic(false);
     setError("");
     setFolderError("");
     onOpenChange(false);
@@ -94,16 +102,55 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
     try {
       const filePath = await selectAudioFile();
       if (filePath) {
-        setMusicPath(filePath);
         const fileName = await basename(filePath);
+        
+        // Check if project folder is selected
+        if (projectFolder) {
+          const musicDir = await dirname(filePath);
+          
+          // If music is not in project folder, ask user
+          if (musicDir !== projectFolder) {
+            setPendingMusicPath(filePath);
+            setPendingMusicFileName(fileName);
+            setShowCopyMusicDialog(true);
+            return;
+          }
+        }
+        
+        // Music is already in project folder or no project folder selected
+        setMusicPath(filePath);
         setMusicFileName(fileName);
+        setShouldCopyMusic(false);
       }
     } catch (error) {
       console.error("Erreur lors de la sélection de la musique:", error);
     }
   };
 
+  const handleConfirmCopyMusic = () => {
+    if (pendingMusicPath && pendingMusicFileName) {
+      setMusicPath(pendingMusicPath);
+      setMusicFileName(pendingMusicFileName);
+      setShouldCopyMusic(true);
+    }
+    setShowCopyMusicDialog(false);
+    setPendingMusicPath(null);
+    setPendingMusicFileName(null);
+  };
+
+  const handleDeclineCopyMusic = () => {
+    if (pendingMusicPath && pendingMusicFileName) {
+      setMusicPath(pendingMusicPath);
+      setMusicFileName(pendingMusicFileName);
+      setShouldCopyMusic(false);
+    }
+    setShowCopyMusicDialog(false);
+    setPendingMusicPath(null);
+    setPendingMusicFileName(null);
+  };
+
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -140,7 +187,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
                   className="flex-1"
                 />
                 <Button type="button" variant="outline" onClick={handleSelectFolder}>
-                  <Folder className="h-4 w-4" />
+                  <FontAwesomeIcon icon={faFolder} className="h-4 w-4" />
                 </Button>
               </div>
               {folderError && <p className="text-sm text-destructive">{folderError}</p>}
@@ -159,7 +206,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
                   className="flex-1"
                 />
                 <Button type="button" variant="outline" onClick={handleSelectMusic}>
-                  <Music className="h-4 w-4" />
+                  <FontAwesomeIcon icon={faMusic} className="h-4 w-4" />
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -176,5 +223,14 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
         </form>
       </DialogContent>
     </Dialog>
+
+      <CopyMusicDialog
+        open={showCopyMusicDialog}
+        onOpenChange={setShowCopyMusicDialog}
+        musicFileName={pendingMusicFileName || ""}
+        onConfirm={handleConfirmCopyMusic}
+        onDecline={handleDeclineCopyMusic}
+      />
+    </>
   );
 };

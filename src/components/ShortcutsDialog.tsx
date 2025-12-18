@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useShortcuts } from '@/hooks/useShortcuts';
 import { useTranslation } from '@/hooks/useTranslation';
-import { RotateCcw, Lock, Edit } from 'lucide-react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRotateLeft, faLock, faPen } from "@fortawesome/free-solid-svg-icons";
 import { Shortcut } from '@/types/shortcuts';
 
 interface ShortcutsDialogProps {
@@ -103,7 +104,7 @@ export const ShortcutsDialog = ({ open, onOpenChange }: ShortcutsDialogProps) =>
                       <div className="font-medium flex items-center gap-2">
                         {t(shortcut.nameKey)}
                         {!shortcut.modifiable && (
-                          <Lock className="h-3 w-3 text-muted-foreground" />
+                          <FontAwesomeIcon icon={faLock} className="h-3 w-3 text-muted-foreground" />
                         )}
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -151,7 +152,7 @@ export const ShortcutsDialog = ({ open, onOpenChange }: ShortcutsDialogProps) =>
                                   setTempKey('');
                                 }}
                               >
-                                <Edit className="h-4 w-4" />
+                                <FontAwesomeIcon icon={faPen} className="h-4 w-4" />
                               </Button>
                               <Button
                                 size="sm"
@@ -159,7 +160,7 @@ export const ShortcutsDialog = ({ open, onOpenChange }: ShortcutsDialogProps) =>
                                 onClick={() => resetShortcut(shortcut.id)}
                                 title={t('shortcuts.reset') || 'Réinitialiser'}
                               >
-                                <RotateCcw className="h-4 w-4" />
+                                <FontAwesomeIcon icon={faRotateLeft} className="h-4 w-4" />
                               </Button>
                             </>
                           )}
@@ -175,7 +176,7 @@ export const ShortcutsDialog = ({ open, onOpenChange }: ShortcutsDialogProps) =>
 
         <DialogFooter>
           <Button variant="outline" onClick={resetShortcuts}>
-            <RotateCcw className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faRotateLeft} className="mr-2 h-4 w-4" />
             {t('shortcuts.resetAll') || 'Tout réinitialiser'}
           </Button>
           <Button onClick={() => onOpenChange(false)}>

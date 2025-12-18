@@ -1,4 +1,5 @@
-import { Minus, Square, X } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMinus, faSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { CloseHandler } from "@/utils/closeHandler";
 
@@ -58,7 +59,7 @@ export const CustomTitleBar = () => {
           className="hover:bg-accent h-8 w-10 flex items-center justify-center transition-colors cursor-pointer"
           title="Réduire"
         >
-          <Minus className="h-4 w-4" />
+          <FontAwesomeIcon icon={faMinus} className="h-4 w-4" />
         </button>
         
         <button
@@ -66,7 +67,7 @@ export const CustomTitleBar = () => {
           className="hover:bg-accent h-8 w-10 flex items-center justify-center transition-colors cursor-pointer"
           title="Agrandir/Rétrécir"
         >
-          <Square className="h-3 w-3" />
+          <FontAwesomeIcon icon={faSquare} className="h-3 w-3" />
         </button>
         
         <button
@@ -74,7 +75,7 @@ export const CustomTitleBar = () => {
           className="hover:bg-destructive hover:text-destructive-foreground h-8 w-10 flex items-center justify-center transition-colors cursor-pointer"
           title="Fermer"
         >
-          <X className="h-4 w-4" />
+          <FontAwesomeIcon icon={faXmark} className="h-4 w-4" />
         </button>
       </div>
     </div>

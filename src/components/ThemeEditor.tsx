@@ -16,7 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Upload, RotateCcw, Palette, Copy, Check, Save, Trash2 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload, faUpload, faRotateLeft, faPalette, faCopy, faCheck, faFloppyDisk, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { HexColorPicker } from "react-colorful";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Theme } from "@/types/theme";
@@ -269,7 +270,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
                       className="h-8 w-8"
                       onClick={handleCopyHex}
                     >
-                      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                      {copied ? <FontAwesomeIcon icon={faCheck} className="h-3 w-3" /> : <FontAwesomeIcon icon={faCopy} className="h-3 w-3" />}
                     </Button>
                   </div>
                 </div>
@@ -316,7 +317,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Palette className="h-5 w-5" />
+            <FontAwesomeIcon icon={faPalette} className="h-5 w-5" />
             {t("theme.editor")}
           </DialogTitle>
           <DialogDescription>
@@ -347,7 +348,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
                             setThemeToDelete(t.name);
                           }}
                         >
-                          <Trash2 className="h-3 w-3" />
+                          <FontAwesomeIcon icon={faTrash} className="h-3 w-3" />
                         </Button>
                       )}
                     </div>
@@ -364,7 +365,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
               setShowSaveDialog(true);
             }}
           >
-            <Save className="h-4 w-4" />
+            <FontAwesomeIcon icon={faFloppyDisk} className="h-4 w-4" />
             {t("theme.saveAs") || "Enregistrer sous"}
           </Button>
         </div>
@@ -394,15 +395,15 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
         <DialogFooter className="flex-row gap-2 sm:justify-between">
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleImportAndSave} className="gap-2">
-              <Upload className="h-4 w-4" />
+              <FontAwesomeIcon icon={faUpload} className="h-4 w-4" />
               {t("theme.import")}
             </Button>
             <Button variant="outline" onClick={handleExport} className="gap-2">
-              <Download className="h-4 w-4" />
+              <FontAwesomeIcon icon={faDownload} className="h-4 w-4" />
               {t("theme.export")}
             </Button>
             <Button variant="outline" onClick={handleReset} className="gap-2">
-              <RotateCcw className="h-4 w-4" />
+              <FontAwesomeIcon icon={faRotateLeft} className="h-4 w-4" />
               {t("theme.reset")}
             </Button>
           </div>
@@ -448,7 +449,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
             {t("actions.cancel")}
           </Button>
           <Button onClick={handleSaveTheme}>
-            <Save className="h-4 w-4 mr-2" />
+            <FontAwesomeIcon icon={faFloppyDisk} className="h-4 w-4 mr-2" />
             {t("actions.save") || "Enregistrer"}
           </Button>
         </DialogFooter>

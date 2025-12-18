@@ -1,4 +1,5 @@
-import { Eye, EyeOff, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash, faEllipsisVertical, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,9 +41,9 @@ export const TrackGroupItem = ({
         onClick={onToggleVisibility}
       >
         {group.visible ? (
-          <Eye className="h-4 w-4" />
+          <FontAwesomeIcon icon={faEye} className="h-4 w-4" />
         ) : (
-          <EyeOff className="h-4 w-4 text-muted-foreground" />
+          <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4 text-muted-foreground" />
         )}
       </Button>
 
@@ -59,16 +60,16 @@ export const TrackGroupItem = ({
             size="icon"
             className="h-6 w-6"
           >
-            <MoreVertical className="h-4 w-4" />
+            <FontAwesomeIcon icon={faEllipsisVertical} className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={onEdit}>
-            <Pencil className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faPen} className="mr-2 h-4 w-4" />
             {t("actions.edit")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onDelete} className="text-destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" />
             {t("actions.delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>

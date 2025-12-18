@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { panelColors, trackColors } from '@/lib/panelColors';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Clipboard } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Note } from "@/types/note";
 import { NoteBlock } from "./NoteBlock";
@@ -52,6 +53,8 @@ interface RhythmGridProps {
   hasCopiedNotes?: boolean;
   previewNote?: PreviewNote;
   showMouseIndicator?: boolean;
+  onResizeStart?: () => void;
+  onResizeEnd?: () => void;
 }
 
 export const RhythmGrid = ({
@@ -96,7 +99,9 @@ export const RhythmGrid = ({
   onGridMouseMove,
   hasCopiedNotes = false,
   previewNote,
-  showMouseIndicator = true
+  showMouseIndicator = true,
+  onResizeStart,
+  onResizeEnd
 }: RhythmGridProps) => {
   const { t } = useTranslation();
 
@@ -201,7 +206,8 @@ export const RhythmGrid = ({
       }
 
       // Draw lines and text
-      ctx.font = `${10 * dpr}px Outfit, sans-serif`;
+      const fontFamily = getComputedStyle(document.documentElement).getPropertyValue('--font-text').trim() || 'Roboto, sans-serif';
+      ctx.font = `${10 * dpr}px ${fontFamily}`;
       ctx.textBaseline = 'top';
 
       for (let i = 0; i <= cells; i++) {
@@ -351,10 +357,20 @@ export const RhythmGrid = ({
     setResizeStartX(e.clientX);
     setResizeStartWidth(note.gridWidth * cellWidth);
     setCurrentResizedWidth(note.gridWidth * cellWidth);
+    
+    // Notify parent that resize started
+    if (onResizeStart) {
+      onResizeStart();
+    }
   };
 
   const handleResizeEnd = () => {
     if (!isResizing || !resizeNoteId) return;
+
+    // Notify parent that resize ended
+    if (onResizeEnd) {
+      onResizeEnd();
+    }
 
     const note = notes.find(n => n.id === resizeNoteId);
     if (!note) {
@@ -618,7 +634,7 @@ export const RhythmGrid = ({
               onClick={onPaste}
               disabled={!hasCopiedNotes}
             >
-              <Clipboard className="mr-2 h-4 w-4" />
+              <FontAwesomeIcon icon={faClipboard} className="mr-2 h-4 w-4" />
               <span className="flex-1">{t("actions.paste")}</span>
               <span className="ml-auto pl-4 text-xs text-muted-foreground">Ctrl+V</span>
             </DropdownMenuItem>
