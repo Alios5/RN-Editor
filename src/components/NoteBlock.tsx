@@ -162,20 +162,23 @@ const NoteBlockComponent = ({
       e.preventDefault();
       e.stopPropagation();
       
-      // Démarrer le drag si c'est une note sélectionnée
-      if (isSelected && onStartDrag) {
-        // Calculer l'offset du clic par rapport au début de la note
-        const target = e.currentTarget as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const clickOffsetInPixels = clickX;
-        const clickOffsetInCells = Math.floor(clickOffsetInPixels / cellWidth);
-        
-        const cellPosition = note.gridPosition;
-        onStartDrag(cellPosition, clickOffsetInCells);
-      } else if (onNoteClick) {
-        // Sinon gérer le clic de sélection
+      // Calculer l'offset du clic par rapport au début de la note
+      const target = e.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickOffsetInPixels = clickX;
+      const clickOffsetInCells = Math.floor(clickOffsetInPixels / cellWidth);
+      const cellPosition = note.gridPosition;
+      
+      // Si la note n'est pas sélectionnée, la sélectionner d'abord
+      if (!isSelected && onNoteClick) {
+        // Sélectionner la note (avec Ctrl pour ajouter à la sélection existante)
         onNoteClick(e.ctrlKey || e.metaKey);
+      }
+      
+      // Démarrer le drag immédiatement (que la note soit déjà sélectionnée ou non)
+      if (onStartDrag) {
+        onStartDrag(cellPosition, clickOffsetInCells);
       }
     }
   };
@@ -199,7 +202,11 @@ const NoteBlockComponent = ({
               data-note-block
               data-note-id={`${trackId}:${note.id}`}
               className={`absolute top-0 bottom-0 rounded ${
-                isDragging || isResizing ? 'cursor-grabbing transition-none' : 'transition-all'
+                isDragging || isResizing 
+                  ? 'cursor-grabbing transition-none' 
+                  : editorMode === 'select' 
+                    ? 'cursor-grab transition-all' 
+                    : 'transition-all'
               } ${
                 isDragging 
                   ? 'border-4 border-dashed border-blue-400 ring-2 ring-blue-200'

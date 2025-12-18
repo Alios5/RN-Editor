@@ -215,4 +215,11 @@ All colors MUST be HSL.
     width: 20px;
     height: 20px;
   }
+
+  /* Force text cursor on waveform */
+  [data-testid="waveform"],
+  .wavesurfer-wrapper,
+  div[style*="wavesurfer"] {
+    cursor: text !important;
+  }
 }

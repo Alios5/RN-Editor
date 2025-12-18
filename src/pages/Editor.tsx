@@ -46,6 +46,7 @@ import { CopyMusicDialog } from "@/components/CopyMusicDialog";
 import { UnsavedChangesDialog } from "@/components/UnsavedChangesDialog";
 import { LassoSelection } from "@/components/LassoSelection";
 import { TracksPanel } from "@/components/TracksPanel";
+import { SortableSidebarPanel } from "@/components/SortableSidebarPanel";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -151,6 +152,19 @@ const Editor = () => {
   // Sidebar visibility
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
+
+  // Sidebar panels order (drag and drop) - persisted in localStorage
+  const [sidebarPanelOrder, setSidebarPanelOrder] = useState<string[]>(() => {
+    const saved = localStorage.getItem('sidebarPanelOrder');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return ['tracks', 'audio'];
+      }
+    }
+    return ['tracks', 'audio'];
+  });
 
   // Ref pour l'AudioPlayer
   const audioPlayerRef = useRef<AudioPlayerRef>(null);
@@ -1048,6 +1062,22 @@ const Editor = () => {
       }
     }
   }, [tracks]);
+
+  // Handle sidebar panel reordering via dnd-kit
+  const handleSidebarDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      const oldIndex = sidebarPanelOrder.findIndex(id => id === active.id);
+      const newIndex = sidebarPanelOrder.findIndex(id => id === over.id);
+      
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newOrder = arrayMove(sidebarPanelOrder, oldIndex, newIndex);
+        setSidebarPanelOrder(newOrder);
+        localStorage.setItem('sidebarPanelOrder', JSON.stringify(newOrder));
+      }
+    }
+  }, [sidebarPanelOrder]);
 
   // Track Groups Management
   const handleCreateGroup = (name: string) => {
@@ -2549,64 +2579,90 @@ const Editor = () => {
           {isSidebarVisible && (
             <ResizablePanel defaultSize={20} minSize={20} maxSize={35}>
               <div className="h-full overflow-y-auto">
-                <TracksPanel
-                  onCreateTrack={() => {
-                    if (audioDuration === 0) {
-                      toast.error(t("track.noMusicError"));
-                    } else {
-                      setShowCreateTrackDialog(true);
-                    }
-                  }}
-                  editorMode={editorMode}
-                  onModeChange={handleModeChange}
-                  groups={trackGroups}
-                  tracks={tracks}
-                  specificActions={specificActions}
-                  onCreateGroup={handleCreateGroup}
-                  onUpdateGroup={handleUpdateGroup}
-                  onDeleteGroup={handleDeleteGroup}
-                  onCreateAction={handleCreateAction}
-                  onEditAction={handleEditAction}
-                  onDeleteAction={handleDeleteAction}
-                />
-                <AudioPanel
-                  audioFile={audioFileName || project.musicFileName || t("audio.noAudio")}
-                  bpm={bpm}
-                  setBpm={(value) => {
-                    setBpm(value);
-                    // History is now automatic via useEffect with debounce
-                  }}
-                  rhythmSync={rhythmSync}
-                  setRhythmSync={(value) => {
-                    setRhythmSync(value);
-                    // History is now automatic via useEffect with debounce
-                  }}
-                  subRhythmSync={subRhythmSync}
-                  setSubRhythmSync={(value) => {
-                    setSubRhythmSync(value);
-                    // History is now automatic via useEffect with debounce
-                  }}
-                  volume={volume}
-                  setVolume={(value) => {
-                    setVolume(value);
-                    // History is now automatic via useEffect with debounce
-                  }}
-                  pitch={pitch}
-                  setPitch={(value) => {
-                    setPitch(value);
-                    // History is now automatic via useEffect with debounce
-                  }}
-                  startOffset={startOffset}
-                  setStartOffset={(value) => {
-                    setStartOffset(value);
-                    // History is now automatic via useEffect with debounce
-                  }}
-                  onLoadAudio={handleLoadAudio}
-                  onDetectBPM={handleDetectBPM}
-                  isDetectingBPM={isDetectingBPM}
-                  showMouseIndicator={showMouseIndicator}
-                  setShowMouseIndicator={setShowMouseIndicator}
-                />
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleSidebarDragEnd}
+                >
+                  <SortableContext
+                    items={sidebarPanelOrder}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {sidebarPanelOrder.map((panelId) => {
+                      if (panelId === 'tracks') {
+                        return (
+                          <SortableSidebarPanel key="tracks" id="tracks">
+                            <TracksPanel
+                              onCreateTrack={() => {
+                                if (audioDuration === 0) {
+                                  toast.error(t("track.noMusicError"));
+                                } else {
+                                  setShowCreateTrackDialog(true);
+                                }
+                              }}
+                              editorMode={editorMode}
+                              onModeChange={handleModeChange}
+                              groups={trackGroups}
+                              tracks={tracks}
+                              specificActions={specificActions}
+                              onCreateGroup={handleCreateGroup}
+                              onUpdateGroup={handleUpdateGroup}
+                              onDeleteGroup={handleDeleteGroup}
+                              onCreateAction={handleCreateAction}
+                              onEditAction={handleEditAction}
+                              onDeleteAction={handleDeleteAction}
+                            />
+                          </SortableSidebarPanel>
+                        );
+                      }
+                      if (panelId === 'audio') {
+                        return (
+                          <SortableSidebarPanel key="audio" id="audio">
+                            <AudioPanel
+                              audioFile={audioFileName || project.musicFileName || t("audio.noAudio")}
+                              bpm={bpm}
+                              setBpm={(value) => {
+                                setBpm(value);
+                                // History is now automatic via useEffect with debounce
+                              }}
+                              rhythmSync={rhythmSync}
+                              setRhythmSync={(value) => {
+                                setRhythmSync(value);
+                                // History is now automatic via useEffect with debounce
+                              }}
+                              subRhythmSync={subRhythmSync}
+                              setSubRhythmSync={(value) => {
+                                setSubRhythmSync(value);
+                                // History is now automatic via useEffect with debounce
+                              }}
+                              volume={volume}
+                              setVolume={(value) => {
+                                setVolume(value);
+                                // History is now automatic via useEffect with debounce
+                              }}
+                              pitch={pitch}
+                              setPitch={(value) => {
+                                setPitch(value);
+                                // History is now automatic via useEffect with debounce
+                              }}
+                              startOffset={startOffset}
+                              setStartOffset={(value) => {
+                                setStartOffset(value);
+                                // History is now automatic via useEffect with debounce
+                              }}
+                              onLoadAudio={handleLoadAudio}
+                              onDetectBPM={handleDetectBPM}
+                              isDetectingBPM={isDetectingBPM}
+                              showMouseIndicator={showMouseIndicator}
+                              setShowMouseIndicator={setShowMouseIndicator}
+                            />
+                          </SortableSidebarPanel>
+                        );
+                      }
+                      return null;
+                    })}
+                  </SortableContext>
+                </DndContext>
               </div>
             </ResizablePanel>
           )}

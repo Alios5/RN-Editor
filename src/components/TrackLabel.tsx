@@ -9,7 +9,7 @@ import {
 import { Edit2, Eye, EyeOff, Trash2, FolderInput, GripVertical } from "lucide-react";
 import { getContrastColor } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { DraggableAttributes } from "@dnd-kit/core";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
@@ -27,6 +27,7 @@ interface TrackLabelProps {
   onDelete: () => void;
   onAssignToGroup: () => void;
   dragHandleProps?: DragHandleProps;
+  scrollContainerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const TrackLabel = ({ 
@@ -38,10 +39,28 @@ export const TrackLabel = ({
   onDelete, 
   onAssignToGroup,
   dragHandleProps,
+  scrollContainerRef,
 }: TrackLabelProps) => {
   const { t } = useTranslation();
   const textColor = getContrastColor(track.color);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef?.current;
+    const label = labelRef.current;
+    if (!container || !label) return;
+
+    const handleScroll = () => {
+      label.style.left = `${container.scrollLeft}px`;
+    };
+
+    // Set initial position
+    handleScroll();
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [scrollContainerRef]);
 
   const handleClick = (e: React.MouseEvent) => {
     // Do nothing if the label is disabled
@@ -66,7 +85,8 @@ export const TrackLabel = ({
   
   return (
     <div 
-      className={`flex items-center sticky left-0 z-10 mb-2`}
+      ref={labelRef}
+      className={`flex items-center z-10 bg-background absolute top-0`}
     >
       {/* Drag Handle */}
       <div

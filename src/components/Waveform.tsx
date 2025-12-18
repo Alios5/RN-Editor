@@ -84,7 +84,7 @@ export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek,
       <div 
         ref={containerRef} 
         className="h-full"
-        style={{ width: width ? `${width}px` : '100%' }}
+        style={{ width: width ? `${width}px` : '100%', cursor: 'text' }}
       />
       {!isReady && audioUrl && (
         <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: panelColors.sectionBackground() }}>

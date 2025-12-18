@@ -113,9 +113,10 @@ export const TrackRow = ({
   } = useSortable({ id: track.id, disabled: isLabelDisabled });
 
   // Only apply Y translation to avoid deformation when grid is hidden
-  const style = {
+  const style: React.CSSProperties = {
     transform: transform ? `translateY(${transform.y}px)` : undefined,
     transition,
+    width: audioMetrics.waveformWidth,
   };
 
   return (
@@ -124,16 +125,20 @@ export const TrackRow = ({
       style={style}
       className={`${isDragging ? 'opacity-50 z-50' : ''}`}
     >
-      <TrackLabel
-        track={track}
-        trackGroup={trackGroup}
-        isDisabled={isLabelDisabled}
-        onEdit={onEdit}
-        onToggleVisibility={onToggleVisibility}
-        onDelete={onDelete}
-        onAssignToGroup={onAssignToGroup}
-        dragHandleProps={{ attributes, listeners }}
-      />
+      {/* Label row - sticky container */}
+      <div className="relative h-[35px] mb-2">
+        <TrackLabel
+          track={track}
+          trackGroup={trackGroup}
+          isDisabled={isLabelDisabled}
+          onEdit={onEdit}
+          onToggleVisibility={onToggleVisibility}
+          onDelete={onDelete}
+          onAssignToGroup={onAssignToGroup}
+          dragHandleProps={{ attributes, listeners }}
+          scrollContainerRef={scrollContainerRef}
+        />
+      </div>
       {isGridVisible && (
         <RhythmGrid
           width={audioMetrics.waveformWidth}

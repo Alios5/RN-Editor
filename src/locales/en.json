@@ -383,5 +383,12 @@
     "deleteSuccess": "Theme deleted successfully",
     "deleteError": "Error deleting theme",
     "cannotDeleteBuiltin": "Cannot delete built-in themes"
+  },
+  "dialog": {
+    "confirmQuit": "Are you sure you want to quit?",
+    "confirmQuitUnsaved": "Unsaved changes. Quit anyway?",
+    "confirm": "Confirm",
+    "quit": "Quit",
+    "cancel": "Cancel"
   }
 }

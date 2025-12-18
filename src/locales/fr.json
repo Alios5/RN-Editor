@@ -382,5 +382,12 @@
     "deleteSuccess": "Thème supprimé avec succès",
     "deleteError": "Erreur lors de la suppression du thème",
     "cannotDeleteBuiltin": "Impossible de supprimer les thèmes intégrés"
+  },
+  "dialog": {
+    "confirmQuit": "Êtes-vous sûr de vouloir quitter ?",
+    "confirmQuitUnsaved": "Des modifications non sauvegardées. Quitter ?",
+    "confirm": "Confirmer",
+    "quit": "Quitter",
+    "cancel": "Annuler"
   }
 }

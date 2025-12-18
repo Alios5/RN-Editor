@@ -5,11 +5,26 @@ import { confirm } from "@tauri-apps/plugin-dialog";
  * Centralized window-close handling for Tauri 2
  * Uses closable property (prevent_close/allow_close) instead of onCloseRequested
  */
+interface CloseHandlerTranslations {
+  confirmQuit: string;
+  confirmQuitUnsaved: string;
+  confirm: string;
+  quit: string;
+  cancel: string;
+}
+
 export class CloseHandler {
   private static hasUnsavedChanges = false;
   private static onShowDialogCallback: (() => void) | null = null;
   private static checkIntervalId: number | null = null;
   private static isProcessingClose = false;
+  private static translations: CloseHandlerTranslations = {
+    confirmQuit: "Are you sure you want to quit?",
+    confirmQuitUnsaved: "Unsaved changes. Quit anyway?",
+    confirm: "Confirm",
+    quit: "Quit",
+    cancel: "Cancel",
+  };
 
   /**
    * Initialize the close handler
@@ -25,6 +40,10 @@ export class CloseHandler {
 
   static getHasUnsavedChanges(): boolean {
     return this.hasUnsavedChanges;
+  }
+
+  static setTranslations(translations: CloseHandlerTranslations) {
+    this.translations = translations;
   }
 
   /**
@@ -51,19 +70,19 @@ export class CloseHandler {
           this.onShowDialogCallback();
         } else {
           // Fallback: native confirm
-          const ok = await confirm("Des modifications non sauvegardées. Quitter ?", {
-            title: "Confirmer",
-            okLabel: "Quitter",
-            cancelLabel: "Annuler",
+          const ok = await confirm(this.translations.confirmQuitUnsaved, {
+            title: this.translations.confirm,
+            okLabel: this.translations.quit,
+            cancelLabel: this.translations.cancel,
           });
           if (ok) await this.forceClose();
         }
       } else {
         // No unsaved changes: quick confirm
-        const ok = await confirm("Êtes-vous sûr de vouloir quitter ?", {
-          title: "Confirmer",
-          okLabel: "Quitter",
-          cancelLabel: "Annuler",
+        const ok = await confirm(this.translations.confirmQuit, {
+          title: this.translations.confirm,
+          okLabel: this.translations.quit,
+          cancelLabel: this.translations.cancel,
         });
         if (ok) await this.forceClose();
       }

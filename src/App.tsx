@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { restoreWindowState, setupWindowStatePersistence } from "@/utils/windowState";
 import { CloseHandler } from "@/utils/closeHandler";
 import { CustomTitleBar } from "@/components/CustomTitleBar";
+import { CloseHandlerTranslations } from "@/components/CloseHandlerTranslations";
 import { useWindowShortcuts } from "@/hooks/useWindowShortcuts";
 import { loadTheme, applyTheme } from "@/utils/themeManager";
 import Projects from "./pages/Projects";
@@ -102,6 +103,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
+        <CloseHandlerTranslations />
         <TooltipProvider>
           <CustomTitleBar />
           <div className="fixed inset-0 top-8 overflow-hidden">
