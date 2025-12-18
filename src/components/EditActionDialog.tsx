@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { useTranslation } from '@/hooks/useTranslation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AVAILABLE_ICONS } from '@/lib/faIconMap';
+import { STYLES, VALIDATION, getIconButtonClasses } from '@/lib/designTokens';
 
 interface EditActionDialogProps {
   open: boolean;
@@ -76,16 +77,13 @@ export const EditActionDialog = ({
           {/* Sélecteur d'Icône */}
           <div className="space-y-2">
             <Label>{t('action.actionIcon') || 'Icône de l\'Action'}</Label>
-            <div className="grid grid-cols-8 gap-2 p-4 border rounded-lg bg-muted/30 max-h-64 overflow-y-auto">
+            <div className={STYLES.iconGrid + " grid grid-cols-8 gap-2"}>
               {AVAILABLE_ICONS.map((iconEntry) => (
                 <button
                   key={iconEntry.name}
                   type="button"
                   onClick={() => setSelectedIcon(iconEntry.name)}
-                  className={`p-3 rounded-lg border transition-all hover:bg-accent ${selectedIcon === iconEntry.name
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'bg-background border-border'
-                    }`}
+                  className={getIconButtonClasses(selectedIcon === iconEntry.name)}
                   title={iconEntry.name}
                 >
                   <FontAwesomeIcon icon={iconEntry.icon} className="h-5 w-5" />
@@ -96,7 +94,7 @@ export const EditActionDialog = ({
 
           {/* Prévisualisation */}
           {selectedIcon && name && (
-            <div className="p-4 border rounded-lg bg-accent/50">
+            <div className={STYLES.previewContainer}>
               <p className="text-sm text-muted-foreground mb-2">
                 {t('action.preview') || 'Prévisualisation'}
               </p>

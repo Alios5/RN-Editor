@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TrackGroup } from "@/types/trackGroup";
 import { useTranslation } from "@/hooks/useTranslation";
+import { STYLES, VALIDATION, truncateToMaxLength } from "@/lib/designTokens";
 
 interface EditGroupDialogProps {
   open: boolean;
@@ -53,7 +54,7 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
   };
 
   const handleNameChange = (value: string) => {
-    setName(value.slice(0, 50));
+    setName(truncateToMaxLength(value, VALIDATION.maxNameLength));
     setError("");
   };
 
@@ -79,7 +80,7 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
               className={error ? "border-destructive" : ""}
             />
             {error && (
-              <p className="text-sm text-destructive">{error}</p>
+              <p className={STYLES.errorMessage}>{error}</p>
             )}
           </div>
         </div>

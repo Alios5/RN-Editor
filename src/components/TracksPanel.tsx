@@ -27,6 +27,7 @@ import {
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
 import { toast } from "sonner";
+import { STYLES } from "@/lib/designTokens";
 
 interface TracksPanelProps {
   onCreateTrack: () => void;
@@ -232,7 +233,7 @@ export const TracksPanel = memo(({
           </div>
 
           {groups.length === 0 ? (
-            <div className="text-center py-4 text-muted-foreground text-xs">
+            <div className={STYLES.emptyMessage}>
               {t("group.noGroups")}
             </div>
           ) : (
@@ -272,7 +273,7 @@ export const TracksPanel = memo(({
           </div>
 
           {specificActions.length === 0 ? (
-            <div className="text-center py-4 text-muted-foreground text-xs">
+            <div className={STYLES.emptyMessage}>
               {t("action.noActions")}
             </div>
           ) : (

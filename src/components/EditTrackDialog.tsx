@@ -12,6 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Track } from "@/types/track";
 import { useTranslation } from "@/hooks/useTranslation";
+import { 
+  TRACK_PRESET_COLORS, 
+  STYLES, 
+  VALIDATION,
+  getColorButtonClasses,
+  truncateToMaxLength 
+} from "@/lib/designTokens";
 
 interface EditTrackDialogProps {
   open: boolean;
@@ -21,19 +28,6 @@ interface EditTrackDialogProps {
   existingTrackNames: string[];
   usedKeys?: string[];
 }
-
-const PRESET_COLORS = [
-  "#FFFFFF", // Blanc
-  "#EF4444", // Rouge
-  "#3B82F6", // Bleu
-  "#10B981", // Vert
-  "#F59E0B", // Orange
-  "#8B5CF6", // Violet
-  "#EC4899", // Rose
-  "#F97316", // Orange foncé
-  "#06B6D4", // Cyan
-  "#84CC16", // Lime
-];
 
 export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTrackNames, usedKeys = [] }: EditTrackDialogProps) => {
   const [name, setName] = useState("");
@@ -72,7 +66,7 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
   };
 
   const handleNameChange = (value: string) => {
-    setName(value.slice(0, 50));
+    setName(truncateToMaxLength(value, VALIDATION.maxNameLength));
     setError("");
   };
 
@@ -98,7 +92,7 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
               className={error ? "border-destructive" : ""}
             />
             {error && (
-              <p className="text-sm text-destructive">{error}</p>
+              <p className={STYLES.errorMessage}>{error}</p>
             )}
           </div>
           
@@ -141,7 +135,7 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
                 </Button>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className={STYLES.helpText}>
               {t("track.assignedKeyDescription")}
             </p>
           </div>
@@ -149,13 +143,11 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
           <div className="space-y-2">
             <Label>{t("track.trackColor")}</Label>
             <div className="grid grid-cols-5 gap-2">
-              {PRESET_COLORS.map((presetColor) => (
+              {TRACK_PRESET_COLORS.map((presetColor) => (
                 <button
                   key={presetColor}
                   type="button"
-                  className={`h-10 rounded-md border-2 transition-all hover:scale-110 ${
-                    color === presetColor ? "border-primary ring-2 ring-primary ring-offset-2" : "border-border"
-                  }`}
+                  className={getColorButtonClasses(color === presetColor)}
                   style={{ backgroundColor: presetColor }}
                   onClick={() => setColor(presetColor)}
                 />

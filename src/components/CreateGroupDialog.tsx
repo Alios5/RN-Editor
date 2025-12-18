@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "@/hooks/useTranslation";
+import { STYLES, VALIDATION, truncateToMaxLength } from "@/lib/designTokens";
 
 interface CreateGroupDialogProps {
   open: boolean;
@@ -44,7 +45,7 @@ export const CreateGroupDialog = ({ open, onOpenChange, onCreate, existingGroupN
   };
 
   const handleNameChange = (value: string) => {
-    setName(value.slice(0, 50));
+    setName(truncateToMaxLength(value, VALIDATION.maxNameLength));
     setError("");
   };
 
@@ -70,7 +71,7 @@ export const CreateGroupDialog = ({ open, onOpenChange, onCreate, existingGroupN
               className={error ? "border-destructive" : ""}
             />
             {error && (
-              <p className="text-sm text-destructive">{error}</p>
+              <p className={STYLES.errorMessage}>{error}</p>
             )}
           </div>
         </div>
