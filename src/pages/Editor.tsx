@@ -2682,6 +2682,7 @@ const Editor = () => {
                               onCreateAction={handleCreateAction}
                               onEditAction={handleEditAction}
                               onDeleteAction={handleDeleteAction}
+                              onAssignTrackToGroup={handleAssignTrackToGroup}
                             />
                           </SortableSidebarPanel>
                         );

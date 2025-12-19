@@ -37,7 +37,8 @@
     "decline": "Refuser",
     "hide": "Cacher",
     "show": "Afficher",
-    "clear": "Effacer"
+    "clear": "Effacer",
+    "edit": "Modifier"
   },
   "project": {
     "title": "PROJET",
@@ -57,6 +58,8 @@
     "musicPlaceholder": "Aucune musique sélectionnée",
     "musicHint": "Vous pouvez charger une musique dès maintenant ou plus tard dans l'éditeur",
     "documentation": "Documentation",
+    "deleteTitle": "Supprimer le projet",
+    "deleteWarning": "Cette action est irréversible.",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le projet \"{name}\" ?",
     "deleteSuccess": "Projet \"{name}\" supprimé avec succès !",
     "createSuccess": "Projet \"{name}\" créé avec succès !",
@@ -135,7 +138,11 @@
     "deleteSuccess": "Groupe supprimé",
     "assignTrack": "Assigner la piste à un groupe",
     "assignTrackDescription": "Choisissez un groupe pour la piste \"{trackName}\"",
-    "removeFromGroup": "Retirer du groupe"
+    "removeFromGroup": "Retirer du groupe",
+    "tracksInGroup": "Pistes dans ce groupe",
+    "availableTracks": "Pistes disponibles",
+    "addToGroup": "Ajouter au groupe",
+    "otherGroup": "autre groupe"
   },
   "clipboard": {
     "copied": "{{count}} note(s) copiée(s)",

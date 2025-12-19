@@ -58,6 +58,7 @@
     "musicPlaceholder": "No music selected",
     "musicHint": "You can load music now or later in the editor",
     "documentation": "Documentation",
+    "deleteTitle": "Delete Project",
     "deleteConfirm": "Are you sure you want to delete the project \"{name}\"?",
     "deleteSuccess": "Project \"{name}\" deleted successfully!",
     "createSuccess": "Project \"{name}\" created successfully!",
@@ -135,7 +136,11 @@
     "deleteSuccess": "Group deleted",
     "assignTrack": "Assign Track to Group",
     "assignTrackDescription": "Choose a group for the track \"{tracksame}\"",
-    "removeFromGroup": "Remove from group"
+    "removeFromGroup": "Remove from group",
+    "tracksInGroup": "Tracks in this group",
+    "availableTracks": "Available tracks",
+    "addToGroup": "Add to group",
+    "otherGroup": "other group"
   },
   "clipboard": {
     "copied": "{{count}} note(s) copied",

@@ -42,6 +42,7 @@ interface TracksPanelProps {
   onCreateAction: (name: string, icon: string) => void;
   onEditAction: (actionId: string, name: string, icon: string) => void;
   onDeleteAction: (actionId: string) => void;
+  onAssignTrackToGroup: (trackId: string, groupId: string | null) => void;
 }
 
 export const TracksPanel = memo(({ 
@@ -56,7 +57,8 @@ export const TracksPanel = memo(({
   onDeleteGroup,
   onCreateAction,
   onEditAction,
-  onDeleteAction
+  onDeleteAction,
+  onAssignTrackToGroup
 }: TracksPanelProps) => {
   const { t } = useTranslation();
   const [isCreateGroupDialogOpen, setIsCreateGroupDialogOpen] = useState(false);
@@ -305,6 +307,8 @@ export const TracksPanel = memo(({
       onEdit={handleEditGroupSubmit}
       group={editingGroup}
       existingGroupNames={groups.map(g => g.name)}
+      tracks={tracks}
+      onAssignTrackToGroup={onAssignTrackToGroup}
     />
 
     <CreateActionDialog

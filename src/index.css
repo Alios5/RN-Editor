@@ -14,7 +14,7 @@ All colors MUST be HSL.
     --background: 230 35% 7%;
     --foreground: 0 0% 98%;
 
-    --card: 230 25% 12%;
+    --card: 228 22% 21%;
     --card-foreground: 0 0% 98%;
 
     --popover: 230 30% 10%;
@@ -23,10 +23,10 @@ All colors MUST be HSL.
     --primary: 245 75% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 230 25% 18%;
+    --secondary: 228 22% 21%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 230 20% 20%;
+    --muted: 228 22% 21%;
     --muted-foreground: 220 10% 60%;
 
     --accent: 20 100% 50%;
@@ -35,7 +35,7 @@ All colors MUST be HSL.
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 230 25% 20%;
+    --border: 228 27% 17%;
     --input: 230 25% 18%;
     --ring: 245 75% 60%;
 
@@ -43,7 +43,7 @@ All colors MUST be HSL.
     --gradient-end: 265 70% 55%;
 
     /* Panel colors - base HSL values */
-    --panel-background: 230 25% 12%;
+    --panel-background: 228 22% 18%;
     --panel-border: 230 25% 20%;
     --panel-icon-background: 245 75% 60%;
     --panel-input-background: 230 25% 18%;
@@ -55,7 +55,7 @@ All colors MUST be HSL.
     --track-measure-line: 245 60% 50%;
 
     /* Waveform colors - base HSL values */
-    --waveform-color: 230 20% 25%;
+    --waveform-color: 245 41% 49%;
 
     /* Panel colors - final colors with opacity built-in */
     --panel-background-color: hsl(var(--panel-background) / 0.3);

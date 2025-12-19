@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { panelColors } from "@/lib/panelColors";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ProjectListItemProps {
   project: Project;
@@ -23,7 +24,8 @@ interface ProjectListItemProps {
 }
 
 export const ProjectListItem = ({ project, onClick, onDelete, index = 0 }: ProjectListItemProps) => {
-  const formattedDate = new Date(project.createdAt).toLocaleDateString("fr-FR", {
+  const { t } = useTranslation();
+  const formattedDate = new Date(project.createdAt).toLocaleDateString(undefined, {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -78,18 +80,18 @@ export const ProjectListItem = ({ project, onClick, onDelete, index = 0 }: Proje
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer le projet</AlertDialogTitle>
+            <AlertDialogTitle>{t("project.deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer le projet "{project.name}" ? Cette action est irréversible.
+              {t("project.deleteConfirm", { name: project.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => onDelete(project.id)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Supprimer
+              {t("actions.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
