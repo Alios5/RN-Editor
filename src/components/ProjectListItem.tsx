@@ -19,9 +19,10 @@ interface ProjectListItemProps {
   project: Project;
   onClick: (id: string) => void;
   onDelete: (id: string) => void;
+  index?: number;
 }
 
-export const ProjectListItem = ({ project, onClick, onDelete }: ProjectListItemProps) => {
+export const ProjectListItem = ({ project, onClick, onDelete, index = 0 }: ProjectListItemProps) => {
   const formattedDate = new Date(project.createdAt).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "short",
@@ -29,12 +30,19 @@ export const ProjectListItem = ({ project, onClick, onDelete }: ProjectListItemP
   });
 
   return (
-    <div className="w-full flex items-center gap-3 p-3 rounded-lg border border-border/30 hover:border-border/50 transition-all group" style={{ backgroundColor: panelColors.inputBackground() }}>
+    <div 
+      className="w-full flex items-center gap-3 p-3 rounded-lg border border-border/30 project-item group animate-fade-in-up" 
+      style={{ 
+        backgroundColor: panelColors.inputBackground(),
+        animationDelay: `${index * 0.08}s`,
+        opacity: 0
+      }}
+    >
       <button
         onClick={() => onClick(project.id)}
         className="flex items-center gap-3 flex-1 min-w-0 text-left"
       >
-        <div className="flex h-11 w-11 items-center justify-center rounded-md gradient-primary flex-shrink-0">
+        <div className="flex h-11 w-11 items-center justify-center rounded-md gradient-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
           {project.filePath ? (
             <FontAwesomeIcon icon={faFileLines} className="h-5 w-5 text-primary-foreground" />
           ) : (

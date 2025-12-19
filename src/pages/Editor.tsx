@@ -2297,14 +2297,14 @@ const Editor = () => {
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-background overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-background overflow-hidden animate-editor-enter">
       {/* Header */}
-      <header className="border-b border-border backdrop-blur-md relative z-50" style={{ backgroundColor: panelColors.background() }}>
+      <header className="border-b border-border backdrop-blur-md relative z-50 animate-fade-in-down" style={{ backgroundColor: panelColors.background() }}>
         <div className="w-full px-6 py-3">
           <div className="flex items-center justify-between">
             {/* Left side - Logo and Title */}
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="RhythmNator Logo" className="w-10 h-10 object-cover" />
+              <img src="/logo.png" alt="RhythmNator Logo" className="w-10 h-10 object-cover logo-animate" />
               <div>
                 <h1 className="text-xl font-bold leading-tight" style={{ fontFamily: 'Audiowide, sans-serif' }}>RhythmNator Editor</h1>
                 <p className="text-xs text-muted-foreground">{project?.name}</p>

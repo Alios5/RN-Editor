@@ -82,11 +82,11 @@ const Projects = () => {
   return (
     <div className="flex flex-col h-full w-full bg-background overflow-hidden">
       {/* Header Principal */}
-      <header className="border-b border-border backdrop-blur-md" style={{ backgroundColor: panelColors.background() }}>
+      <header className="border-b border-border backdrop-blur-md animate-fade-in-down" style={{ backgroundColor: panelColors.background() }}>
         <div className="w-full px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="RhythmNator Logo" className="w-10 h-10 object-cover" />
+              <img src="/logo.png" alt="RhythmNator Logo" className="w-10 h-10 object-cover logo-animate" />
               <div>
                 <h1 className="text-xl font-bold leading-tight" style={{ fontFamily: 'Audiowide, sans-serif' }}>{t("app.name")}</h1>
               </div>
@@ -137,10 +137,10 @@ const Projects = () => {
           {/* Colonne Gauche - Sections Project et Release Note */}
           <div className="col-span-3 space-y-6 overflow-y-auto">
             {/* Section PROJECT */}
-            <Card className="backdrop-blur-sm hover:scale-100 transition-none shadow-sm">
+            <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-1">
               <CardHeader className="pb-3 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
+                  <div className="h-7 w-7 rounded-md flex items-center justify-center icon-bounce" style={{ backgroundColor: panelColors.iconBackground() }}>
                     <FontAwesomeIcon icon={faMusic} className="h-3.5 w-3.5 text-primary" />
                   </div>
                   <span className="text-foreground">{t("project.title")}</span>
@@ -150,7 +150,7 @@ const Projects = () => {
                 <Button
                   onClick={() => setIsCreateDialogOpen(true)}
                   variant="default"
-                  className="w-full justify-start gap-2"
+                  className="w-full justify-start gap-2 btn-animate"
                 >
                   <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
                   {t("project.new")}
@@ -168,7 +168,7 @@ const Projects = () => {
                     }
                   }}
                   variant="secondary"
-                  className="w-full justify-start gap-2"
+                  className="w-full justify-start gap-2 btn-animate"
                 >
                   <FontAwesomeIcon icon={faFolderOpen} className="h-4 w-4" />
                   {t("project.open")}
@@ -184,10 +184,10 @@ const Projects = () => {
             </Card>
 
             {/* Section RELEASE NOTE */}
-            <Card className="backdrop-blur-sm hover:scale-100 transition-none shadow-sm">
+            <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-2">
               <CardHeader className="pb-3 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
+                  <div className="h-7 w-7 rounded-md flex items-center justify-center icon-bounce" style={{ backgroundColor: panelColors.iconBackground() }}>
                     <FontAwesomeIcon icon={faBox} className="h-3.5 w-3.5 text-primary" />
                   </div>
                   <span className="text-foreground">{t("release.title")}</span>
@@ -203,10 +203,10 @@ const Projects = () => {
 
           {/* Colonne Droite - Section Recent Projects */}
           <div className="col-span-9 overflow-hidden">
-            <Card className="h-full backdrop-blur-sm hover:scale-100 transition-none shadow-sm flex flex-col">
+            <Card className="h-full backdrop-blur-sm shadow-sm hover-glow flex flex-col animate-slide-in-right stagger-1">
               <CardHeader className="pb-3 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
+                  <div className="h-7 w-7 rounded-md flex items-center justify-center icon-bounce" style={{ backgroundColor: panelColors.iconBackground() }}>
                     <FontAwesomeIcon icon={faMusic} className="h-3.5 w-3.5 text-primary" />
                   </div>
                   <span className="text-foreground">{t("project.recent")}</span>
@@ -216,14 +216,14 @@ const Projects = () => {
                 {projects.length === 0 ? (
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center max-w-md">
-                      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary/20 mx-auto" style={{ backgroundColor: panelColors.iconBackground() }}>
+                      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary/20 mx-auto empty-state-icon" style={{ backgroundColor: panelColors.iconBackground() }}>
                         <FontAwesomeIcon icon={faMusic} className="h-10 w-10 text-primary" />
                       </div>
                       <h3 className="mb-2 text-xl font-semibold">{t("project.noProjects")}</h3>
                       <p className="mb-6 text-sm text-muted-foreground">
                         {t("project.noProjectsDescription")}
                       </p>
-                      <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
+                      <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2 btn-animate">
                         <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
                         {t("project.createProject")}
                       </Button>
@@ -231,12 +231,13 @@ const Projects = () => {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {projects.map((project) => (
+                    {projects.map((project, index) => (
                       <ProjectListItem
                         key={project.id}
                         project={project}
                         onClick={handleOpenProject}
                         onDelete={handleDeleteProject}
+                        index={index}
                       />
                     ))}
                   </div>
@@ -255,7 +256,7 @@ const Projects = () => {
       />
 
       {/* Version badge - subtle */}
-      <div className="fixed bottom-3 right-3 px-2 py-1 rounded-md bg-secondary/20 backdrop-blur-sm border border-border/30">
+      <div className="fixed bottom-3 right-3 px-2 py-1 rounded-md bg-secondary/20 backdrop-blur-sm border border-border/30 animate-fade-in-up stagger-3">
         <span className="text-xs text-muted-foreground/70 font-mono">v{APP_VERSION} Dev</span>
       </div>
     </div>
