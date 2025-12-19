@@ -92,21 +92,6 @@ export const EditActionDialog = ({
             </div>
           </div>
 
-          {/* Prévisualisation */}
-          {selectedIcon && name && (
-            <div className={STYLES.previewContainer}>
-              <p className="text-sm text-muted-foreground mb-2">
-                {t('action.preview') || 'Prévisualisation'}
-              </p>
-              <div className="flex items-center gap-2">
-                {(() => {
-                  const iconEntry = AVAILABLE_ICONS.find(i => i.name === selectedIcon);
-                  return iconEntry ? <FontAwesomeIcon icon={iconEntry.icon} className="h-5 w-5" /> : null;
-                })()}
-                <span className="font-medium">{name}</span>
-              </div>
-            </div>
-          )}
         </div>
 
         <DialogFooter>
