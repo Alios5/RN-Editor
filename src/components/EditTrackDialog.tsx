@@ -153,6 +153,16 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
                 />
               ))}
             </div>
+            <div className="flex items-center gap-2 mt-3">
+              <Label htmlFor="edit-custom-color" className="text-sm">{t("track.customColor")}</Label>
+              <input
+                id="edit-custom-color"
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="h-10 w-20 rounded border border-input cursor-pointer"
+              />
+            </div>
           </div>
         </div>
         

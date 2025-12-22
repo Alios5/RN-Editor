@@ -21,7 +21,7 @@ import { faDownload, faUpload, faRotateLeft, faPalette, faCopy, faCheck, faFlopp
 import { HexColorPicker } from "react-colorful";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Theme } from "@/types/theme";
-import { 
+import {
   loadTheme, 
   applyTheme, 
   exportTheme, 
@@ -32,7 +32,8 @@ import {
   getSavedThemes,
   saveCustomTheme,
   deleteCustomTheme,
-  isBuiltinTheme
+  isBuiltinTheme,
+  generateUniqueThemeName
 } from "@/utils/themeManager";
 import { toast } from "sonner";
 import {
@@ -58,7 +59,7 @@ interface ThemeEditorProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type ColorCategory = "base" | "interactive" | "status" | "borders" | "panels" | "tracks";
+type ColorCategory = "base" | "interactive" | "status" | "borders" | "panels" | "tracks" | "waveform";
 
 const COLOR_CATEGORIES: Record<ColorCategory, Array<keyof Theme['colors']>> = {
   base: ["background", "foreground", "card", "cardForeground"],
@@ -66,7 +67,8 @@ const COLOR_CATEGORIES: Record<ColorCategory, Array<keyof Theme['colors']>> = {
   status: ["muted", "mutedForeground", "destructive", "destructiveForeground"],
   borders: ["border", "input", "ring", "popover", "popoverForeground"],
   panels: ["panelBackground", "panelBorder", "panelIconBackground", "panelInputBackground", "panelSectionBackground"],
-  tracks: ["trackBorder", "trackGridLine", "trackMeasureLine", "waveformColor"],
+  tracks: ["trackBorder", "trackGridLine", "trackMeasureLine", "trackBeatPrimary", "trackBeatSecondary"],
+  waveform: ["waveformColor", "waveformBackground", "waveformOutline"],
 };
 
 export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
@@ -166,14 +168,23 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
     }
 
     try {
-      const themeToSave = { ...theme, name: saveThemeName.trim() };
+      // Generate a unique name if the theme name already exists
+      const uniqueName = generateUniqueThemeName(saveThemeName.trim(), savedThemes);
+      
+      const themeToSave = { ...theme, name: uniqueName };
       saveCustomTheme(themeToSave);
       setSavedThemes(getSavedThemes());
       setTheme(themeToSave);
       applyTheme(themeToSave);
       setShowSaveDialog(false);
       setSaveThemeName("");
-      toast.success(t("theme.saveSuccess") || "Thème sauvegardé avec succès");
+      
+      // Show different message if name was changed
+      if (uniqueName !== saveThemeName.trim()) {
+        toast.success(`${t("theme.saveSuccess") || "Thème sauvegardé avec succès"} : "${uniqueName}"`);
+      } else {
+        toast.success(t("theme.saveSuccess") || "Thème sauvegardé avec succès");
+      }
     } catch (error) {
       toast.error(t("theme.saveError") || "Erreur lors de la sauvegarde du thème");
     }
@@ -202,7 +213,6 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
       const importedTheme = await importTheme();
       if (importedTheme) {
         // Generate a unique name if the theme name already exists
-        const { generateUniqueThemeName } = await import('@/utils/themeManager');
         const uniqueName = generateUniqueThemeName(importedTheme.name, savedThemes);
         const themeWithUniqueName = { ...importedTheme, name: uniqueName };
         
@@ -372,13 +382,14 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
 
         <div className="flex-1 overflow-hidden">
           <Tabs defaultValue="base" className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="base">{t("theme.categoryBase")}</TabsTrigger>
               <TabsTrigger value="interactive">{t("theme.categoryInteractive")}</TabsTrigger>
               <TabsTrigger value="status">{t("theme.categoryStatus")}</TabsTrigger>
               <TabsTrigger value="borders">{t("theme.categoryBorders")}</TabsTrigger>
               <TabsTrigger value="panels">{t("theme.categoryPanels")}</TabsTrigger>
               <TabsTrigger value="tracks">{t("theme.categoryTracks") || "Pistes"}</TabsTrigger>
+              <TabsTrigger value="waveform">{t("theme.categoryWaveform") || "Waveform"}</TabsTrigger>
             </TabsList>
 
             <div className="flex-1 overflow-y-auto mt-4">
@@ -388,6 +399,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
               <TabsContent value="borders">{renderCategoryColors("borders")}</TabsContent>
               <TabsContent value="panels">{renderCategoryColors("panels")}</TabsContent>
               <TabsContent value="tracks">{renderCategoryColors("tracks")}</TabsContent>
+              <TabsContent value="waveform">{renderCategoryColors("waveform")}</TabsContent>
             </div>
           </Tabs>
         </div>

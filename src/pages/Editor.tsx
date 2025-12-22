@@ -149,6 +149,9 @@ const Editor = () => {
   const [dragStartCell, setDragStartCell] = useState(0);
   const [dragClickOffset, setDragClickOffset] = useState(0); // Offset du clic dans la note
   const [dragOffset, setDragOffset] = useState(0);
+  
+  // Track reordering drag state
+  const [isDraggingTrack, setIsDraggingTrack] = useState(false);
 
   // Sound for note movement
   const noteMoveSound = useRef<HTMLAudioElement | null>(null);
@@ -1083,35 +1086,41 @@ const Editor = () => {
   );
 
   // Handle track reordering via dnd-kit
+  const handleTrackDragStart = useCallback(() => {
+    setIsDraggingTrack(true);
+  }, []);
+
   const handleTrackDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     
     if (over && active.id !== over.id) {
-      const oldIndex = tracks.findIndex(t => t.id === active.id);
-      const newIndex = tracks.findIndex(t => t.id === over.id);
-      
-      if (oldIndex !== -1 && newIndex !== -1) {
-        setTracks(arrayMove(tracks, oldIndex, newIndex));
-        // History is now automatic via useEffect with debounce
-      }
+      setTracks((items) => {
+        const oldIndex = items.findIndex(item => item.id === active.id);
+        const newIndex = items.findIndex(item => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
     }
+    setIsDraggingTrack(false);
+    // History is now automatic via useEffect with debounce
   }, [tracks]);
 
   // Handle sidebar panel reordering via dnd-kit
+  const handleSidebarDragStart = useCallback(() => {
+    setIsDraggingTrack(true);
+  }, []);
+
   const handleSidebarDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     
     if (over && active.id !== over.id) {
-      const oldIndex = sidebarPanelOrder.findIndex(id => id === active.id);
-      const newIndex = sidebarPanelOrder.findIndex(id => id === over.id);
-      
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newOrder = arrayMove(sidebarPanelOrder, oldIndex, newIndex);
-        setSidebarPanelOrder(newOrder);
-        localStorage.setItem('sidebarPanelOrder', JSON.stringify(newOrder));
-      }
+      setSidebarPanelOrder((items) => {
+        const oldIndex = items.indexOf(active.id as string);
+        const newIndex = items.indexOf(over.id as string);
+        return arrayMove(items, oldIndex, newIndex);
+      });
     }
-  }, [sidebarPanelOrder]);
+    setIsDraggingTrack(false);
+  }, []);
 
   // Track Groups Management
   const handleCreateGroup = (name: string) => {
@@ -1391,6 +1400,44 @@ const Editor = () => {
     // The action will be applied to all selected notes
     setNoteToAssignAction({ trackId: 'selected', noteId: 'all' });
     setShowSelectActionDialog(true);
+  };
+
+  const handleUnlinkActionFromNote = (trackId: string, noteId: string) => {
+    setTracks(tracks.map(track => {
+      if (track.id === trackId) {
+        return {
+          ...track,
+          notes: track.notes?.map(note =>
+            note.id === noteId
+              ? { ...note, specificAction: undefined }
+              : note
+          )
+        };
+      }
+      return track;
+    }));
+    // History is now automatic via useEffect with debounce
+  };
+
+  const handleUnlinkActionFromSelectedNotes = () => {
+    setTracks(tracks.map(track => {
+      const notesInTrack = Array.from(selectedNotes)
+        .filter(key => key.startsWith(`${track.id}:`))
+        .map(key => key.split(':')[1]);
+
+      if (notesInTrack.length > 0) {
+        return {
+          ...track,
+          notes: track.notes?.map(note =>
+            notesInTrack.includes(note.id)
+              ? { ...note, specificAction: undefined }
+              : note
+          )
+        };
+      }
+      return track;
+    }));
+    // History is now automatic via useEffect with debounce
   };
 
   const handleSelectActionForNote = (action: SpecificAction | null) => {
@@ -2151,6 +2198,9 @@ const Editor = () => {
     // Ignorer si un menu contextuel est ouvert
     if (isContextMenuOpen) return;
 
+    // Ignorer si on est en train de déplacer une piste
+    if (isDraggingTrack) return;
+
     // Ignorer si on clique sur une note (elle gérera son propre clic)
     const target = e.target as HTMLElement;
     if (target.closest('[data-note-block]')) return;
@@ -2538,6 +2588,7 @@ const Editor = () => {
                         <DndContext
                           sensors={sensors}
                           collisionDetection={closestCenter}
+                          onDragStart={handleTrackDragStart}
                           onDragEnd={handleTrackDragEnd}
                         >
                           <SortableContext
@@ -2593,6 +2644,8 @@ const Editor = () => {
                                     onPaste={handlePaste}
                                     onAssignActionToNote={handleAssignActionToNote}
                                     onAssignActionToSelected={handleAssignActionToSelectedNotes}
+                                    onUnlinkActionFromNote={handleUnlinkActionFromNote}
+                                    onUnlinkActionFromSelected={handleUnlinkActionFromSelectedNotes}
                                     onNoteClick={handleNoteClick}
                                     onContextMenuOpenChange={setIsContextMenuOpen}
                                     isDraggingNotes={isDraggingNotes}
@@ -2653,6 +2706,7 @@ const Editor = () => {
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
+                  onDragStart={handleSidebarDragStart}
                   onDragEnd={handleSidebarDragEnd}
                 >
                   <SortableContext

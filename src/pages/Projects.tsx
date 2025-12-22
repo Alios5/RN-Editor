@@ -257,7 +257,7 @@ const Projects = () => {
 
       {/* Version badge - subtle */}
       <div className="fixed bottom-3 right-3 px-2 py-1 rounded-md bg-secondary/20 backdrop-blur-sm border border-border/30 animate-fade-in-up stagger-3">
-        <span className="text-xs text-muted-foreground/70 font-mono">v{APP_VERSION} Dev</span>
+        <span className="text-xs text-muted-foreground/70 font-mono">v{APP_VERSION} Beta</span>
       </div>
     </div>
   );

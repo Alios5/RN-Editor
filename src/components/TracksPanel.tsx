@@ -297,8 +297,24 @@ export const TracksPanel = memo(({
     <CreateGroupDialog
       open={isCreateGroupDialogOpen}
       onOpenChange={setIsCreateGroupDialogOpen}
-      onCreate={onCreateGroup}
+      onCreate={(name, selectedTrackIds) => {
+        onCreateGroup(name);
+        // Assign selected tracks to the newly created group
+        // We need to get the group ID after creation, so we'll handle this in the parent
+        if (selectedTrackIds.length > 0) {
+          // The parent will need to handle track assignment after group creation
+          setTimeout(() => {
+            const newGroup = groups.find(g => g.name === name);
+            if (newGroup) {
+              selectedTrackIds.forEach(trackId => {
+                onAssignTrackToGroup(trackId, newGroup.id);
+              });
+            }
+          }, 100);
+        }
+      }}
       existingGroupNames={groups.map(g => g.name)}
+      tracks={tracks}
     />
 
     <EditGroupDialog

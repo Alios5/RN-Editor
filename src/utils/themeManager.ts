@@ -26,7 +26,11 @@ export const loadTheme = (): Theme => {
         !theme.colors?.trackBorder ||
         !theme.colors?.trackGridLine ||
         !theme.colors?.trackMeasureLine ||
-        !theme.colors?.waveformColor;
+        !theme.colors?.trackBeatPrimary ||
+        !theme.colors?.trackBeatSecondary ||
+        !theme.colors?.waveformColor ||
+        !theme.colors?.waveformBackground ||
+        !theme.colors?.waveformOutline;
         
       if (needsMigration) {
         // Detect if it's a light or dark theme by checking background lightness
@@ -166,7 +170,11 @@ export const importTheme = async (): Promise<Theme | null> => {
         !theme.colors.trackBorder ||
         !theme.colors.trackGridLine ||
         !theme.colors.trackMeasureLine ||
-        !theme.colors.waveformColor;
+        !theme.colors.trackBeatPrimary ||
+        !theme.colors.trackBeatSecondary ||
+        !theme.colors.waveformColor ||
+        !theme.colors.waveformBackground ||
+        !theme.colors.waveformOutline;
         
       if (needsMigration) {
         return {
@@ -197,10 +205,36 @@ export const resetToDefaultTheme = (): void => {
 };
 
 /**
+ * Clean up user themes that are now builtin themes
+ */
+export const cleanupDuplicateThemes = (): void => {
+  try {
+    const stored = localStorage.getItem(SAVED_THEMES_KEY);
+    if (!stored) return;
+    
+    const userThemes: Theme[] = JSON.parse(stored);
+    const builtinNames = BUILTIN_THEMES.map(t => t.name);
+    
+    // Filter out themes that are now builtin
+    const cleanedThemes = userThemes.filter(theme => !builtinNames.includes(theme.name));
+    
+    if (cleanedThemes.length !== userThemes.length) {
+      localStorage.setItem(SAVED_THEMES_KEY, JSON.stringify(cleanedThemes));
+      console.log(`✅ Cleaned up ${userThemes.length - cleanedThemes.length} duplicate theme(s)`);
+    }
+  } catch (error) {
+    console.error("Error cleaning up duplicate themes:", error);
+  }
+};
+
+/**
  * Get all saved themes (builtin + user saved)
  */
 export const getSavedThemes = (): Theme[] => {
   try {
+    // Clean up duplicates first
+    cleanupDuplicateThemes();
+    
     const stored = localStorage.getItem(SAVED_THEMES_KEY);
     const userThemes: Partial<Theme>[] = stored ? JSON.parse(stored) : [];
     
@@ -217,7 +251,11 @@ export const getSavedThemes = (): Theme[] => {
         !theme.colors?.trackBorder ||
         !theme.colors?.trackGridLine ||
         !theme.colors?.trackMeasureLine ||
-        !theme.colors?.waveformColor;
+        !theme.colors?.trackBeatPrimary ||
+        !theme.colors?.trackBeatSecondary ||
+        !theme.colors?.waveformColor ||
+        !theme.colors?.waveformBackground ||
+        !theme.colors?.waveformOutline;
         
       if (needsMigration) {
         return {

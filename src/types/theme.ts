@@ -32,8 +32,12 @@ export interface Theme {
     trackBorder: string;
     trackGridLine: string;
     trackMeasureLine: string;
+    trackBeatPrimary: string;
+    trackBeatSecondary: string;
     // Waveform colors
     waveformColor: string;
+    waveformBackground: string;
+    waveformOutline: string;
   };
 }
 
@@ -71,8 +75,12 @@ export const DEFAULT_THEME: Theme = {
     trackBorder: "230 25% 25%",
     trackGridLine: "230 25% 22%",
     trackMeasureLine: "245 60% 50%",
+    trackBeatPrimary: "230 25% 18%",
+    trackBeatSecondary: "230 30% 15%",
     // Waveform colors
     waveformColor: "245 41% 49%",
+    waveformBackground: "230 30% 10%",
+    waveformOutline: "245 60% 50%",
   },
 };
 
@@ -110,9 +118,93 @@ export const LIGHT_THEME: Theme = {
     trackBorder: "230 15% 47%",
     trackGridLine: "230 16% 70%",
     trackMeasureLine: "245 60% 50%",
+    trackBeatPrimary: "210 40% 96%",
+    trackBeatSecondary: "0 0% 100%",
     // Waveform colors
     waveformColor: "231 33% 61%",
+    waveformBackground: "0 0% 100%",
+    waveformOutline: "230 15% 70%",
   },
 };
 
-export const BUILTIN_THEMES: Theme[] = [DEFAULT_THEME, LIGHT_THEME];
+export const GOLD_NIGHT_THEME: Theme = {
+  name: "Gold Night",
+  colors: {
+    background: "220 45% 5%",
+    foreground: "210 40% 98%",
+    card: "218 35% 14%",
+    cardForeground: "210 40% 98%",
+    popover: "220 40% 12%",
+    popoverForeground: "210 40% 98%",
+    primary: "38 92% 55%",
+    primaryForeground: "220 45% 5%",
+    secondary: "218 35% 14%",
+    secondaryForeground: "210 40% 98%",
+    muted: "220 30% 12%",
+    mutedForeground: "215 20% 65%",
+    accent: "220 35% 15%",
+    accentForeground: "38 92% 55%",
+    destructive: "0 62.8% 50%",
+    destructiveForeground: "210 40% 98%",
+    border: "218 40% 12%",
+    input: "220 30% 15%",
+    ring: "38 92% 55%",
+    gradientStart: "38 92% 55%",
+    gradientEnd: "35 85% 50%",
+    panelBackground: "218 35% 14%",
+    panelBorder: "220 30% 18%",
+    panelIconBackground: "38 92% 55%",
+    panelInputBackground: "218 35% 14%",
+    panelSectionBackground: "218 35% 14%",
+    trackBorder: "220 30% 20%",
+    trackGridLine: "220 25% 15%",
+    trackMeasureLine: "38 92% 55%",
+    trackBeatPrimary: "218 35% 14%",
+    trackBeatSecondary: "220 35% 11%",
+    waveformColor: "38 85% 50%",
+    waveformBackground: "220 40% 12%",
+    waveformOutline: "38 92% 55%",
+  },
+};
+
+export const WINTER_THEME: Theme = {
+  name: "Winter",
+  colors: {
+    background: "0 0% 100%",
+    foreground: "210 44% 26%",
+    card: "208 19% 53%",
+    cardForeground: "210 44% 26%",
+    popover: "0 0% 100%",
+    popoverForeground: "210 44% 26%",
+    primary: "210 100% 51%",
+    primaryForeground: "0 0% 100%",
+    secondary: "227 29% 72%",
+    secondaryForeground: "0 0% 100%",
+    muted: "210 62% 95%",
+    mutedForeground: "210 24% 40%",
+    accent: "224 100% 92%",
+    accentForeground: "223 44% 17%",
+    destructive: "0 50% 73%",
+    destructiveForeground: "0 86% 10%",
+    border: "215 50% 91%",
+    input: "217 51% 91%",
+    ring: "210 100% 51%",
+    gradientStart: "210 100% 51%",
+    gradientEnd: "250 45% 44%",
+    panelBackground: "211 37% 89%",
+    panelBorder: "210 62% 95%",
+    panelIconBackground: "210 100% 51%",
+    panelInputBackground: "211 63% 90%",
+    panelSectionBackground: "211 25% 79%",
+    trackBorder: "216 26% 64%",
+    trackGridLine: "218 36% 80%",
+    trackMeasureLine: "210 100% 51%",
+    trackBeatPrimary: "211 100% 96%",
+    trackBeatSecondary: "0 0% 100%",
+    waveformColor: "211 38% 45%",
+    waveformBackground: "213 100% 96%",
+    waveformOutline: "215 50% 91%",
+  },
+};
+
+export const BUILTIN_THEMES: Theme[] = [DEFAULT_THEME, LIGHT_THEME, GOLD_NIGHT_THEME, WINTER_THEME];

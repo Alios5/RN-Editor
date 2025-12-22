@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faLink, faCopy, faScissors, faClipboard, faCodeMerge } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faLink, faCopy, faScissors, faClipboard, faCodeMerge, faLinkSlash } from "@fortawesome/free-solid-svg-icons";
 import { getIconByName } from "@/lib/faIconMap";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -39,6 +39,8 @@ interface NoteBlockProps {
   onPaste?: () => void;
   onAssignAction?: () => void;
   onAssignActionToSelected?: () => void;
+  onUnlinkAction?: () => void;
+  onUnlinkActionFromSelected?: () => void;
   onMenuOpenChange?: (open: boolean) => void;
   onNoteClick?: (ctrlKey: boolean) => void;
   onDeleteOnHover?: () => void;
@@ -73,6 +75,8 @@ const NoteBlockComponent = ({
   onPaste,
   onAssignAction,
   onAssignActionToSelected,
+  onUnlinkAction,
+  onUnlinkActionFromSelected,
   onMenuOpenChange,
   onNoteClick,
   onDeleteOnHover,
@@ -292,6 +296,16 @@ const NoteBlockComponent = ({
               ? t("action.linkActionCount", { count: String(selectedCount) })
               : t("action.selectAction")}
           </DropdownMenuItem>
+          
+          {/* Délier action (seulement si au moins une note a une action) */}
+          {note.specificAction && (
+            <DropdownMenuItem onClick={selectedCount > 1 ? onUnlinkActionFromSelected : onUnlinkAction}>
+              <FontAwesomeIcon icon={faLinkSlash} className="mr-2 h-4 w-4" />
+              {selectedCount > 1 
+                ? t("action.unlinkActionCount", { count: String(selectedCount) })
+                : t("action.unlinkAction")}
+            </DropdownMenuItem>
+          )}
           
           <div className="h-px bg-border my-1" />
           

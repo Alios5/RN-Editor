@@ -42,6 +42,8 @@ interface RhythmGridProps {
   onPaste?: () => void;
   onAssignActionToNote?: (noteId: string) => void;
   onAssignActionToSelected?: () => void;
+  onUnlinkActionFromNote?: (noteId: string) => void;
+  onUnlinkActionFromSelected?: () => void;
   onNoteClick?: (noteId: string, ctrlKey: boolean) => void;
   onContextMenuOpenChange?: (isOpen: boolean) => void;
   isDraggingNotes?: boolean;
@@ -89,6 +91,8 @@ export const RhythmGrid = ({
   onPaste,
   onAssignActionToNote,
   onAssignActionToSelected,
+  onUnlinkActionFromNote,
+  onUnlinkActionFromSelected,
   onNoteClick,
   onContextMenuOpenChange,
   isDraggingNotes = false,
@@ -176,13 +180,13 @@ export const RhythmGrid = ({
       const computedStyle = getComputedStyle(container);
       const gridVarName = '--track-grid-line-color';
       const measureVarName = '--track-measure-line-color';
-      const sectionBgVarName = '--panel-section-background-color';
-      const inputBgVarName = '--panel-input-background-color';
+      const beatPrimaryVarName = '--track-beat-primary-color';
+      const beatSecondaryVarName = '--track-beat-secondary-color';
 
       const gridColor = computedStyle.getPropertyValue(gridVarName).trim() || '#e5e7eb';
       const measureColor = computedStyle.getPropertyValue(measureVarName).trim() || '#9ca3af';
-      const sectionBgColor = computedStyle.getPropertyValue(sectionBgVarName).trim() || 'rgba(30, 41, 59, 0.5)';
-      const inputBgColor = computedStyle.getPropertyValue(inputBgVarName).trim() || 'rgba(15, 23, 42, 0.5)';
+      const beatPrimaryColor = computedStyle.getPropertyValue(beatPrimaryVarName).trim() || 'rgba(30, 41, 59, 0.5)';
+      const beatSecondaryColor = computedStyle.getPropertyValue(beatSecondaryVarName).trim() || 'rgba(15, 23, 42, 0.5)';
 
       // Draw backgrounds first (to be behind lines)
       // Draw by beat (subdivision) instead of by measure
@@ -200,8 +204,8 @@ export const RhythmGrid = ({
         const canvasX = Math.floor(worldX * dpr);
         const canvasWidth = Math.ceil(worldWidth * dpr);
 
-        // Alternating background per beat
-        ctx.fillStyle = b % 2 === 0 ? sectionBgColor : inputBgColor;
+        // Alternating background per beat (BPM visualization)
+        ctx.fillStyle = b % 2 === 0 ? beatPrimaryColor : beatSecondaryColor;
         ctx.fillRect(canvasX, 0, canvasWidth, 80 * dpr);
       }
 
@@ -501,8 +505,6 @@ export const RhythmGrid = ({
         }`}
       style={{
         width: `${width}px`,
-        paddingLeft: `${startOffset}px`,
-        boxSizing: 'border-box',
         backgroundColor: panelColors.sectionBackground(),
         border: `1px solid ${trackColors.border()}`
       }}
@@ -560,6 +562,8 @@ export const RhythmGrid = ({
             onPaste={onPaste}
             onAssignAction={() => onAssignActionToNote?.(note.id)}
             onAssignActionToSelected={onAssignActionToSelected}
+            onUnlinkAction={() => onUnlinkActionFromNote?.(note.id)}
+            onUnlinkActionFromSelected={onUnlinkActionFromSelected}
             onMenuOpenChange={handleMenuOpenChange}
             onNoteClick={(ctrlKey) => onNoteClick?.(note.id, ctrlKey)}
             onStartDrag={(cellPosition, clickOffsetInCells) => {

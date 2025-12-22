@@ -1,5 +1,7 @@
-/* Finlandica Font from Google Fonts - Police principale */
-@import url('https://fonts.googleapis.com/css2?family=Finlandica:wght@300;400;500;600;700&display=swap');
+/* Inter Font from Google Fonts - Police principale */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Outfit Font from Google Fonts - Police des titres */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -53,9 +55,13 @@ All colors MUST be HSL.
     --track-border: 230 25% 25%;
     --track-grid-line: 230 25% 22%;
     --track-measure-line: 245 60% 50%;
+    --track-beat-primary: 230 25% 18%;
+    --track-beat-secondary: 230 30% 15%;
 
     /* Waveform colors - base HSL values */
     --waveform-color: 245 41% 49%;
+    --waveform-background: 230 30% 10%;
+    --waveform-outline: 245 60% 50%;
 
     /* Panel colors - final colors with opacity built-in */
     --panel-background-color: hsl(var(--panel-background) / 0.3);
@@ -68,6 +74,8 @@ All colors MUST be HSL.
     --track-border-color: hsl(var(--track-border) / 0.6);
     --track-grid-line-color: hsl(var(--track-grid-line) / 0.3);
     --track-measure-line-color: hsl(var(--track-measure-line) / 0.4);
+    --track-beat-primary-color: hsl(var(--track-beat-primary) / 0.5);
+    --track-beat-secondary-color: hsl(var(--track-beat-secondary) / 0.5);
 
     --radius: 0.75rem;
   }
@@ -104,7 +112,7 @@ All colors MUST be HSL.
   }
 
   body {
-    font-family: var(--font-text, 'Roboto'), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font-text, 'Inter'), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6, .font-title {

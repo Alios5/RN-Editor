@@ -103,7 +103,7 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
                   {t("group.noTracksInGroup")}
                 </p>
               ) : (
-                <ScrollArea className="max-h-[120px]">
+                <ScrollArea className="max-h-[240px]">
                   <div className="space-y-1">
                     {tracks.filter(t => t.groupId === group?.id).map(track => (
                       <div 
@@ -142,7 +142,7 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
                 className="rounded-lg border border-border p-2"
                 style={{ backgroundColor: panelColors.inputBackground() }}
               >
-                <ScrollArea className="max-h-[120px]">
+                <ScrollArea className="max-h-[240px]">
                   <div className="space-y-1">
                     {tracks.filter(t => t.groupId !== group?.id).map(track => (
                       <div 

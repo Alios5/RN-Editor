@@ -40,6 +40,8 @@ interface TrackRowProps {
   onPaste?: () => void;
   onAssignActionToNote?: (trackId: string, noteId: string) => void;
   onAssignActionToSelected?: () => void;
+  onUnlinkActionFromNote?: (trackId: string, noteId: string) => void;
+  onUnlinkActionFromSelected?: () => void;
   onNoteClick?: (trackId: string, noteId: string, ctrlKey: boolean) => void;
   onContextMenuOpenChange?: (isOpen: boolean) => void;
   isDraggingNotes?: boolean;
@@ -87,6 +89,8 @@ export const TrackRow = ({
   onPaste,
   onAssignActionToNote,
   onAssignActionToSelected,
+  onUnlinkActionFromNote,
+  onUnlinkActionFromSelected,
   onNoteClick,
   onContextMenuOpenChange,
   isDraggingNotes,
@@ -180,6 +184,8 @@ export const TrackRow = ({
           onPaste={onPaste}
           onAssignActionToNote={(noteId) => onAssignActionToNote?.(track.id, noteId)}
           onAssignActionToSelected={onAssignActionToSelected}
+          onUnlinkActionFromNote={(noteId) => onUnlinkActionFromNote?.(track.id, noteId)}
+          onUnlinkActionFromSelected={onUnlinkActionFromSelected}
           onNoteClick={(noteId, ctrlKey) => onNoteClick?.(track.id, noteId, ctrlKey)}
           onContextMenuOpenChange={onContextMenuOpenChange}
           isDraggingNotes={isDraggingNotes}

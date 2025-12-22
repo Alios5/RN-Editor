@@ -12,11 +12,11 @@ const formatTimeValue = (value: number): number => {
 };
 
 interface ExportNote {
-  trackName: string;
-  rowId: number; // Position of the track in the list (0, 1, 2, ...)
-  startTime: number;
+  name: string;
+  row: number; // Position of the track in the list (0, 1, 2, ...)
+  time: number;
   duration: number;
-  specificAction?: string; // Just the action name
+  action?: string; // Just the action name
 }
 
 interface ExportData {
@@ -49,13 +49,13 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
       
       track.notes.forEach(note => {
         const exportNote: ExportNote = {
-          trackName: note.trackName,
-          rowId: rowIndex, // Track position in the list
-          startTime: formatTimeValue(note.startTime),
+          name: note.trackName,
+          row: rowIndex, // Track position in the list
+          time: formatTimeValue(note.startTime),
           duration: formatTimeValue(note.duration)
         };
         if (note.specificAction) {
-          exportNote.specificAction = note.specificAction.name; // Just the name
+          exportNote.action = note.specificAction.name; // Just the name
         }
         notesByGroup[targetCategory].push(exportNote);
         totalNotes++;
@@ -63,9 +63,9 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
     }
   });
 
-  // 3. Sort each group by startTime
+  // 3. Sort each group by time
   Object.keys(notesByGroup).forEach(groupName => {
-    notesByGroup[groupName].sort((a, b) => a.startTime - b.startTime);
+    notesByGroup[groupName].sort((a, b) => a.time - b.time);
   });
 
   // 4. Create JSON structure
@@ -116,13 +116,13 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
         
         track.notes.forEach(note => {
           const exportNote: ExportNote = {
-            trackName: note.trackName,
-            rowId: rowIndex, // Track position in the list
-            startTime: formatTimeValue(note.startTime),
+            name: note.trackName,
+            row: rowIndex, // Track position in the list
+            time: formatTimeValue(note.startTime),
             duration: formatTimeValue(note.duration)
           };
           if (note.specificAction) {
-            exportNote.specificAction = note.specificAction.name; // Just the name
+            exportNote.action = note.specificAction.name; // Just the name
           }
           notesByGroup[targetCategory].push(exportNote);
           totalNotes++;
@@ -130,9 +130,9 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
       }
     });
 
-    // 3. Sort each group by startTime
+    // 3. Sort each group by time
     Object.keys(notesByGroup).forEach(groupName => {
-      notesByGroup[groupName].sort((a, b) => a.startTime - b.startTime);
+      notesByGroup[groupName].sort((a, b) => a.time - b.time);
     });
 
     // 4. Create JSON structure
