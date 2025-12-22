@@ -46,21 +46,29 @@ export const TrackLabel = ({
   const textColor = getContrastColor(track.color);
   const triggerRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
+  const lastUpdateRef = useRef<number>(0);
 
   useEffect(() => {
     const container = scrollContainerRef?.current;
     const label = labelRef.current;
     if (!container || !label) return;
 
+    // Set initial position
+    label.style.transform = `translateX(${container.scrollLeft}px)`;
+
     const handleScroll = () => {
-      label.style.left = `${container.scrollLeft}px`;
+      const now = performance.now();
+      // Throttle: update max every 8ms (~120fps) for smoothness without overhead
+      if (now - lastUpdateRef.current < 8) return;
+      
+      lastUpdateRef.current = now;
+      label.style.transform = `translateX(${container.scrollLeft}px)`;
     };
 
-    // Set initial position
-    handleScroll();
-
     container.addEventListener('scroll', handleScroll, { passive: true });
-    return () => container.removeEventListener('scroll', handleScroll);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
   }, [scrollContainerRef]);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -87,7 +95,7 @@ export const TrackLabel = ({
   return (
     <div 
       ref={labelRef}
-      className={`flex items-center z-10 bg-background absolute top-0`}
+      className="flex items-center z-10 bg-background absolute top-0 left-0 will-change-transform"
     >
       {/* Drag Handle */}
       <div
