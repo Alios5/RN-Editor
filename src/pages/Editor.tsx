@@ -1123,14 +1123,26 @@ const Editor = () => {
   }, []);
 
   // Track Groups Management
-  const handleCreateGroup = (name: string) => {
+  const handleCreateGroup = (name: string, selectedTrackIds: string[]) => {
     const newGroup: TrackGroup = {
       id: crypto.randomUUID(),
       name,
       visible: true,
       collapsed: false,
     };
-    setTrackGroups([...trackGroups, newGroup]);
+
+    setTrackGroups(prev => [...prev, newGroup]);
+
+    if (selectedTrackIds.length > 0) {
+      setTracks(prevTracks =>
+        prevTracks.map(track =>
+          selectedTrackIds.includes(track.id)
+            ? { ...track, groupId: newGroup.id }
+            : track
+        )
+      );
+    }
+
     toast.success(t("group.createSuccess"));
     // History is now automatic via useEffect with debounce
   };

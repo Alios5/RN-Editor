@@ -36,7 +36,7 @@ interface TracksPanelProps {
   groups: TrackGroup[];
   tracks: Track[];
   specificActions: SpecificAction[];
-  onCreateGroup: (name: string) => void;
+  onCreateGroup: (name: string, selectedTrackIds: string[]) => void;
   onUpdateGroup: (groupId: string, updates: Partial<TrackGroup>) => void;
   onDeleteGroup: (groupId: string) => void;
   onCreateAction: (name: string, icon: string) => void;
@@ -298,23 +298,11 @@ export const TracksPanel = memo(({
       open={isCreateGroupDialogOpen}
       onOpenChange={setIsCreateGroupDialogOpen}
       onCreate={(name, selectedTrackIds) => {
-        onCreateGroup(name);
-        // Assign selected tracks to the newly created group
-        // We need to get the group ID after creation, so we'll handle this in the parent
-        if (selectedTrackIds.length > 0) {
-          // The parent will need to handle track assignment after group creation
-          setTimeout(() => {
-            const newGroup = groups.find(g => g.name === name);
-            if (newGroup) {
-              selectedTrackIds.forEach(trackId => {
-                onAssignTrackToGroup(trackId, newGroup.id);
-              });
-            }
-          }, 100);
-        }
+        onCreateGroup(name, selectedTrackIds);
       }}
       existingGroupNames={groups.map(g => g.name)}
       tracks={tracks}
+      groups={groups}
     />
 
     <EditGroupDialog

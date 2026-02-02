@@ -20,7 +20,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
 
 // Import version from package.json
-const APP_VERSION = "0.3.0";
+const APP_VERSION = "0.3.3";
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);

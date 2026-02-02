@@ -68,11 +68,15 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
     notesByGroup[groupName].sort((a, b) => a.time - b.time);
   });
 
+  const nonEmptyNotesByGroup = Object.fromEntries(
+    Object.entries(notesByGroup).filter(([, notes]) => notes.length > 0)
+  ) as { [groupName: string]: ExportNote[] };
+
   // 4. Create JSON structure
   const exportData: ExportData = {
     bpm,
     musicDuration: formatTimeValue(musicDuration),
-    ...notesByGroup
+    ...nonEmptyNotesByGroup
   };
 
   // 5. Create the file and trigger download
@@ -135,11 +139,15 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
       notesByGroup[groupName].sort((a, b) => a.time - b.time);
     });
 
+    const nonEmptyNotesByGroup = Object.fromEntries(
+      Object.entries(notesByGroup).filter(([, notes]) => notes.length > 0)
+    ) as { [groupName: string]: ExportNote[] };
+
     // 4. Create JSON structure
     const exportData: ExportData = {
       bpm,
       musicDuration: formatTimeValue(musicDuration),
-      ...notesByGroup
+      ...nonEmptyNotesByGroup
     };
 
     let targetPath = filePath;

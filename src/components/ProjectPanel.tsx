@@ -21,11 +21,13 @@ interface ProjectPanelProps {
   groups: TrackGroup[];
   tracks: Track[];
   specificActions: SpecificAction[];
-  onCreateGroup: (name: string) => void;
+  onCreateGroup: (name: string, selectedTrackIds: string[]) => void;
   onUpdateGroup: (groupId: string, updates: Partial<TrackGroup>) => void;
   onDeleteGroup: (groupId: string) => void;
   onCreateAction: (name: string, icon: string) => void;
+  onEditAction: (actionId: string, name: string, icon: string) => void;
   onDeleteAction: (actionId: string) => void;
+  onAssignTrackToGroup: (trackId: string, groupId: string | null) => void;
 }
 
 export const ProjectPanel = ({ 
@@ -37,7 +39,9 @@ export const ProjectPanel = ({
   onUpdateGroup, 
   onDeleteGroup,
   onCreateAction,
-  onDeleteAction
+  onEditAction,
+  onDeleteAction,
+  onAssignTrackToGroup
 }: ProjectPanelProps) => {
   const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -162,6 +166,8 @@ export const ProjectPanel = ({
         onOpenChange={setIsCreateDialogOpen}
         onCreate={onCreateGroup}
         existingGroupNames={groups.map(g => g.name)}
+        tracks={tracks}
+        groups={groups}
       />
 
       <EditGroupDialog
@@ -170,6 +176,8 @@ export const ProjectPanel = ({
         onEdit={handleEditGroupSubmit}
         group={editingGroup}
         existingGroupNames={groups.map(g => g.name)}
+        tracks={tracks}
+        onAssignTrackToGroup={onAssignTrackToGroup}
       />
 
       <SpecificActionsDialog
@@ -177,6 +185,7 @@ export const ProjectPanel = ({
         onOpenChange={setIsActionsDialogOpen}
         actions={specificActions}
         onCreateAction={onCreateAction}
+        onEditAction={onEditAction}
         onDeleteAction={onDeleteAction}
       />
     </>

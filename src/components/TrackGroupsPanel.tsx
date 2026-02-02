@@ -15,9 +15,10 @@ import { toast } from "sonner";
 interface TrackGroupsPanelProps {
   groups: TrackGroup[];
   tracks: Track[];
-  onCreateGroup: (name: string, color: string) => void;
+  onCreateGroup: (name: string, selectedTrackIds: string[]) => void;
   onUpdateGroup: (groupId: string, updates: Partial<TrackGroup>) => void;
   onDeleteGroup: (groupId: string) => void;
+  onAssignTrackToGroup: (trackId: string, groupId: string | null) => void;
 }
 
 export const TrackGroupsPanel = ({
@@ -26,6 +27,7 @@ export const TrackGroupsPanel = ({
   onCreateGroup,
   onUpdateGroup,
   onDeleteGroup,
+  onAssignTrackToGroup,
 }: TrackGroupsPanelProps) => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -40,9 +42,9 @@ export const TrackGroupsPanel = ({
     }
   };
 
-  const handleEditGroupSubmit = (name: string, color: string) => {
+  const handleEditGroupSubmit = (name: string) => {
     if (editingGroup) {
-      onUpdateGroup(editingGroup.id, { name, color });
+      onUpdateGroup(editingGroup.id, { name });
       toast.success(t("group.editSuccess"));
       setIsEditDialogOpen(false);
       setEditingGroup(null);
@@ -102,6 +104,8 @@ export const TrackGroupsPanel = ({
         onOpenChange={setIsCreateDialogOpen}
         onCreate={onCreateGroup}
         existingGroupNames={groups.map(g => g.name)}
+        tracks={tracks}
+        groups={groups}
       />
 
       <EditGroupDialog
@@ -110,6 +114,8 @@ export const TrackGroupsPanel = ({
         onEdit={handleEditGroupSubmit}
         group={editingGroup}
         existingGroupNames={groups.map(g => g.name)}
+        tracks={tracks}
+        onAssignTrackToGroup={onAssignTrackToGroup}
       />
     </>
   );
