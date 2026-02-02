@@ -250,10 +250,9 @@ const Editor = () => {
     bufferSize: 300,
   });
 
-  // Display only visible tracks for performance optimization
-  const displayedTracks = useMemo(() => {
-    return tracks.filter(track => visibleTrackIds.has(track.id));
-  }, [tracks, visibleTrackIds]);
+  // Display all tracks (virtualization disabled to prevent scroll jitter)
+  // The visible track optimization caused layout shifts when scrolling to bottom
+  const displayedTracks = tracks;
 
   // Calculate notes that overlap with other notes
   const overlappingNotes = useMemo(() => {
@@ -2546,7 +2545,7 @@ const Editor = () => {
           <ResizablePanel defaultSize={75} minSize={50} maxSize={80}>
             <div className="flex flex-col h-full">
               {/* Waveform Area - Zone de travail avec scroll horizontal */}
-              <div ref={scrollContainerRef} className="flex-1 p-6 overflow-x-auto overflow-y-auto">
+              <div ref={scrollContainerRef} className="flex-1 p-6 overflow-x-auto overflow-y-auto overscroll-contain">
                 {/* Conteneur interne avec largeur dynamique */}
                 <div
                   data-lasso-container

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Track } from '@/types/track';
 
 interface UseVisibleTracksOptions {
@@ -19,6 +19,8 @@ export const useVisibleTracks = ({
   bufferSize = 300,
 }: UseVisibleTracksOptions): Set<string> => {
   const [visibleTrackIds, setVisibleTrackIds] = useState<Set<string>>(new Set());
+  const rafIdRef = useRef<number | null>(null);
+  const lastScrollTopRef = useRef<number>(0);
 
   const updateVisibleTracks = useCallback(() => {
     if (!scrollContainerRef.current) {
@@ -56,10 +58,27 @@ export const useVisibleTracks = ({
 
     // Initial calculation
     updateVisibleTracks();
+    lastScrollTopRef.current = container.scrollTop;
 
-    // Listen to scroll events
+    // Listen to scroll events with throttling via RAF
     const handleScroll = () => {
-      updateVisibleTracks();
+      const currentScrollTop = container.scrollTop;
+      
+      // Only update if vertical scroll changed significantly (more than 10px)
+      if (Math.abs(currentScrollTop - lastScrollTopRef.current) < 10) {
+        return;
+      }
+      
+      lastScrollTopRef.current = currentScrollTop;
+      
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+      
+      rafIdRef.current = requestAnimationFrame(() => {
+        updateVisibleTracks();
+        rafIdRef.current = null;
+      });
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
@@ -73,6 +92,9 @@ export const useVisibleTracks = ({
     return () => {
       container.removeEventListener('scroll', handleScroll);
       resizeObserver.disconnect();
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
     };
   }, [updateVisibleTracks, scrollContainerRef]);
 

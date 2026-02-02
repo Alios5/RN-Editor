@@ -134,7 +134,7 @@ export const TrackRow = ({
       className={`${isDragging ? 'opacity-50 z-50' : ''}`}
     >
       {/* Label row - sticky container */}
-      <div className="relative h-[35px] mb-2">
+      <div className="relative h-[35px] mb-2" style={{ width: audioMetrics.waveformWidth }}>
         <TrackLabel
           track={track}
           trackGroup={trackGroup}

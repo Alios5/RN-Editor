@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Note } from '@/types/note';
 
 interface UseVisibleNotesOptions {
@@ -21,6 +21,8 @@ export const useVisibleNotes = ({
   bufferSize = 300,
 }: UseVisibleNotesOptions): Set<string> => {
   const [visibleNoteIds, setVisibleNoteIds] = useState<Set<string>>(new Set());
+  const rafIdRef = useRef<number | null>(null);
+  const lastScrollLeftRef = useRef<number>(0);
 
   const updateVisibleNotes = useCallback(() => {
     if (!containerRef.current) {
@@ -61,10 +63,27 @@ export const useVisibleNotes = ({
 
     // Initial calculation
     updateVisibleNotes();
+    lastScrollLeftRef.current = container.scrollLeft;
 
-    // Listen to scroll events
+    // Listen to scroll events with throttling via RAF
     const handleScroll = () => {
-      updateVisibleNotes();
+      const currentScrollLeft = container.scrollLeft;
+      
+      // Only update if horizontal scroll changed significantly (more than 20px)
+      if (Math.abs(currentScrollLeft - lastScrollLeftRef.current) < 20) {
+        return;
+      }
+      
+      lastScrollLeftRef.current = currentScrollLeft;
+      
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+      
+      rafIdRef.current = requestAnimationFrame(() => {
+        updateVisibleNotes();
+        rafIdRef.current = null;
+      });
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
@@ -78,6 +97,9 @@ export const useVisibleNotes = ({
     return () => {
       container.removeEventListener('scroll', handleScroll);
       resizeObserver.disconnect();
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
     };
   }, [updateVisibleNotes, containerRef]);
 
