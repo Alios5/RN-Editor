@@ -10,7 +10,6 @@ import { CreateGroupDialog } from "./CreateGroupDialog";
 import { EditGroupDialog } from "./EditGroupDialog";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
-import { toast } from "sonner";
 
 interface TrackGroupsPanelProps {
   groups: TrackGroup[];
@@ -45,7 +44,6 @@ export const TrackGroupsPanel = ({
   const handleEditGroupSubmit = (name: string) => {
     if (editingGroup) {
       onUpdateGroup(editingGroup.id, { name });
-      toast.success(t("group.editSuccess"));
       setIsEditDialogOpen(false);
       setEditingGroup(null);
     }

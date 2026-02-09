@@ -15,7 +15,6 @@ import { openProjectFile, saveProjectToFile } from "@/utils/fileSystem";
 import { copyMusicToProjectFolder } from "@/utils/musicManager";
 import { join, basename } from "@tauri-apps/api/path";
 import { Project } from "@/types/project";
-import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
 
@@ -46,7 +45,6 @@ const Projects = () => {
         if (copiedPath) {
           finalMusicPath = copiedPath;
           finalMusicFileName = await basename(copiedPath);
-          toast.success(t("audio.copySuccess"));
         }
       }
       
@@ -60,11 +58,9 @@ const Projects = () => {
       }
       
       setProjects(getProjects());
-      toast.success(t("project.createSuccess", { name }));
       navigate(`/editor/${newProject.id}`);
     } catch (error) {
       console.error("Error creating project:", error);
-      toast.error(t("project.createError"));
     }
   };
 
@@ -76,7 +72,6 @@ const Projects = () => {
     const project = projects.find(p => p.id === id);
     deleteProject(id);
     setProjects(getProjects());
-    toast.success(t("project.deleteSuccess", { name: project?.name || "" }));
   };
 
   return (
@@ -164,7 +159,6 @@ const Projects = () => {
                       }
                     } catch (error) {
                       console.error("Erreur lors de l'ouverture:", error);
-                      toast.error(t("project.openError"));
                     }
                   }}
                   variant="secondary"

@@ -35,7 +35,6 @@ import {
   isBuiltinTheme,
   generateUniqueThemeName
 } from "@/utils/themeManager";
-import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -122,16 +121,13 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
 
   const handleApply = () => {
     applyTheme(theme);
-    toast.success(t("theme.applySuccess"));
     onOpenChange(false);
   };
 
   const handleExport = async () => {
     try {
       await exportTheme(theme);
-      toast.success(t("theme.exportSuccess"));
     } catch (error) {
-      toast.error(t("theme.exportError"));
     }
   };
 
@@ -141,17 +137,14 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
       if (importedTheme) {
         setTheme(importedTheme);
         applyTheme(importedTheme);
-        toast.success(t("theme.importSuccess"));
       }
     } catch (error) {
-      toast.error(t("theme.importError"));
     }
   };
 
   const handleReset = () => {
     resetToDefaultTheme();
     setTheme(loadTheme());
-    toast.success(t("theme.resetSuccess"));
   };
 
   const handleLoadTheme = (themeName: string) => {
@@ -163,7 +156,6 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
 
   const handleSaveTheme = () => {
     if (!saveThemeName.trim()) {
-      toast.error(t("theme.nameRequired") || "Le nom du thème est requis");
       return;
     }
 
@@ -181,12 +173,9 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
       
       // Show different message if name was changed
       if (uniqueName !== saveThemeName.trim()) {
-        toast.success(`${t("theme.saveSuccess") || "Thème sauvegardé avec succès"} : "${uniqueName}"`);
       } else {
-        toast.success(t("theme.saveSuccess") || "Thème sauvegardé avec succès");
       }
     } catch (error) {
-      toast.error(t("theme.saveError") || "Erreur lors de la sauvegarde du thème");
     }
   };
 
@@ -194,7 +183,6 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
     if (!themeToDelete) return;
 
     if (isBuiltinTheme(themeToDelete)) {
-      toast.error(t("theme.cannotDeleteBuiltin") || "Impossible de supprimer un thème intégré");
       return;
     }
 
@@ -202,9 +190,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
       deleteCustomTheme(themeToDelete);
       setSavedThemes(getSavedThemes());
       setThemeToDelete(null);
-      toast.success(t("theme.deleteSuccess") || "Thème supprimé avec succès");
     } catch (error) {
-      toast.error(t("theme.deleteError") || "Erreur lors de la suppression du thème");
     }
   };
 
@@ -215,14 +201,13 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
         // Generate a unique name if the theme name already exists
         const uniqueName = generateUniqueThemeName(importedTheme.name, savedThemes);
         const themeWithUniqueName = { ...importedTheme, name: uniqueName };
-        
-        setTheme(themeWithUniqueName);
-        setSaveThemeName(uniqueName);
-        setShowSaveDialog(true);
-        toast.success(t("theme.importSuccess"));
+        if (themeWithUniqueName) {
+          setTheme(themeWithUniqueName);
+          setSaveThemeName(uniqueName);
+          setShowSaveDialog(true);
+        }
       }
     } catch (error) {
-      toast.error(t("theme.importError"));
     }
   };
 

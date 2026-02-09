@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
-import { toast } from "sonner";
 import { STYLES } from "@/lib/designTokens";
 
 interface TracksPanelProps {
@@ -81,7 +80,6 @@ export const TracksPanel = memo(({
   const handleEditGroupSubmit = (name: string) => {
     if (editingGroup) {
       onUpdateGroup(editingGroup.id, { name });
-      toast.success(t("group.editSuccess"));
       setIsEditGroupDialogOpen(false);
       setEditingGroup(null);
     }

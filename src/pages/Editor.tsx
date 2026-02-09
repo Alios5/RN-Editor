@@ -637,7 +637,6 @@ const Editor = () => {
 
       if (!found) {
         console.error('Projet non trouvé dans localStorage');
-        toast.error(t("project.notFound"));
         navigate("/");
         return;
       }
@@ -654,7 +653,6 @@ const Editor = () => {
 
           if (!fileExists) {
             console.error("Fichier introuvable:", found.filePath);
-            toast.error(t("project.fileNotFound", { name: found.name }));
             navigate("/");
             return;
           }
@@ -669,12 +667,10 @@ const Editor = () => {
             console.log('Projet chargé avec succès !');
           } else {
             console.error('loadProjectFromFile a retourné null');
-            toast.error(t("project.loadError"));
             navigate("/");
           }
         } catch (error) {
           console.error("Erreur lors du chargement:", error);
-          toast.error(t("project.openError"));
           navigate("/");
         }
       } else {
@@ -793,7 +789,6 @@ const Editor = () => {
               label: t("project.showPath") || "Voir le chemin",
               onClick: () => {
                 navigator.clipboard.writeText(dirPath);
-                toast.info(t("project.pathCopied") || "Chemin copié dans le presse-papiers");
               }
             }
           });
@@ -809,7 +804,6 @@ const Editor = () => {
                 label: t("project.showPath") || "Voir le chemin",
                 onClick: () => {
                   navigator.clipboard.writeText(dirPath);
-                  toast.info(t("project.pathCopied") || "Chemin copié dans le presse-papiers");
                 }
               }
             });
@@ -939,7 +933,6 @@ const Editor = () => {
           setMusicFilePath(filePath);
           setAudioUrl(convertFilePathToAudioUrl(filePath));
           setAudioFileName(fileName);
-          toast.success(t("audio.loadSuccess", { name: fileName }));
           // History is now automatic via useEffect with debounce
         }
       } else {
@@ -947,12 +940,10 @@ const Editor = () => {
         setMusicFilePath(filePath);
         setAudioUrl(convertFilePathToAudioUrl(filePath));
         setAudioFileName(fileName);
-        toast.success(t("audio.loadSuccess", { name: fileName }));
         // History is now automatic via useEffect with debounce
       }
     } catch (error) {
       console.error("Error loading audio:", error);
-      toast.error(t("audio.loadError"));
     }
   };
 
@@ -982,14 +973,11 @@ const Editor = () => {
         setMusicFilePath(copiedPath);
         setAudioUrl(convertFilePathToAudioUrl(copiedPath));
         setAudioFileName(fileName);
-        toast.success(t("audio.copyAndLoadSuccess", { name: fileName }));
         // History is now automatic via useEffect with debounce
       } else {
-        toast.error(t("audio.copyError"));
       }
     } catch (error) {
       console.error("Error copying:", error);
-      toast.error(t("audio.copyError"));
     } finally {
       setShowCopyMusicDialog(false);
       setPendingMusicPath(null);
@@ -1002,7 +990,6 @@ const Editor = () => {
       setMusicFilePath(pendingMusicPath);
       setAudioUrl(convertFilePathToAudioUrl(pendingMusicPath));
       setAudioFileName(pendingMusicFileName);
-      toast.warning(t("audio.loadWithAbsolutePath", { name: pendingMusicFileName }));
       if (warningSound.current) {
         warningSound.current.currentTime = 0;
         warningSound.current.play().catch(() => {});
@@ -1033,7 +1020,6 @@ const Editor = () => {
       assignedKey,
     };
     setTracks([...tracks, newTrack]);
-    toast.success(t("track.createSuccess"));
     // History is now automatic via useEffect with debounce
   };
 
@@ -1054,7 +1040,6 @@ const Editor = () => {
       }
       return track;
     }));
-    toast.success(t("track.editSuccess"));
     // History is now automatic via useEffect with debounce
   };
 
@@ -1068,7 +1053,6 @@ const Editor = () => {
   const handleDeleteTrack = (trackId: string) => {
     setTracks(tracks.filter(track => track.id !== trackId));
     setTrackToDelete(null);
-    toast.success(t("track.deleteSuccess"));
     // History is now automatic via useEffect with debounce
   };
 
@@ -1141,8 +1125,6 @@ const Editor = () => {
         )
       );
     }
-
-    toast.success(t("group.createSuccess"));
     // History is now automatic via useEffect with debounce
   };
 
@@ -1163,7 +1145,6 @@ const Editor = () => {
     ));
 
     setTrackGroups(trackGroups.filter(g => g.id !== groupId));
-    toast.success(t("group.deleteSuccess"));
     // History is now automatic via useEffect with debounce
   };
 
@@ -1175,7 +1156,6 @@ const Editor = () => {
       icon,
     };
     setSpecificActions([...specificActions, newAction]);
-    toast.success(t("action.createSuccess"));
     // History is now automatic via useEffect with debounce
   };
 
@@ -1199,7 +1179,6 @@ const Editor = () => {
       )
     })));
 
-    toast.success(t("action.editSuccess") || "Action modifiée avec succès");
     // History is now automatic via useEffect with debounce
   };
 
@@ -1215,7 +1194,6 @@ const Editor = () => {
     })));
 
     setSpecificActions(specificActions.filter(a => a.id !== actionId));
-    toast.success(t("action.deleteSuccess"));
     // History is now automatic via useEffect with debounce
   };
 
@@ -1229,7 +1207,7 @@ const Editor = () => {
     // History is now automatic via useEffect with debounce
   };
 
-  const handleCreateNote = useCallback((trackId: string, noteData: Omit<Note, 'id' | 'trackId' | 'trackName'>) => {
+  const createNoteOnTrack = useCallback((trackId: string, noteData: Omit<Note, 'id' | 'trackId' | 'trackName'>, playSound: boolean) => {
     setTracks(prevTracks => prevTracks.map(track => {
       if (track.id === trackId) {
         const newNote = {
@@ -1245,13 +1223,21 @@ const Editor = () => {
       }
       return track;
     }));
-    // Play create note sound
-    if (createNoteSound.current) {
+
+    if (playSound && createNoteSound.current) {
       createNoteSound.current.currentTime = 0;
       createNoteSound.current.play().catch(() => {});
     }
     // History is now automatic via useEffect with debounce
   }, []);
+
+  const handleCreateNote = useCallback((trackId: string, noteData: Omit<Note, 'id' | 'trackId' | 'trackName'>) => {
+    createNoteOnTrack(trackId, noteData, true);
+  }, [createNoteOnTrack]);
+
+  const handleCreateNoteSilent = useCallback((trackId: string, noteData: Omit<Note, 'id' | 'trackId' | 'trackName'>) => {
+    createNoteOnTrack(trackId, noteData, false);
+  }, [createNoteOnTrack]);
 
   // Realtime note creation during auto-playback
   const { isRealtimeMode, previewNotes } = useRealtimeNoteCreation({
@@ -1263,7 +1249,7 @@ const Editor = () => {
     waveformWidth: audioMetrics.waveformWidth,
     bpm,
     subRhythmSync,
-    onCreateNote: handleCreateNote,
+    onCreateNote: handleCreateNoteSilent,
   });
 
   // Metronome
@@ -1874,7 +1860,6 @@ const Editor = () => {
     });
 
     setCopiedNotes(notesToCopy);
-    toast.success(t("clipboard.copied", { count: selectedNotes.size.toString() }));
   }, [selectedNotes, tracks, t]);
 
   const handleCut = useCallback(() => {
@@ -1882,17 +1867,14 @@ const Editor = () => {
 
     handleCopy();
     deleteSelectedNotes();
-    toast.success(t("clipboard.cut", { count: selectedNotes.size.toString() }));
   }, [selectedNotes, handleCopy]);
 
   const handlePaste = useCallback(() => {
     if (copiedNotes.length === 0) {
-      toast.error(t("clipboard.nothingToPaste"));
       return;
     }
 
     if (!mouseGridPosition) {
-      toast.error(t("clipboard.noPosition"));
       return;
     }
 
@@ -1940,14 +1922,12 @@ const Editor = () => {
       };
     }));
 
-    toast.success(t("clipboard.pasted", { count: totalPasted.toString() }));
     // History is now automatic via useEffect with debounce
   }, [copiedNotes, mouseGridPosition, tracks, audioMetrics.waveformWidth, startOffset, audioDuration, t]);
 
   // BPM Detection handler
   const handleDetectBPM = async () => {
     if (!musicFilePath) {
-      toast.error(t("audio.noAudioLoaded"));
       return;
     }
 
@@ -1956,11 +1936,9 @@ const Editor = () => {
       const { detectBPM } = await import('@/utils/bpmDetector');
       const detectedBPM = await detectBPM(musicFilePath);
       setBpm(detectedBPM);
-      toast.success(t("audio.bpmDetected", { bpm: detectedBPM.toString() }));
       // History is now automatic via useEffect with debounce
     } catch (error) {
       console.error('Erreur détection BPM:', error);
-      toast.error(t("audio.bpmDetectionError"));
     } finally {
       setIsDetectingBPM(false);
     }
@@ -2298,14 +2276,10 @@ const Editor = () => {
         // Ouvrir le dossier via la commande Tauri personnalisée
         const { invoke } = await import('@tauri-apps/api/core');
         await invoke('open_folder', { folderPath });
-
-        toast.success(t("project.folderOpened") || "Dossier ouvert");
       } catch (error) {
         console.error("Error opening project folder:", error);
-        toast.error(t("project.folderOpenError") || "Erreur lors de l'ouverture du dossier");
       }
     } else {
-      toast.error(t("project.noProjectPath") || "Aucun chemin de projet disponible");
     }
   };
 
@@ -2316,7 +2290,6 @@ const Editor = () => {
       await invoke('open_folder', { folderPath });
     } catch (error) {
       console.error("Error opening export folder:", error);
-      toast.error(t("project.folderOpenError") || "Erreur lors de l'ouverture du dossier");
     }
   };
 
@@ -2731,7 +2704,6 @@ const Editor = () => {
                             <TracksPanel
                               onCreateTrack={() => {
                                 if (audioDuration === 0) {
-                                  toast.error(t("track.noMusicError"));
                                 } else {
                                   setShowCreateTrackDialog(true);
                                 }
