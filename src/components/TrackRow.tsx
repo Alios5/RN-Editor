@@ -128,13 +128,13 @@ export const TrackRow = ({
   };
 
   return (
-    <div 
-      ref={setNodeRef} 
+    <div
+      ref={setNodeRef}
       style={style}
       className={`${isDragging ? 'opacity-50 z-50' : ''}`}
     >
       {/* Label row - sticky container */}
-      <div className="relative h-[35px] mb-2" style={{ width: audioMetrics.waveformWidth }}>
+      <div className="h-[35px] mb-2">
         <TrackLabel
           track={track}
           trackGroup={trackGroup}
@@ -144,7 +144,6 @@ export const TrackRow = ({
           onDelete={onDelete}
           onAssignToGroup={onAssignToGroup}
           dragHandleProps={{ attributes, listeners }}
-          scrollContainerRef={scrollContainerRef}
         />
       </div>
       {isGridVisible && (

@@ -1,73 +1,127 @@
-# Welcome to your Lovable project
+# 🎵 RhythmNator Editor
 
-## Project info
+A desktop rhythm/music editor built with **Tauri v2**, **React**, **TypeScript**, and **Tailwind CSS**. Create, edit, and organize rhythm patterns synced to audio tracks with a visual timeline interface.
 
-**URL**: https://lovable.dev/projects/0e88f4ae-7e98-4586-b026-7e18d1f799e4
+## ✨ Features
 
-## How can I edit this code?
+- **Audio Waveform Editor** — Load audio files and visualize waveforms with [WaveSurfer.js](https://wavesurfer.xyz/), with playback controls and real-time BPM detection
+- **Multi-Track Timeline** — Create multiple tracks with notes placed on a rhythmic grid, synced to the audio
+- **Rhythm Grid** — Configurable grid with beat/measure lines, snapping, and zoom controls
+- **Notes & Actions** — Place note blocks on tracks and assign specific actions to each note
+- **Track Groups** — Organize tracks into named groups with color coding
+- **Drag & Drop** — Reorder tracks and panels via drag-and-drop (powered by dnd-kit)
+- **Resizable Panels** — Flexible layout with resizable sidebar panels (audio, tracks, project info, groups)
+- **Theme Editor** — Full theme customization with built-in themes (Amethyst, Default Dark, Light, Gold Night, Winter) and support for custom themes (import/export `.rntheme` files)
+- **Project Management** — Create, duplicate, rename, and delete projects. Each project is saved as a `.rne` file
+- **Keyboard Shortcuts** — Comprehensive shortcut system for playback, editing, navigation, and more
+- **Localization** — English and French (i18n) with language switcher
+- **Custom Font Selection** — Choose from multiple fonts for titles and body text
+- **Custom Title Bar** — Native-like frameless window with custom window controls
+- **Window State Persistence** — Remembers window size and position between sessions
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+| Layer | Technology |
+|-------|-----------|
+| Desktop framework | [Tauri v2](https://v2.tauri.app/) (Rust backend) |
+| Frontend framework | [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
+| Build tool | [Vite](https://vitejs.dev/) |
+| Styling | [Tailwind CSS](https://tailwindcss.com/) |
+| UI components | [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives) |
+| Audio visualization | [WaveSurfer.js](https://wavesurfer.xyz/) |
+| BPM detection | [realtime-bpm-analyzer](https://www.npmjs.com/package/realtime-bpm-analyzer) |
+| Drag & drop | [dnd-kit](https://dndkit.com/) |
+| Icons | [Lucide React](https://lucide.dev/) + [Font Awesome](https://fontawesome.com/) |
+| Routing | [React Router v6](https://reactrouter.com/) |
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0e88f4ae-7e98-4586-b026-7e18d1f799e4) and start prompting.
+## 📋 Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Node.js** ≥ 18 and **npm**
+- **Rust** toolchain (for Tauri) — [Install Rust](https://www.rust-lang.org/tools/install)
+- **Tauri v2 prerequisites** — [Platform-specific setup](https://v2.tauri.app/start/prerequisites/)
 
-**Use your preferred IDE**
+## 🚀 Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```bash
+# Clone the repository
+git clone https://github.com/Alios5/RN-Editor.git
+cd RN-Editor
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+# Install dependencies
+npm install
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Run the desktop app in development mode
+npm run tauri dev
 ```
 
-**Edit a file directly in GitHub**
+### Other scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Frontend dev server only (no Tauri window)
+npm run dev
 
-**Use GitHub Codespaces**
+# Build the production desktop app
+npm run tauri build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Lint the codebase
+npm run lint
+```
 
-## What technologies are used for this project?
+## 📁 Project Structure
 
-This project is built with:
+```
+RN-Editor/
+├── src/                    # React frontend
+│   ├── components/         # UI components (editor panels, dialogs, tracks...)
+│   │   └── ui/             # shadcn/ui base components
+│   ├── contexts/           # React contexts (Language, Font)
+│   ├── hooks/              # Custom hooks (shortcuts, window, audio...)
+│   ├── locales/            # i18n translation files (en, fr)
+│   ├── pages/              # Pages (Projects, Editor, NotFound)
+│   ├── types/              # TypeScript types (project, track, note, theme...)
+│   ├── utils/              # Utilities (theme manager, project storage, audio...)
+│   ├── index.css           # Global styles & CSS design tokens
+│   └── App.tsx             # Root component with routing
+├── src-tauri/              # Tauri/Rust backend
+│   ├── src/                # Rust source code
+│   ├── icons/              # App icons
+│   └── tauri.conf.json     # Tauri configuration
+└── package.json
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🎨 Themes
 
-## How can I deploy this project?
+RhythmNator includes **5 built-in themes**:
 
-Simply open [Lovable](https://lovable.dev/projects/0e88f4ae-7e98-4586-b026-7e18d1f799e4) and click on Share -> Publish.
+| Theme | Description |
+|-------|-------------|
+| **Amethyst** | Deep purple with violet accents |
+| **Default Dark** | Classic dark blue-indigo |
+| **Light** | Clean light theme |
+| **Gold Night** | Dark with golden accents |
+| **Winter** | Cool blue/white winter palette |
 
-## Can I connect a custom domain to my Lovable project?
+Custom themes can be created via the built-in **Theme Editor**, exported as `.rntheme` files, and shared with others.
 
-Yes, you can!
+## 📄 File Formats
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+| Extension | Description |
+|-----------|-------------|
+| `.rne` | RhythmNator project file (JSON, compressed with pako/gzip) |
+| `.rntheme` | Theme file (JSON) |
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Space` | Play / Pause |
+| `Ctrl+S` | Save project |
+| `Ctrl+Z` | Undo |
+| `Ctrl+Y` | Redo |
+| `Delete` | Delete selected notes |
+| `Ctrl++` / `Ctrl+-` | Zoom in / out |
+| `?` | Show all shortcuts |
+
+## 📝 License
+
+This project is private.

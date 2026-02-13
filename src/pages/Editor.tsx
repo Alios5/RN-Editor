@@ -149,7 +149,7 @@ const Editor = () => {
   const [dragStartCell, setDragStartCell] = useState(0);
   const [dragClickOffset, setDragClickOffset] = useState(0); // Offset du clic dans la note
   const [dragOffset, setDragOffset] = useState(0);
-  
+
   // Track reordering drag state
   const [isDraggingTrack, setIsDraggingTrack] = useState(false);
 
@@ -992,7 +992,7 @@ const Editor = () => {
       setAudioFileName(pendingMusicFileName);
       if (warningSound.current) {
         warningSound.current.currentTime = 0;
-        warningSound.current.play().catch(() => {});
+        warningSound.current.play().catch(() => { });
       }
       // History is now automatic via useEffect with debounce
     }
@@ -1075,7 +1075,7 @@ const Editor = () => {
 
   const handleTrackDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (over && active.id !== over.id) {
       setTracks((items) => {
         const oldIndex = items.findIndex(item => item.id === active.id);
@@ -1094,7 +1094,7 @@ const Editor = () => {
 
   const handleSidebarDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (over && active.id !== over.id) {
       setSidebarPanelOrder((items) => {
         const oldIndex = items.indexOf(active.id as string);
@@ -1226,7 +1226,7 @@ const Editor = () => {
 
     if (playSound && createNoteSound.current) {
       createNoteSound.current.currentTime = 0;
-      createNoteSound.current.play().catch(() => {});
+      createNoteSound.current.play().catch(() => { });
     }
     // History is now automatic via useEffect with debounce
   }, []);
@@ -1274,7 +1274,7 @@ const Editor = () => {
     // Play delete note sound
     if (deleteNoteSound.current) {
       deleteNoteSound.current.currentTime = 0;
-      deleteNoteSound.current.play().catch(() => {});
+      deleteNoteSound.current.play().catch(() => { });
     }
     // History is now automatic via useEffect with debounce
   };
@@ -1292,7 +1292,7 @@ const Editor = () => {
     // Play delete note sound
     if (deleteNoteSound.current) {
       deleteNoteSound.current.currentTime = 0;
-      deleteNoteSound.current.play().catch(() => {});
+      deleteNoteSound.current.play().catch(() => { });
     }
     // History is now automatic via useEffect with debounce
   };
@@ -1970,14 +1970,14 @@ const Editor = () => {
     if (isDraggingNotes) {
       // Ajuster l'offset en fonction de l'endroit où l'utilisateur a cliqué dans la note
       const offset = cellPosition - dragStartCell - dragClickOffset;
-      
+
       // Play sound when moving to a different cell
       if (offset !== previousDragOffset.current && noteMoveSound.current) {
         noteMoveSound.current.currentTime = 0;
-        noteMoveSound.current.play().catch(() => {});
+        noteMoveSound.current.play().catch(() => { });
       }
       previousDragOffset.current = offset;
-      
+
       setDragOffset(offset);
     }
   };
@@ -2000,7 +2000,7 @@ const Editor = () => {
   const handleResizeStart = useCallback(() => {
     if (resizeNoteSound.current) {
       resizeNoteSound.current.currentTime = 0;
-      resizeNoteSound.current.play().catch(() => {});
+      resizeNoteSound.current.play().catch(() => { });
     }
   }, []);
 
@@ -2841,8 +2841,8 @@ const Editor = () => {
         onOpenChange={setIsShortcutsDialogOpen}
       />
 
-      <AlertDialog open={showMissingMusicDialog} onOpenChange={setShowMissingMusicDialog}>
-        <AlertDialogContent>
+      <AlertDialog open={showMissingMusicDialog} onOpenChange={() => { }}>
+        <AlertDialogContent onEscapeKeyDown={(e) => e.preventDefault()}>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("audio.missingMusicTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
@@ -2850,8 +2850,11 @@ const Editor = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowMissingMusicDialog(false)}>
-              {t("actions.cancel")}
+            <AlertDialogCancel onClick={() => {
+              setShowMissingMusicDialog(false);
+              navigate("/");
+            }}>
+              {t("editor.backToProjects")}
             </AlertDialogCancel>
             <AlertDialogAction onClick={() => {
               setShowMissingMusicDialog(false);

@@ -41,6 +41,49 @@ export interface Theme {
   };
 }
 
+export const AMETHYST_THEME: Theme = {
+  name: "Amethyst",
+  colors: {
+    background: "251 19% 12%",
+    foreground: "250 36% 90%",
+    card: "251 20% 16%",
+    cardForeground: "250 36% 90%",
+    popover: "251 20% 16%",
+    popoverForeground: "250 36% 90%",
+    primary: "263 33% 69%",
+    primaryForeground: "251 19% 12%",
+    secondary: "254 15% 38%",
+    secondaryForeground: "250 36% 90%",
+    muted: "254 21% 16%",
+    mutedForeground: "259 10% 64%",
+    accent: "272 16% 21%",
+    accentForeground: "346 69% 84%",
+    destructive: "360 69% 67%",
+    destructiveForeground: "251 19% 12%",
+    border: "252 19% 21%",
+    input: "249 20% 19%",
+    ring: "263 33% 69%",
+    gradientStart: "263 33% 69%",
+    gradientEnd: "280 30% 55%",
+    // Panel colors
+    panelBackground: "251 20% 16%",
+    panelBorder: "252 19% 21%",
+    panelIconBackground: "263 33% 69%",
+    panelInputBackground: "249 20% 19%",
+    panelSectionBackground: "254 15% 38%",
+    // Track colors
+    trackBorder: "252 19% 24%",
+    trackGridLine: "262 19% 35%",
+    trackMeasureLine: "263 30% 60%",
+    trackBeatPrimary: "252 15% 19%",
+    trackBeatSecondary: "251 19% 14%",
+    // Waveform colors
+    waveformColor: "263 28% 60%",
+    waveformBackground: "251 20% 14%",
+    waveformOutline: "263 30% 60%",
+  },
+};
+
 export const DEFAULT_THEME: Theme = {
   name: "Default Dark",
   colors: {
@@ -207,4 +250,4 @@ export const WINTER_THEME: Theme = {
   },
 };
 
-export const BUILTIN_THEMES: Theme[] = [DEFAULT_THEME, LIGHT_THEME, GOLD_NIGHT_THEME, WINTER_THEME];
+export const BUILTIN_THEMES: Theme[] = [AMETHYST_THEME, DEFAULT_THEME, LIGHT_THEME, GOLD_NIGHT_THEME, WINTER_THEME];
