@@ -58,6 +58,8 @@
     "musicPlaceholder": "Aucune musique sélectionnée",
     "musicHint": "Vous pouvez charger une musique dès maintenant ou plus tard dans l'éditeur",
     "documentation": "Documentation",
+    "documentationWipTitle": "En cours de développement",
+    "documentationWipDescription": "La documentation arrive bientôt. Restez connecté !",
     "deleteTitle": "Supprimer le projet",
     "deleteWarning": "Cette action est irréversible.",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le projet \"{name}\" ?",
@@ -270,7 +272,8 @@
   },
   "release": {
     "title": "NOTES DE VERSION",
-    "noReleases": "Aucune note de version disponible"
+    "noReleases": "Aucune note de version disponible",
+    "loading": "Chargement des notes de version..."
   },
   "tracks": {
     "title": "PISTES",
@@ -364,6 +367,7 @@
     "waveformColor": "Couleur de la waveform",
     "waveformBackground": "Fond de la waveform",
     "waveformOutline": "Contour de la waveform",
+    "playheadLine": "Ligne de lecture",
     "adjustColor": "Ajuster la couleur",
     "hexColor": "Code HEX",
     "hslColor": "Code HSL",

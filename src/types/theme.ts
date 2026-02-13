@@ -38,6 +38,8 @@ export interface Theme {
     waveformColor: string;
     waveformBackground: string;
     waveformOutline: string;
+    // Playhead
+    playheadLine: string;
   };
 }
 
@@ -81,49 +83,53 @@ export const AMETHYST_THEME: Theme = {
     waveformColor: "263 28% 60%",
     waveformBackground: "251 20% 14%",
     waveformOutline: "263 30% 60%",
+    // Playhead
+    playheadLine: "263 50% 65%",
   },
 };
 
 export const DEFAULT_THEME: Theme = {
   name: "Default Dark",
   colors: {
-    background: "230 35% 7%",
-    foreground: "0 0% 98%",
-    card: "228 23% 17%",
-    cardForeground: "0 0% 98%",
-    popover: "230 30% 10%",
-    popoverForeground: "0 0% 98%",
-    primary: "245 75% 60%",
+    background: "225 7% 11%",
+    foreground: "0 0% 94%",
+    card: "228 7% 14%",
+    cardForeground: "0 0% 94%",
+    popover: "228 7% 14%",
+    popoverForeground: "0 0% 94%",
+    primary: "258 100% 68%",
     primaryForeground: "0 0% 100%",
-    secondary: "230 25% 18%",
-    secondaryForeground: "0 0% 98%",
-    muted: "230 20% 20%",
-    mutedForeground: "220 10% 60%",
-    accent: "20 100% 50%",
-    accentForeground: "0 0% 100%",
-    destructive: "0 84.2% 60.2%",
+    secondary: "227 10% 18%",
+    secondaryForeground: "0 0% 94%",
+    muted: "227 10% 18%",
+    mutedForeground: "0 0% 63%",
+    accent: "217 33% 17%",
+    accentForeground: "208 100% 74%",
+    destructive: "0 91% 71%",
     destructiveForeground: "0 0% 100%",
-    border: "227 29% 13%",
-    input: "230 25% 18%",
-    ring: "245 75% 60%",
-    gradientStart: "245 75% 60%",
-    gradientEnd: "265 70% 55%",
+    border: "223 6% 21%",
+    input: "223 6% 21%",
+    ring: "258 100% 68%",
+    gradientStart: "258 100% 68%",
+    gradientEnd: "280 70% 55%",
     // Panel colors
-    panelBackground: "228 22% 18%",
-    panelBorder: "230 25% 20%",
-    panelIconBackground: "245 75% 60%",
-    panelInputBackground: "230 25% 18%",
-    panelSectionBackground: "230 25% 18%",
+    panelBackground: "228 7% 14%",
+    panelBorder: "223 6% 21%",
+    panelIconBackground: "258 100% 68%",
+    panelInputBackground: "223 6% 21%",
+    panelSectionBackground: "227 10% 18%",
     // Track colors
-    trackBorder: "230 25% 25%",
-    trackGridLine: "230 25% 22%",
-    trackMeasureLine: "245 60% 50%",
-    trackBeatPrimary: "230 25% 18%",
-    trackBeatSecondary: "230 30% 15%",
+    trackBorder: "223 6% 24%",
+    trackGridLine: "228 7% 18%",
+    trackMeasureLine: "258 80% 60%",
+    trackBeatPrimary: "227 10% 18%",
+    trackBeatSecondary: "225 7% 14%",
     // Waveform colors
-    waveformColor: "245 41% 49%",
-    waveformBackground: "230 30% 10%",
-    waveformOutline: "245 60% 50%",
+    waveformColor: "258 60% 60%",
+    waveformBackground: "228 7% 12%",
+    waveformOutline: "258 80% 60%",
+    // Playhead
+    playheadLine: "217 92% 65%",
   },
 };
 
@@ -167,6 +173,8 @@ export const LIGHT_THEME: Theme = {
     waveformColor: "231 33% 61%",
     waveformBackground: "0 0% 100%",
     waveformOutline: "230 15% 70%",
+    // Playhead
+    playheadLine: "245 75% 60%",
   },
 };
 
@@ -200,13 +208,15 @@ export const GOLD_NIGHT_THEME: Theme = {
     panelInputBackground: "218 35% 14%",
     panelSectionBackground: "218 35% 14%",
     trackBorder: "220 30% 20%",
-    trackGridLine: "220 25% 15%",
+    trackGridLine: "224 23% 28%",
     trackMeasureLine: "38 92% 55%",
-    trackBeatPrimary: "218 35% 14%",
+    trackBeatPrimary: "218 35% 17%",
     trackBeatSecondary: "220 35% 11%",
     waveformColor: "38 85% 50%",
     waveformBackground: "220 40% 12%",
     waveformOutline: "38 92% 55%",
+    // Playhead
+    playheadLine: "38 92% 55%",
   },
 };
 
@@ -247,7 +257,54 @@ export const WINTER_THEME: Theme = {
     waveformColor: "211 38% 45%",
     waveformBackground: "213 100% 96%",
     waveformOutline: "215 50% 91%",
+    // Playhead
+    playheadLine: "200 80% 55%",
   },
 };
 
-export const BUILTIN_THEMES: Theme[] = [AMETHYST_THEME, DEFAULT_THEME, LIGHT_THEME, GOLD_NIGHT_THEME, WINTER_THEME];
+export const T3_CHAT_THEME: Theme = {
+  name: "T3 Chat",
+  colors: {
+    background: "270 15% 13%",
+    foreground: "272 28% 82%",
+    card: "270 14% 17%",
+    cardForeground: "325 23% 82%",
+    popover: "320 23% 5%",
+    popoverForeground: "326 33% 96%",
+    primary: "332 100% 32%",
+    primaryForeground: "329 59% 85%",
+    secondary: "274 15% 21%",
+    secondaryForeground: "270 30% 83%",
+    muted: "273 14% 15%",
+    mutedForeground: "269 21% 76%",
+    accent: "272 20% 27%",
+    accentForeground: "326 33% 96%",
+    destructive: "351 53% 37%",
+    destructiveForeground: "0 0% 100%",
+    border: "327 8% 21%",
+    input: "312 9% 22%",
+    ring: "333 71% 51%",
+    gradientStart: "332 100% 32%",
+    gradientEnd: "333 71% 51%",
+    // Panel colors
+    panelBackground: "270 14% 17%",
+    panelBorder: "327 8% 21%",
+    panelIconBackground: "332 100% 32%",
+    panelInputBackground: "312 9% 22%",
+    panelSectionBackground: "274 15% 21%",
+    // Track colors
+    trackBorder: "327 8% 24%",
+    trackGridLine: "270 14% 25%",
+    trackMeasureLine: "333 60% 45%",
+    trackBeatPrimary: "274 15% 21%",
+    trackBeatSecondary: "270 15% 15%",
+    // Waveform colors
+    waveformColor: "333 60% 45%",
+    waveformBackground: "270 15% 14%",
+    waveformOutline: "333 71% 51%",
+    // Playhead
+    playheadLine: "333 71% 51%",
+  },
+};
+
+export const BUILTIN_THEMES: Theme[] = [AMETHYST_THEME, DEFAULT_THEME, LIGHT_THEME, GOLD_NIGHT_THEME, WINTER_THEME, T3_CHAT_THEME];

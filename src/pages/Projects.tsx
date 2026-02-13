@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMusic, faFolderOpen, faBox, faFileLines, faKeyboard, faPalette } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectListItem } from "@/components/ProjectListItem";
@@ -16,6 +17,7 @@ import { copyMusicToProjectFolder } from "@/utils/musicManager";
 import { join, basename } from "@tauri-apps/api/path";
 import { Project } from "@/types/project";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useGitHubRelease } from "@/hooks/useGitHubRelease";
 import { panelColors } from "@/lib/panelColors";
 
 // Import version from package.json
@@ -28,6 +30,7 @@ const Projects = () => {
   const [isThemeEditorOpen, setIsThemeEditorOpen] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { release, loading: releaseLoading } = useGitHubRelease();
 
   useEffect(() => {
     setProjects(getProjects());
@@ -37,7 +40,7 @@ const Projects = () => {
     try {
       let finalMusicPath = musicPath;
       let finalMusicFileName = musicFileName;
-      
+
       // If music is provided and user chose to copy it to project folder
       if (musicPath && projectFolder && shouldCopyMusic) {
         // Copy the music to the project folder
@@ -47,16 +50,16 @@ const Projects = () => {
           finalMusicFileName = await basename(copiedPath);
         }
       }
-      
+
       const newProject = createProject(name, projectFolder, finalMusicPath, finalMusicFileName);
-      
+
       // If a project folder is specified, save the RNE file immediately
       if (projectFolder) {
         const rneFilePath = await join(projectFolder, `${name}.rne`);
         await saveProjectToFile(newProject, rneFilePath);
         newProject.filePath = rneFilePath;
       }
-      
+
       setProjects(getProjects());
       navigate(`/editor/${newProject.id}`);
     } catch (error) {
@@ -113,7 +116,7 @@ const Projects = () => {
           </div>
         </div>
       </header>
-      
+
       {/* Dialog des raccourcis */}
       <ShortcutsDialog
         open={isShortcutsDialogOpen}
@@ -170,6 +173,10 @@ const Projects = () => {
                 <Button
                   variant="ghost"
                   className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+                  onClick={() => toast(t("project.documentationWipTitle"), {
+                    description: t("project.documentationWipDescription"),
+                    icon: "🚧",
+                  })}
                 >
                   <FontAwesomeIcon icon={faFileLines} className="h-4 w-4" />
                   {t("project.documentation")}
@@ -188,9 +195,31 @@ const Projects = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {t("release.noReleases")}
-                </p>
+                {releaseLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-3 rounded-full bg-primary/40 animate-pulse" />
+                    <p className="text-sm text-muted-foreground">{t("release.loading")}</p>
+                  </div>
+                ) : release ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-primary/15 text-primary font-semibold">
+                        {release.tagName}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(release.publishedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium text-foreground">{release.name}</p>
+                    <p className="text-xs text-muted-foreground whitespace-pre-line line-clamp-8 leading-relaxed">
+                      {release.body}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {t("release.noReleases")}
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>

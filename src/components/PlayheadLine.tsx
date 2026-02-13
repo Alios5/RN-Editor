@@ -25,18 +25,20 @@ export const PlayheadLine = memo(({
 
   return (
     <div
-      className="absolute top-0 w-0.5 bg-blue-400 pointer-events-none"
+      className="absolute top-0 w-0.5 pointer-events-none"
       style={{
         left: `${position}px`,
         height: '100%',
         minHeight: '100%',
-        zIndex: 50
+        zIndex: 50,
+        backgroundColor: 'hsl(var(--playhead-line))',
       }}
     >
-      {/* Triangle indicateur en haut */}
+      {/* Triangle indicator at top */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full">
         <div
-          className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-400"
+          className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px]"
+          style={{ borderTopColor: 'hsl(var(--playhead-line))' }}
         />
       </div>
     </div>

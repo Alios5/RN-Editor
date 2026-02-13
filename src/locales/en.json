@@ -58,6 +58,8 @@
     "musicPlaceholder": "No music selected",
     "musicHint": "You can load music now or later in the editor",
     "documentation": "Documentation",
+    "documentationWipTitle": "Work in Progress",
+    "documentationWipDescription": "Documentation is coming soon. Stay tuned!",
     "deleteTitle": "Delete Project",
     "deleteConfirm": "Are you sure you want to delete the project \"{name}\"?",
     "deleteSuccess": "Project \"{name}\" deleted successfully!",
@@ -272,7 +274,8 @@
   },
   "release": {
     "title": "RELEASE NOTE",
-    "noReleases": "No release notes available"
+    "noReleases": "No release notes available",
+    "loading": "Loading release notes..."
   },
   "tracks": {
     "title": "TRACKS",
@@ -366,6 +369,7 @@
     "waveformColor": "Waveform Color",
     "waveformBackground": "Waveform Background",
     "waveformOutline": "Waveform Outline",
+    "playheadLine": "Playhead Line",
     "adjustColor": "Adjust color",
     "hexColor": "HEX Code",
     "hslColor": "HSL Code",

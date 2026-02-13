@@ -63,6 +63,9 @@ All colors MUST be HSL.
     --waveform-background: 228 7% 12%;
     --waveform-outline: 258 80% 60%;
 
+    /* Playhead */
+    --playhead-line: 217 92% 65%;
+
     /* Panel colors - final colors with opacity built-in */
     --panel-background-color: hsl(var(--panel-background) / 0.3);
     --panel-border-color: hsl(var(--panel-border) / 0.5);
