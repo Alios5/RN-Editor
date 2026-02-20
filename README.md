@@ -122,6 +122,3 @@ Custom themes can be created via the built-in **Theme Editor**, exported as `.rn
 | `Ctrl++` / `Ctrl+-` | Zoom in / out |
 | `?` | Show all shortcuts |
 
-## 📝 License
-
-This project is private.

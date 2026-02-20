@@ -17,7 +17,7 @@ export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek,
   // Get waveform colors from CSS variables (theme-aware)
   const waveformColor = getComputedStyle(document.documentElement).getPropertyValue('--waveform-color').trim();
   const waveformColorHSL = waveformColor ? `hsl(${waveformColor})` : "hsl(230, 20%, 25%)";
-  
+
   const waveformBackground = getComputedStyle(document.documentElement).getPropertyValue('--waveform-background').trim();
   const waveformBackgroundHSL = waveformBackground ? `hsl(${waveformBackground})` : "hsl(230, 30%, 10%)";
 
@@ -42,7 +42,7 @@ export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek,
 
   useEffect(() => {
     if (!audioUrl || !wavesurfer) return;
-    
+
     // Load new audio URL
     wavesurfer.load(audioUrl);
   }, [audioUrl, wavesurfer]);
@@ -50,32 +50,32 @@ export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek,
   // Direct and precise synchronization with audio player
   useEffect(() => {
     if (!wavesurfer || !isReady) return;
-    
+
     wavesurfer.setTime(currentTime);
   }, [currentTime, wavesurfer, isReady]);
 
   // Listen to user interactions (clicks/drags) on waveform
   useEffect(() => {
     if (!wavesurfer) return;
-    
+
     // During drag - visual update only
     const handleDrag = () => {
       const newTime = wavesurfer.getCurrentTime();
       onDragSeek?.(newTime);
     };
-    
+
     // At the end of drag/click - update actual audio position
     const handleInteraction = () => {
       const newTime = wavesurfer.getCurrentTime();
       onSeek?.(newTime);
     };
-    
+
     // Listen to drags (visual update)
     wavesurfer.on('drag', handleDrag);
-    
+
     // Listen to interaction end (audio update)
     wavesurfer.on('interaction', handleInteraction);
-    
+
     return () => {
       wavesurfer.un('drag', handleDrag);
       wavesurfer.un('interaction', handleInteraction);
@@ -84,10 +84,10 @@ export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek,
 
   return (
     <div className="w-full h-[100px] rounded-lg overflow-hidden relative" style={{ backgroundColor: waveformBackgroundHSL }}>
-      <div 
-        ref={containerRef} 
+      <div
+        ref={containerRef}
         className="h-full"
-        style={{ width: width ? `${width}px` : '100%', cursor: 'text' }}
+        style={{ width: width ? `${width}px` : '100%', cursor: "url('/assets/cursors/line_vertical.svg') 16 16, text" }}
       />
       {!isReady && audioUrl && (
         <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: waveformBackgroundHSL }}>

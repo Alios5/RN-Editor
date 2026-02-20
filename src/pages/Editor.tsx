@@ -2803,19 +2803,19 @@ const Editor = () => {
       <AlertDialog open={!!trackToDelete} onOpenChange={() => setTrackToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer la piste ?</AlertDialogTitle>
+            <AlertDialogTitle>{t("track.delete")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer la piste "{trackToDelete?.name}" ?
-              Cette action est irréversible.
+              {t("track.deleteConfirm", { name: trackToDelete?.name })}
+              {" "}{t("track.deleteWarning")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => trackToDelete && handleDeleteTrack(trackToDelete.id)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Supprimer
+              {t("actions.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
