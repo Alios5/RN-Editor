@@ -273,7 +273,9 @@
   "release": {
     "title": "NOTES DE VERSION",
     "noReleases": "Aucune note de version disponible",
-    "loading": "Chargement des notes de version..."
+    "loading": "Chargement des notes de version...",
+    "seeMore": "Voir tous les détails",
+    "close": "Fermer"
   },
   "tracks": {
     "title": "PISTES",

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMusic, faFolderOpen, faBox, faFileLines, faKeyboard, faPalette } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faMusic, faFolderOpen, faBox, faFileLines, faKeyboard, faPalette, faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ProjectListItem } from "@/components/ProjectListItem";
 import { CreateProjectDialog } from "@/components/CreateProjectDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
@@ -19,6 +20,7 @@ import { Project } from "@/types/project";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGitHubRelease } from "@/hooks/useGitHubRelease";
 import { panelColors } from "@/lib/panelColors";
+import { parseMarkdown } from "@/utils/markdownParser";
 
 // Import version from package.json
 const APP_VERSION = "0.3.3";
@@ -28,6 +30,7 @@ const Projects = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isShortcutsDialogOpen, setIsShortcutsDialogOpen] = useState(false);
   const [isThemeEditorOpen, setIsThemeEditorOpen] = useState(false);
+  const [isReleaseDialogOpen, setIsReleaseDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { release, loading: releaseLoading } = useGitHubRelease();
@@ -133,9 +136,9 @@ const Projects = () => {
       <div className="flex-1 overflow-hidden p-6">
         <div className="h-full grid grid-cols-12 gap-6">
           {/* Colonne Gauche - Sections Project et Release Note */}
-          <div className="col-span-3 space-y-6 overflow-y-auto">
+          <div className="col-span-3 flex flex-col gap-6 overflow-hidden">
             {/* Section PROJECT */}
-            <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-1">
+            <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-1 shrink-0">
               <CardHeader className="pb-3 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
                   <div className="h-7 w-7 rounded-md flex items-center justify-center icon-bounce" style={{ backgroundColor: panelColors.iconBackground() }}>
@@ -184,9 +187,9 @@ const Projects = () => {
               </CardContent>
             </Card>
 
-            {/* Section RELEASE NOTE */}
-            <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-2">
-              <CardHeader className="pb-3 pt-4">
+            {/* Section RELEASE NOTE - prend tout l'espace restant */}
+            <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-2 flex-1 flex flex-col min-h-0 overflow-hidden">
+              <CardHeader className="pb-3 pt-4 shrink-0">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
                   <div className="h-7 w-7 rounded-md flex items-center justify-center icon-bounce" style={{ backgroundColor: panelColors.iconBackground() }}>
                     <FontAwesomeIcon icon={faBox} className="h-3.5 w-3.5 text-primary" />
@@ -194,15 +197,15 @@ const Projects = () => {
                   <span className="text-foreground">{t("release.title")}</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex flex-col min-h-0 overflow-hidden">
                 {releaseLoading ? (
                   <div className="flex items-center gap-2">
                     <div className="h-3 w-3 rounded-full bg-primary/40 animate-pulse" />
                     <p className="text-sm text-muted-foreground">{t("release.loading")}</p>
                   </div>
                 ) : release ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex flex-col flex-1 min-h-0">
+                    <div className="flex items-center gap-2 flex-wrap shrink-0 mb-2">
                       <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-primary/15 text-primary font-semibold">
                         {release.tagName}
                       </span>
@@ -210,10 +213,22 @@ const Projects = () => {
                         {new Date(release.publishedAt).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-sm font-medium text-foreground">{release.name}</p>
-                    <p className="text-xs text-muted-foreground whitespace-pre-line line-clamp-8 leading-relaxed">
-                      {release.body}
-                    </p>
+                    <p className="text-sm font-medium text-foreground shrink-0 mb-2">{release.name}</p>
+                    <div
+                      className="text-xs text-muted-foreground leading-relaxed overflow-hidden flex-1 min-h-0 pr-1 [&_h3]:text-foreground [&_h4]:text-foreground [&_strong]:text-foreground [&_ul]:text-muted-foreground [&_li]:text-muted-foreground"
+                      dangerouslySetInnerHTML={{ __html: parseMarkdown(release.body) }}
+                    />
+                    <div className="shrink-0 pt-3 border-t border-border/40 mt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full text-xs text-primary hover:text-primary/80 gap-2"
+                        onClick={() => setIsReleaseDialogOpen(true)}
+                      >
+                        <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="h-3 w-3" />
+                        {t("release.seeMore")}
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
@@ -277,6 +292,46 @@ const Projects = () => {
         onOpenChange={setIsCreateDialogOpen}
         onCreate={handleCreateProject}
       />
+
+      {/* Release Notes Detail Dialog */}
+      <Dialog open={isReleaseDialogOpen} onOpenChange={setIsReleaseDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+          <DialogHeader className="shrink-0">
+            <DialogTitle className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
+                <FontAwesomeIcon icon={faBox} className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex flex-col">
+                <span>{t("release.title")}</span>
+                {release && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-primary/15 text-primary font-semibold">
+                      {release.tagName}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-normal">
+                      {new Date(release.publishedAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          {release && (
+            <div className="flex-1 overflow-y-auto min-h-0 pr-2">
+              <p className="text-base font-semibold text-foreground mb-4">{release.name}</p>
+              <div
+                className="text-sm text-muted-foreground leading-relaxed [&_h3]:text-foreground [&_h3]:text-base [&_h3]:mt-4 [&_h3]:mb-2 [&_h4]:text-foreground [&_h4]:text-sm [&_h4]:mt-3 [&_h4]:mb-1.5 [&_strong]:text-foreground [&_ul]:text-muted-foreground [&_ul]:my-2 [&_li]:text-muted-foreground [&_li]:my-0.5 [&_p]:my-1 [&_code]:text-xs"
+                dangerouslySetInnerHTML={{ __html: parseMarkdown(release.body) }}
+              />
+            </div>
+          )}
+          <DialogFooter className="shrink-0">
+            <Button variant="secondary" onClick={() => setIsReleaseDialogOpen(false)}>
+              {t("release.close")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Version badge - subtle */}
       <div className="fixed bottom-3 right-3 px-2 py-1 rounded-md bg-secondary/20 backdrop-blur-sm border border-border/30 animate-fade-in-up stagger-3">

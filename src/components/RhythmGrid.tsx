@@ -361,7 +361,7 @@ export const RhythmGrid = ({
     setResizeStartX(e.clientX);
     setResizeStartWidth(note.gridWidth * cellWidth);
     setCurrentResizedWidth(note.gridWidth * cellWidth);
-    
+
     // Notify parent that resize started
     if (onResizeStart) {
       onResizeStart();
@@ -501,7 +501,7 @@ export const RhythmGrid = ({
   return (
     <div
       ref={containerRef}
-      className={`relative h-[80px] rounded-lg select-none overflow-hidden ${isRightClickDeleting ? 'cursor-not-allowed' : isResizing ? 'cursor-ew-resize' : editorMode === 'edit' ? 'cursor-crosshair' : 'cursor-default'
+      className={`relative h-[80px] rounded-lg select-none overflow-hidden ${isRightClickDeleting ? 'cursor-custom-not-allowed' : isResizing ? 'cursor-custom-ew-resize' : editorMode === 'edit' ? 'cursor-custom-crosshair' : 'cursor-custom-default'
         }`}
       style={{
         width: `${width}px`,
