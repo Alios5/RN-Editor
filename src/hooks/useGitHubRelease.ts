@@ -8,57 +8,125 @@ export interface GitHubRelease {
     htmlUrl: string;
 }
 
-const GITHUB_API_URL =
-    "https://api.github.com/repos/Alios5/RN-Editor/releases/latest";
+const REPO = "Alios5/RN-Editor";
+const API_BASE = `https://api.github.com/repos/${REPO}/releases`;
 
-// Cache the release in memory so we don't refetch on every navigation
-let cachedRelease: GitHubRelease | null = null;
-let hasFetched = false;
+// In-memory cache
+let cache: {
+    currentRelease: GitHubRelease | null;
+    latestVersion: string | null;
+    latestDownloadUrl: string | null;
+    updateAvailable: boolean;
+} | null = null;
 
-export function useGitHubRelease() {
-    const [release, setRelease] = useState<GitHubRelease | null>(cachedRelease);
-    const [loading, setLoading] = useState(!hasFetched);
-    const [error, setError] = useState(false);
+function parseVersion(tag: string): number[] {
+    return tag
+        .replace(/^v/, "")
+        .split(".")
+        .map((n) => parseInt(n, 10) || 0);
+}
+
+function isNewer(latest: string, current: string): boolean {
+    const l = parseVersion(latest);
+    const c = parseVersion(current);
+    for (let i = 0; i < Math.max(l.length, c.length); i++) {
+        const lv = l[i] || 0;
+        const cv = c[i] || 0;
+        if (lv > cv) return true;
+        if (lv < cv) return false;
+    }
+    return false;
+}
+
+function parseRelease(data: Record<string, unknown>): GitHubRelease {
+    return {
+        tagName: data.tag_name as string,
+        name: (data.name as string) || (data.tag_name as string),
+        body: (data.body as string) || "",
+        publishedAt: data.published_at as string,
+        htmlUrl: data.html_url as string,
+    };
+}
+
+export function useGitHubRelease(appVersion: string) {
+    const [currentRelease, setCurrentRelease] = useState<GitHubRelease | null>(
+        cache?.currentRelease ?? null
+    );
+    const [updateAvailable, setUpdateAvailable] = useState(
+        cache?.updateAvailable ?? false
+    );
+    const [latestVersion, setLatestVersion] = useState<string | null>(
+        cache?.latestVersion ?? null
+    );
+    const [latestDownloadUrl, setLatestDownloadUrl] = useState<string | null>(
+        cache?.latestDownloadUrl ?? null
+    );
+    const [loading, setLoading] = useState(!cache);
 
     useEffect(() => {
-        if (hasFetched) {
-            setRelease(cachedRelease);
+        if (cache) {
+            setCurrentRelease(cache.currentRelease);
+            setUpdateAvailable(cache.updateAvailable);
+            setLatestVersion(cache.latestVersion);
+            setLatestDownloadUrl(cache.latestDownloadUrl);
             setLoading(false);
             return;
         }
 
         const controller = new AbortController();
+        const headers = { Accept: "application/vnd.github.v3+json" };
+        const opts = { signal: controller.signal, headers };
 
-        fetch(GITHUB_API_URL, {
-            signal: controller.signal,
-            headers: { Accept: "application/vnd.github.v3+json" },
-        })
-            .then((res) => {
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                return res.json();
-            })
-            .then((data) => {
-                const parsed: GitHubRelease = {
-                    tagName: data.tag_name,
-                    name: data.name || data.tag_name,
-                    body: data.body || "",
-                    publishedAt: data.published_at,
-                    htmlUrl: data.html_url,
+        // Fetch both: release for current version + latest release
+        Promise.allSettled([
+            fetch(`${API_BASE}/tags/v${appVersion}`, opts).then((r) =>
+                r.ok ? r.json() : null
+            ),
+            fetch(`${API_BASE}/latest`, opts).then((r) =>
+                r.ok ? r.json() : null
+            ),
+        ])
+            .then(([currentResult, latestResult]) => {
+                // Current version release notes
+                const currentData =
+                    currentResult.status === "fulfilled" ? currentResult.value : null;
+                const parsedCurrent = currentData ? parseRelease(currentData) : null;
+
+                // Latest release info
+                const latestData =
+                    latestResult.status === "fulfilled" ? latestResult.value : null;
+                const latestTag = latestData?.tag_name as string | undefined;
+                const hasUpdate = latestTag
+                    ? isNewer(latestTag, appVersion)
+                    : false;
+
+                cache = {
+                    currentRelease: parsedCurrent,
+                    latestVersion: hasUpdate ? latestTag!.replace(/^v/, "") : null,
+                    latestDownloadUrl: hasUpdate
+                        ? (latestData?.html_url as string)
+                        : null,
+                    updateAvailable: hasUpdate,
                 };
-                cachedRelease = parsed;
-                hasFetched = true;
-                setRelease(parsed);
+
+                setCurrentRelease(parsedCurrent);
+                setUpdateAvailable(hasUpdate);
+                setLatestVersion(cache.latestVersion);
+                setLatestDownloadUrl(cache.latestDownloadUrl);
             })
-            .catch((err) => {
-                if (err.name !== "AbortError") {
-                    hasFetched = true;
-                    setError(true);
-                }
+            .catch(() => {
+                // Silently fail if offline
             })
             .finally(() => setLoading(false));
 
         return () => controller.abort();
-    }, []);
+    }, [appVersion]);
 
-    return { release, loading, error };
+    return {
+        release: currentRelease,
+        loading,
+        updateAvailable,
+        latestVersion,
+        latestDownloadUrl,
+    };
 }

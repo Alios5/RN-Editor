@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMusic, faFolderOpen, faBox, faFileLines, faKeyboard, faPalette } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faMusic, faFolderOpen, faBox, faFileLines, faKeyboard, faPalette, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectListItem } from "@/components/ProjectListItem";
@@ -30,7 +31,7 @@ const Projects = () => {
   const [isThemeEditorOpen, setIsThemeEditorOpen] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { release, loading: releaseLoading } = useGitHubRelease();
+  const { release, loading: releaseLoading, updateAvailable, latestVersion, latestDownloadUrl } = useGitHubRelease(APP_VERSION);
 
   useEffect(() => {
     setProjects(getProjects());
@@ -133,7 +134,7 @@ const Projects = () => {
       <div className="flex-1 overflow-hidden p-6">
         <div className="h-full grid grid-cols-12 gap-6">
           {/* Colonne Gauche - Sections Project et Release Note */}
-          <div className="col-span-3 space-y-6 overflow-y-auto">
+          <div className="col-span-3 flex flex-col gap-6 overflow-hidden">
             {/* Section PROJECT */}
             <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-1">
               <CardHeader className="pb-3 pt-4">
@@ -185,7 +186,7 @@ const Projects = () => {
             </Card>
 
             {/* Section RELEASE NOTE */}
-            <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-2">
+            <Card className="flex-1 flex flex-col min-h-0 backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-2">
               <CardHeader className="pb-3 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
                   <div className="h-7 w-7 rounded-md flex items-center justify-center icon-bounce" style={{ backgroundColor: panelColors.iconBackground() }}>
@@ -194,14 +195,37 @@ const Projects = () => {
                   <span className="text-foreground">{t("release.title")}</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 overflow-hidden flex flex-col min-h-0">
+                {/* Update banner */}
+                {updateAvailable && latestVersion && (
+                  <div className="mb-3 p-2.5 rounded-lg bg-primary/10 border border-primary/20 flex items-center gap-2">
+                    <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                      <FontAwesomeIcon icon={faArrowUp} className="h-3 w-3 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-foreground">
+                        {t("release.updateAvailable")} <span className="font-mono text-primary">v{latestVersion}</span>
+                      </p>
+                    </div>
+                    {latestDownloadUrl && (
+                      <a
+                        href={latestDownloadUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-medium px-2.5 py-1 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex-shrink-0"
+                      >
+                        {t("release.download")}
+                      </a>
+                    )}
+                  </div>
+                )}
                 {releaseLoading ? (
                   <div className="flex items-center gap-2">
                     <div className="h-3 w-3 rounded-full bg-primary/40 animate-pulse" />
                     <p className="text-sm text-muted-foreground">{t("release.loading")}</p>
                   </div>
                 ) : release ? (
-                  <div className="space-y-2">
+                  <div className="flex-1 flex flex-col min-h-0 space-y-2">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-primary/15 text-primary font-semibold">
                         {release.tagName}
@@ -211,9 +235,25 @@ const Projects = () => {
                       </span>
                     </div>
                     <p className="text-sm font-medium text-foreground">{release.name}</p>
-                    <p className="text-xs text-muted-foreground whitespace-pre-line line-clamp-8 leading-relaxed">
-                      {release.body}
-                    </p>
+                    <div className="text-xs text-muted-foreground overflow-y-auto flex-1 min-h-0 pr-1 release-markdown">
+                      <ReactMarkdown
+                        components={{
+                          h1: ({ children }) => <h3 className="text-sm font-bold text-foreground mt-2 mb-1">{children}</h3>,
+                          h2: ({ children }) => <h4 className="text-xs font-semibold text-foreground mt-2 mb-1">{children}</h4>,
+                          h3: ({ children }) => <h5 className="text-xs font-semibold text-foreground/80 mt-1 mb-0.5">{children}</h5>,
+                          p: ({ children }) => <p className="mb-1 leading-relaxed">{children}</p>,
+                          ul: ({ children }) => <ul className="list-disc list-inside mb-1 space-y-0.5">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal list-inside mb-1 space-y-0.5">{children}</ol>,
+                          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                          strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+                          a: ({ href, children }) => <a href={href} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
+                          hr: () => <hr className="border-border/50 my-2" />,
+                          code: ({ children }) => <code className="bg-secondary/50 px-1 py-0.5 rounded text-[10px] font-mono">{children}</code>,
+                        }}
+                      >
+                        {release.body}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">

@@ -275,7 +275,9 @@
   "release": {
     "title": "RELEASE NOTE",
     "noReleases": "No release notes available",
-    "loading": "Loading release notes..."
+    "loading": "Loading release notes...",
+    "updateAvailable": "New update available:",
+    "download": "Download"
   },
   "tracks": {
     "title": "TRACKS",
