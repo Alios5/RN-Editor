@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMusic, faFolderOpen, faBox, faFileLines, faKeyboard, faPalette, faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faMusic, faFolderOpen, faBox, faFileLines, faKeyboard, faPalette, faArrowUpRightFromSquare, faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { ThemeEditor } from "@/components/ThemeEditor";
 import { FontSelectorButton } from "@/components/FontSelector";
+import { IconEqualiser, IconBox, IconClock } from "@/components/PanelIcons";
+import { invoke } from "@tauri-apps/api/core";
 import { getProjects, createProject, deleteProject } from "@/utils/localStorage";
 import { openProjectFile, saveProjectToFile } from "@/utils/fileSystem";
 import { copyMusicToProjectFolder } from "@/utils/musicManager";
@@ -23,7 +25,7 @@ import { panelColors } from "@/lib/panelColors";
 import { parseMarkdown } from "@/utils/markdownParser";
 
 // Import version from package.json
-const APP_VERSION = "0.3.3";
+const APP_VERSION = "0.3.4";
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -33,7 +35,7 @@ const Projects = () => {
   const [isReleaseDialogOpen, setIsReleaseDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { release, loading: releaseLoading } = useGitHubRelease();
+  const { release, loading: releaseLoading } = useGitHubRelease(APP_VERSION);
 
   useEffect(() => {
     setProjects(getProjects());
@@ -140,11 +142,22 @@ const Projects = () => {
             {/* Section PROJECT */}
             <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-1 shrink-0">
               <CardHeader className="pb-3 pt-4">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-md flex items-center justify-center icon-bounce" style={{ backgroundColor: panelColors.iconBackground() }}>
-                    <FontAwesomeIcon icon={faMusic} className="h-3.5 w-3.5 text-primary" />
+                <CardTitle className="text-sm font-semibold flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center icon-bounce">
+                      <IconEqualiser className="h-6 w-6" />
+                    </div>
+                    <span className="text-foreground">{t("project.title")}</span>
                   </div>
-                  <span className="text-foreground">{t("project.title")}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 rounded-full hover:bg-primary/20"
+                    title="Help"
+                    onClick={() => invoke("open_url", { url: "https://docs.rhythmnator.com/guide-launch.html#guide-project-launch" })}
+                  >
+                    <FontAwesomeIcon icon={faCircleQuestion} className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
+                  </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -176,10 +189,7 @@ const Projects = () => {
                 <Button
                   variant="ghost"
                   className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-                  onClick={() => toast(t("project.documentationWipTitle"), {
-                    description: t("project.documentationWipDescription"),
-                    icon: "🚧",
-                  })}
+                  onClick={() => invoke("open_url", { url: "https://docs.rhythmnator.com/" })}
                 >
                   <FontAwesomeIcon icon={faFileLines} className="h-4 w-4" />
                   {t("project.documentation")}
@@ -191,8 +201,8 @@ const Projects = () => {
             <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-2 flex-1 flex flex-col min-h-0 overflow-hidden">
               <CardHeader className="pb-3 pt-4 shrink-0">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-md flex items-center justify-center icon-bounce" style={{ backgroundColor: panelColors.iconBackground() }}>
-                    <FontAwesomeIcon icon={faBox} className="h-3.5 w-3.5 text-primary" />
+                  <div className="flex items-center justify-center icon-bounce">
+                    <IconBox className="h-6 w-6" />
                   </div>
                   <span className="text-foreground">{t("release.title")}</span>
                 </CardTitle>
@@ -244,8 +254,8 @@ const Projects = () => {
             <Card className="h-full backdrop-blur-sm shadow-sm hover-glow flex flex-col animate-slide-in-right stagger-1">
               <CardHeader className="pb-3 pt-4">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-md flex items-center justify-center icon-bounce" style={{ backgroundColor: panelColors.iconBackground() }}>
-                    <FontAwesomeIcon icon={faMusic} className="h-3.5 w-3.5 text-primary" />
+                  <div className="flex items-center justify-center icon-bounce">
+                    <IconClock className="h-6 w-6" />
                   </div>
                   <span className="text-foreground">{t("project.recent")}</span>
                 </CardTitle>
@@ -254,8 +264,8 @@ const Projects = () => {
                 {projects.length === 0 ? (
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center max-w-md">
-                      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary/20 mx-auto empty-state-icon" style={{ backgroundColor: panelColors.iconBackground() }}>
-                        <FontAwesomeIcon icon={faMusic} className="h-10 w-10 text-primary" />
+                      <div className="mb-6 flex items-center justify-center empty-state-icon">
+                        <IconClock className="h-16 w-16" />
                       </div>
                       <h3 className="mb-2 text-xl font-semibold">{t("project.noProjects")}</h3>
                       <p className="mb-6 text-sm text-muted-foreground">
@@ -298,8 +308,8 @@ const Projects = () => {
         <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
           <DialogHeader className="shrink-0">
             <DialogTitle className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-                <FontAwesomeIcon icon={faBox} className="h-4 w-4 text-primary" />
+              <div className="flex items-center justify-center">
+                <IconBox className="h-7 w-7" />
               </div>
               <div className="flex flex-col">
                 <span>{t("release.title")}</span>

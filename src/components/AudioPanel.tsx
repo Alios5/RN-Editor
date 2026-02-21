@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
+import { IconHeadphone } from "./PanelIcons";
 
 interface AudioPanelProps {
   audioFile: string;
@@ -59,8 +60,8 @@ export const AudioPanel = memo(({
     <Card className="m-4 backdrop-blur-sm hover:scale-100 transition-none shadow-sm">
       <CardHeader className="pb-3 pt-4">
         <CardTitle className="text-sm font-semibold flex items-center gap-2">
-          <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-            <FontAwesomeIcon icon={faMusic} className="h-3.5 w-3.5 text-primary" />
+          <div className="flex items-center justify-center">
+            <IconHeadphone className="h-6 w-6" />
           </div>
           <span className="text-foreground">{t("audio.title")}</span>
         </CardTitle>

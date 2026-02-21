@@ -27,6 +27,7 @@ import {
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
 import { STYLES } from "@/lib/designTokens";
+import { IconMenu } from "./PanelIcons";
 
 interface TracksPanelProps {
   onCreateTrack: () => void;
@@ -44,9 +45,9 @@ interface TracksPanelProps {
   onAssignTrackToGroup: (trackId: string, groupId: string | null) => void;
 }
 
-export const TracksPanel = memo(({ 
-  onCreateTrack, 
-  editorMode, 
+export const TracksPanel = memo(({
+  onCreateTrack,
+  editorMode,
   onModeChange,
   groups,
   tracks,
@@ -129,228 +130,228 @@ export const TracksPanel = memo(({
       <Card className="m-4 backdrop-blur-sm hover:scale-100 transition-none shadow-sm">
         <CardHeader className="pb-3 pt-4">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <div className="h-7 w-7 rounded-md flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-              <FontAwesomeIcon icon={faListUl} className="h-3.5 w-3.5 text-primary" />
+            <div className="flex items-center justify-center">
+              <IconMenu className="h-6 w-6" />
             </div>
             <span className="text-foreground">{t("tracks.title")}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-        {/* Track Management Section */}
-        <div className="space-y-3">
-          <span className="text-xs font-medium text-muted-foreground block">
-            {t("tracks.management")}
-          </span>
-          
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onCreateTrack}
-                  className="w-full justify-start h-9"
-                >
-                  <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" />
-                  {t("tracks.createTrack")}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t("tracks.createTrackTooltip")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-
-        {/* Divider */}
-        <div className="border-t border-border/50" />
-
-        {/* Tools Section */}
-        <div className="space-y-3">
-          <span className="text-xs font-medium text-muted-foreground block">
-            {t("tracks.tools")}
-          </span>
-          
-          <div className="grid grid-cols-2 gap-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant={editorMode === 'edit' ? 'default' : 'outline'} 
-                    size="sm" 
-                    className="h-9 text-xs"
-                    onClick={() => onModeChange('edit')}
-                  >
-                    <FontAwesomeIcon icon={faPen} className="h-4 w-4 mr-1.5" />
-                    {t("tracks.edit")}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t("tracks.editTooltip")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          {/* Track Management Section */}
+          <div className="space-y-3">
+            <span className="text-xs font-medium text-muted-foreground block">
+              {t("tracks.management")}
+            </span>
 
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button 
-                    variant={editorMode === 'select' ? 'default' : 'outline'} 
-                    size="sm" 
-                    className="h-9 text-xs"
-                    onClick={() => onModeChange('select')}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onCreateTrack}
+                    className="w-full justify-start h-9"
                   >
-                    <FontAwesomeIcon icon={faArrowPointer} className="h-4 w-4 mr-1.5" />
-                    {t("tracks.select")}
+                    <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" />
+                    {t("tracks.createTrack")}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{t("tracks.selectTooltip")}</p>
+                  <p>{t("tracks.createTrackTooltip")}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-        </div>
 
-        {/* Divider */}
-        <div className="border-t border-border/50" />
+          {/* Divider */}
+          <div className="border-t border-border/50" />
 
-        {/* Track Groups Section */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs font-medium text-muted-foreground">
-              {t("group.title")}
-            </Label>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsCreateGroupDialogOpen(true)}
-              className="h-7 text-xs -mr-2"
-            >
-              <FontAwesomeIcon icon={faPlus} className="h-3 w-3 mr-1" />
-              {t("actions.create")}
-            </Button>
+          {/* Tools Section */}
+          <div className="space-y-3">
+            <span className="text-xs font-medium text-muted-foreground block">
+              {t("tracks.tools")}
+            </span>
+
+            <div className="grid grid-cols-2 gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={editorMode === 'edit' ? 'default' : 'outline'}
+                      size="sm"
+                      className="h-9 text-xs"
+                      onClick={() => onModeChange('edit')}
+                    >
+                      <FontAwesomeIcon icon={faPen} className="h-4 w-4 mr-1.5" />
+                      {t("tracks.edit")}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t("tracks.editTooltip")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={editorMode === 'select' ? 'default' : 'outline'}
+                      size="sm"
+                      className="h-9 text-xs"
+                      onClick={() => onModeChange('select')}
+                    >
+                      <FontAwesomeIcon icon={faArrowPointer} className="h-4 w-4 mr-1.5" />
+                      {t("tracks.select")}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t("tracks.selectTooltip")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
 
-          {groups.length === 0 ? (
-            <div className={STYLES.emptyMessage}>
-              {t("group.noGroups")}
+          {/* Divider */}
+          <div className="border-t border-border/50" />
+
+          {/* Track Groups Section */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-medium text-muted-foreground">
+                {t("group.title")}
+              </Label>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsCreateGroupDialogOpen(true)}
+                className="h-7 text-xs -mr-2"
+              >
+                <FontAwesomeIcon icon={faPlus} className="h-3 w-3 mr-1" />
+                {t("actions.create")}
+              </Button>
             </div>
-          ) : (
-            <div className="space-y-1">
-              {groups.map(group => (
-                <TrackGroupItem
-                  key={group.id}
-                  group={group}
-                  tracks={tracks}
-                  onToggleVisibility={() => handleToggleVisibility(group.id)}
-                  onEdit={() => handleEditGroup(group.id)}
-                  onDelete={() => onDeleteGroup(group.id)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
 
-        {/* Divider */}
-        <div className="border-t border-border/50" />
-
-        {/* Actions Section */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs font-medium text-muted-foreground">
-              {t("action.title")}
-            </Label>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsCreateActionDialogOpen(true)}
-              className="h-7 text-xs -mr-2"
-            >
-              <FontAwesomeIcon icon={faPlus} className="h-3 w-3 mr-1" />
-              {t("actions.create")}
-            </Button>
-          </div>
-
-          {specificActions.length === 0 ? (
-            <div className={STYLES.emptyMessage}>
-              {t("action.noActions")}
-            </div>
-          ) : (
-            <div className="space-y-1">
-              {specificActions.map(action => (
-                <SpecificActionItem
-                  key={action.id}
-                  action={action}
-                  onEdit={() => handleEditAction(action.id)}
-                  onDelete={() => handleDeleteAction(action.id)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-
-    <CreateGroupDialog
-      open={isCreateGroupDialogOpen}
-      onOpenChange={setIsCreateGroupDialogOpen}
-      onCreate={(name, selectedTrackIds) => {
-        onCreateGroup(name, selectedTrackIds);
-      }}
-      existingGroupNames={groups.map(g => g.name)}
-      tracks={tracks}
-      groups={groups}
-    />
-
-    <EditGroupDialog
-      open={isEditGroupDialogOpen}
-      onOpenChange={setIsEditGroupDialogOpen}
-      onEdit={handleEditGroupSubmit}
-      group={editingGroup}
-      existingGroupNames={groups.map(g => g.name)}
-      tracks={tracks}
-      onAssignTrackToGroup={onAssignTrackToGroup}
-    />
-
-    <CreateActionDialog
-      open={isCreateActionDialogOpen}
-      onOpenChange={setIsCreateActionDialogOpen}
-      onCreate={onCreateAction}
-      existingActionNames={specificActions.map(a => a.name)}
-    />
-
-    <EditActionDialog
-      open={isEditActionDialogOpen}
-      onOpenChange={setIsEditActionDialogOpen}
-      actionId={editingAction?.id || null}
-      currentName={editingAction?.name || ''}
-      currentIcon={editingAction?.icon || ''}
-      onSave={handleEditActionSubmit}
-    />
-
-    <AlertDialog open={isDeleteActionDialogOpen} onOpenChange={setIsDeleteActionDialogOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t("action.deleteAction")}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t("action.deleteConfirm")}
-            {actionToDelete && (
-              <span className="block mt-2 font-semibold">Action : {actionToDelete.name}</span>
+            {groups.length === 0 ? (
+              <div className={STYLES.emptyMessage}>
+                {t("group.noGroups")}
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {groups.map(group => (
+                  <TrackGroupItem
+                    key={group.id}
+                    group={group}
+                    tracks={tracks}
+                    onToggleVisibility={() => handleToggleVisibility(group.id)}
+                    onEdit={() => handleEditGroup(group.id)}
+                    onDelete={() => onDeleteGroup(group.id)}
+                  />
+                ))}
+              </div>
             )}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleConfirmDeleteAction}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            {t("actions.delete")}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  </>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-border/50" />
+
+          {/* Actions Section */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-medium text-muted-foreground">
+                {t("action.title")}
+              </Label>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsCreateActionDialogOpen(true)}
+                className="h-7 text-xs -mr-2"
+              >
+                <FontAwesomeIcon icon={faPlus} className="h-3 w-3 mr-1" />
+                {t("actions.create")}
+              </Button>
+            </div>
+
+            {specificActions.length === 0 ? (
+              <div className={STYLES.emptyMessage}>
+                {t("action.noActions")}
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {specificActions.map(action => (
+                  <SpecificActionItem
+                    key={action.id}
+                    action={action}
+                    onEdit={() => handleEditAction(action.id)}
+                    onDelete={() => handleDeleteAction(action.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <CreateGroupDialog
+        open={isCreateGroupDialogOpen}
+        onOpenChange={setIsCreateGroupDialogOpen}
+        onCreate={(name, selectedTrackIds) => {
+          onCreateGroup(name, selectedTrackIds);
+        }}
+        existingGroupNames={groups.map(g => g.name)}
+        tracks={tracks}
+        groups={groups}
+      />
+
+      <EditGroupDialog
+        open={isEditGroupDialogOpen}
+        onOpenChange={setIsEditGroupDialogOpen}
+        onEdit={handleEditGroupSubmit}
+        group={editingGroup}
+        existingGroupNames={groups.map(g => g.name)}
+        tracks={tracks}
+        onAssignTrackToGroup={onAssignTrackToGroup}
+      />
+
+      <CreateActionDialog
+        open={isCreateActionDialogOpen}
+        onOpenChange={setIsCreateActionDialogOpen}
+        onCreate={onCreateAction}
+        existingActionNames={specificActions.map(a => a.name)}
+      />
+
+      <EditActionDialog
+        open={isEditActionDialogOpen}
+        onOpenChange={setIsEditActionDialogOpen}
+        actionId={editingAction?.id || null}
+        currentName={editingAction?.name || ''}
+        currentIcon={editingAction?.icon || ''}
+        onSave={handleEditActionSubmit}
+      />
+
+      <AlertDialog open={isDeleteActionDialogOpen} onOpenChange={setIsDeleteActionDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("action.deleteAction")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("action.deleteConfirm")}
+              {actionToDelete && (
+                <span className="block mt-2 font-semibold">Action : {actionToDelete.name}</span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDeleteAction}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("actions.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 });

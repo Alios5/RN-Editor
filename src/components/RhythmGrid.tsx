@@ -158,17 +158,23 @@ export const RhythmGrid = ({
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
+    let animationFrameId: number;
+
     const draw = () => {
       const dpr = window.devicePixelRatio || 1;
+      const scrollLeft = container.scrollLeft;
+      const clientWidth = container.clientWidth || 1000; // fallback if 0
 
-      // Use full width for the canvas to avoid scroll jitter
-      // The browser handles the scrolling naturally
-      if (canvas.width !== width * dpr || canvas.height !== 80 * dpr) {
-        canvas.width = width * dpr;
+      // Only allocate what is visible
+      if (canvas.width !== clientWidth * dpr || canvas.height !== 80 * dpr) {
+        canvas.width = clientWidth * dpr;
         canvas.height = 80 * dpr;
-        canvas.style.width = `${width}px`;
+        canvas.style.width = `${clientWidth}px`;
         canvas.style.height = '80px';
       }
+
+      // Move canvas to visible area
+      canvas.style.transform = `translateX(${scrollLeft}px)`;
 
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -188,12 +194,18 @@ export const RhythmGrid = ({
       const beatPrimaryColor = computedStyle.getPropertyValue(beatPrimaryVarName).trim() || 'rgba(30, 41, 59, 0.5)';
       const beatSecondaryColor = computedStyle.getPropertyValue(beatSecondaryVarName).trim() || 'rgba(15, 23, 42, 0.5)';
 
-      // Draw backgrounds first (to be behind lines)
-      // Draw by beat (subdivision) instead of by measure
-      const cellsPerBeat = subRhythmSync;
-      const totalBeats = Math.ceil(cells / cellsPerBeat);
+      // Calculate visible bounds
+      const visibleStart = scrollLeft;
+      const visibleEnd = scrollLeft + clientWidth;
 
-      for (let b = 0; b < totalBeats; b++) {
+      // Determine the range of beats to draw backgrounds for
+      const cellsPerBeat = subRhythmSync;
+      const beatWidth = cellsPerBeat * cellWidth;
+
+      const startBeat = Math.max(0, Math.floor((visibleStart - startOffset) / beatWidth));
+      const endBeat = Math.min(Math.ceil(cells / cellsPerBeat), Math.ceil((visibleEnd - startOffset) / beatWidth));
+
+      for (let b = startBeat; b <= endBeat; b++) {
         const beatStartCell = b * cellsPerBeat;
 
         // Skip if out of bounds
@@ -201,7 +213,11 @@ export const RhythmGrid = ({
 
         const worldX = startOffset + beatStartCell * cellWidth;
         const worldWidth = cellsPerBeat * cellWidth;
-        const canvasX = Math.floor(worldX * dpr);
+
+        // Convert world coordinate to local canvas coordinate
+        const localX = worldX - scrollLeft;
+
+        const canvasX = Math.floor(localX * dpr);
         const canvasWidth = Math.ceil(worldWidth * dpr);
 
         // Alternating background per beat (BPM visualization)
@@ -214,11 +230,18 @@ export const RhythmGrid = ({
       ctx.font = `${10 * dpr}px ${fontFamily}`;
       ctx.textBaseline = 'top';
 
-      for (let i = 0; i <= cells; i++) {
+      const startCellLine = Math.max(0, Math.floor((visibleStart - startOffset) / cellWidth));
+      const endCellLine = Math.min(cells, Math.ceil((visibleEnd - startOffset) / cellWidth));
+
+      for (let i = startCellLine; i <= endCellLine; i++) {
         const isMeasureStart = i % cellsPerMeasure === 0;
 
         const worldX = startOffset + i * cellWidth;
-        const canvasX = Math.floor(worldX * dpr) + 0.5;
+        const localX = worldX - scrollLeft;
+        const canvasX = Math.floor(localX * dpr) + 0.5;
+
+        // Skip drawing if outside local canvas area (padding safety)
+        if (canvasX < -10 || canvasX > canvas.width + 10) continue;
 
         if (isMeasureStart) {
           ctx.strokeStyle = measureColor;
@@ -242,16 +265,22 @@ export const RhythmGrid = ({
       }
     };
 
+    const handleScroll = () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(draw);
+    };
+
     draw();
 
-    // Remove scroll listener as we now use full width
-    // Keep resize listener in case width/dpr changes
-    window.addEventListener('resize', draw);
+    container.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
 
     return () => {
-      window.removeEventListener('resize', draw);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      container.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
-  }, [scrollContainerRef, startOffset, cells, cellsPerMeasure, subRhythmSync, cellWidth, width]);
+  }, [scrollContainerRef, startOffset, cells, cellsPerMeasure, subRhythmSync, cellWidth]);
 
   // Handler for opening/closing the context menu
   const handleMenuOpenChange = (isOpen: boolean) => {

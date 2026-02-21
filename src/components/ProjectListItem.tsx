@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { panelColors } from "@/lib/panelColors";
 import { useTranslation } from "@/hooks/useTranslation";
+import { IconDoc, IconClock } from "./PanelIcons";
 
 interface ProjectListItemProps {
   project: Project;
@@ -32,9 +33,9 @@ export const ProjectListItem = ({ project, onClick, onDelete, index = 0 }: Proje
   });
 
   return (
-    <div 
-      className="w-full flex items-center gap-3 p-3 rounded-lg border border-border/30 project-item group animate-fade-in-up" 
-      style={{ 
+    <div
+      className="w-full flex items-center gap-3 p-3 rounded-lg border border-border/30 project-item group animate-fade-in-up"
+      style={{
         backgroundColor: panelColors.inputBackground(),
         animationDelay: `${index * 0.08}s`,
         opacity: 0
@@ -46,9 +47,9 @@ export const ProjectListItem = ({ project, onClick, onDelete, index = 0 }: Proje
       >
         <div className="flex h-11 w-11 items-center justify-center rounded-md gradient-primary flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
           {project.filePath ? (
-            <FontAwesomeIcon icon={faFileLines} className="h-5 w-5 text-primary-foreground" />
+            <IconDoc className="h-5 w-5 text-primary-foreground" style={{ '--override-icon-main': 'currentColor', '--override-icon-accent': 'rgba(255,255,255,0.6)' } as React.CSSProperties} />
           ) : (
-            <FontAwesomeIcon icon={faMusic} className="h-5 w-5 text-primary-foreground" />
+            <IconClock className="h-5 w-5 text-primary-foreground" style={{ '--override-icon-main': 'currentColor', '--override-icon-accent': 'rgba(255,255,255,0.6)' } as React.CSSProperties} />
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -66,7 +67,7 @@ export const ProjectListItem = ({ project, onClick, onDelete, index = 0 }: Proje
           </div>
         </div>
       </button>
-      
+
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button

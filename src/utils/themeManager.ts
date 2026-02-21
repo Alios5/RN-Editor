@@ -1,6 +1,7 @@
 import { Theme, DEFAULT_THEME, BUILTIN_THEMES } from "@/types/theme";
 import { save, open } from "@tauri-apps/plugin-dialog";
 import { writeTextFile, readTextFile } from "@tauri-apps/plugin-fs";
+import { cursors } from "./cursors";
 
 const THEME_STORAGE_KEY = "rhythmnator_theme";
 const SAVED_THEMES_KEY = "rhythmnator_saved_themes";
@@ -13,10 +14,10 @@ export const loadTheme = (): Theme => {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored) {
       const theme = JSON.parse(stored) as Partial<Theme>;
-      
+
       // Migration: Add missing properties for old themes
-      const needsMigration = 
-        !theme.colors?.gradientStart || 
+      const needsMigration =
+        !theme.colors?.gradientStart ||
         !theme.colors?.gradientEnd ||
         !theme.colors?.panelBackground ||
         !theme.colors?.panelBorder ||
@@ -31,16 +32,16 @@ export const loadTheme = (): Theme => {
         !theme.colors?.waveformColor ||
         !theme.colors?.waveformBackground ||
         !theme.colors?.waveformOutline;
-        
+
       if (needsMigration) {
         // Detect if it's a light or dark theme by checking background lightness
         // Light theme has background like "0 0% 100%" (lightness 100%)
         // Dark theme has background like "230 35% 7%" (lightness 7%)
-        const isLightTheme = theme.colors?.background?.includes('100%') || 
-                            theme.name?.toLowerCase().includes('light');
-        
+        const isLightTheme = theme.colors?.background?.includes('100%') ||
+          theme.name?.toLowerCase().includes('light');
+
         const baseTheme = isLightTheme ? BUILTIN_THEMES.find(t => t.name === "Light Theme") || DEFAULT_THEME : DEFAULT_THEME;
-        
+
         const migratedTheme = {
           ...baseTheme,
           ...theme,
@@ -49,13 +50,13 @@ export const loadTheme = (): Theme => {
             ...theme.colors,
           }
         } as Theme;
-        
+
         // Save the migrated theme
         saveTheme(migratedTheme);
         console.log(`✅ Theme migrated: ${isLightTheme ? 'Light' : 'Dark'} theme with panel colors`);
         return migratedTheme;
       }
-      
+
       return theme as Theme;
     }
   } catch (error) {
@@ -80,13 +81,42 @@ export const saveTheme = (theme: Theme): void => {
  */
 export const applyTheme = (theme: Theme): void => {
   const root = document.documentElement;
-  
+
   Object.entries(theme.colors).forEach(([key, value]) => {
     // Convert camelCase to kebab-case for CSS variables
     const cssVar = key.replace(/([A-Z])/g, '-$1').toLowerCase();
     root.style.setProperty(`--${cssVar}`, value);
   });
-  
+
+  // Set dynamic cursor colors (replacing their gradients with flat colors to match the theme)
+  const cursorColor = theme.colors.playheadLine || theme.colors.primary;
+
+  // Settings for all cursors
+  const cursorSettings = [
+    { varName: '--cursor-default', id: 'pointer_b', offset: '10 8', fallback: 'auto' },
+    { varName: '--cursor-crosshair', id: 'drawing_brush', offset: '4 28', fallback: 'crosshair' },
+    { varName: '--cursor-grab', id: 'hand_open', offset: '16 16', fallback: 'grab' },
+    { varName: '--cursor-grabbing', id: 'hand_closed', offset: '16 16', fallback: 'grabbing' },
+    { varName: '--cursor-ew-resize', id: 'resize_a_horizontal', offset: '16 16', fallback: 'ew-resize' },
+    { varName: '--cursor-not-allowed', id: 'drawing_eraser', offset: '16 16', fallback: 'not-allowed' },
+    { varName: '--cursor-text', id: 'line_vertical', offset: '16 16', fallback: 'text' },
+    { varName: '--cursor-pointer', id: 'hand_point', offset: '14 8', fallback: 'pointer' },
+    { varName: '--cursor-move', id: 'cross_large', offset: '16 16', fallback: 'move' }
+  ];
+
+  const hexColor = hslToHex(cursorColor);
+
+  cursorSettings.forEach(setting => {
+    let svg = cursors[setting.id];
+    if (svg) {
+      // Replace the default #E8E0F4 and #A898C8 colors with the exact theme primary color
+      // for a flat and modern look matching the panels!
+      svg = svg.replace(/#E8E0F4/g, hexColor).replace(/#A898C8/g, hexColor);
+      const uri = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}") ${setting.offset}, ${setting.fallback}`;
+      root.style.setProperty(setting.varName, uri);
+    }
+  });
+
   saveTheme(theme);
 };
 
@@ -118,21 +148,21 @@ export const exportTheme = async (theme: Theme): Promise<void> => {
  */
 export const generateUniqueThemeName = (baseName: string, existingThemes: Theme[]): string => {
   const existingNames = existingThemes.map(t => t.name);
-  
+
   // If name doesn't exist, return as is
   if (!existingNames.includes(baseName)) {
     return baseName;
   }
-  
+
   // Find the next available number
   let counter = 1;
   let newName = `${baseName} ${counter}`;
-  
+
   while (existingNames.includes(newName)) {
     counter++;
     newName = `${baseName} ${counter}`;
   }
-  
+
   return newName;
 };
 
@@ -152,15 +182,15 @@ export const importTheme = async (): Promise<Theme | null> => {
     if (selected && typeof selected === 'string') {
       const content = await readTextFile(selected);
       const theme = JSON.parse(content) as Partial<Theme>;
-      
+
       // Validate theme structure
       if (!theme.name || !theme.colors) {
         throw new Error("Invalid theme file format");
       }
-      
+
       // Migration: Add missing properties for imported themes
-      const needsMigration = 
-        !theme.colors.gradientStart || 
+      const needsMigration =
+        !theme.colors.gradientStart ||
         !theme.colors.gradientEnd ||
         !theme.colors.panelBackground ||
         !theme.colors.panelBorder ||
@@ -175,7 +205,7 @@ export const importTheme = async (): Promise<Theme | null> => {
         !theme.colors.waveformColor ||
         !theme.colors.waveformBackground ||
         !theme.colors.waveformOutline;
-        
+
       if (needsMigration) {
         return {
           ...DEFAULT_THEME,
@@ -186,14 +216,14 @@ export const importTheme = async (): Promise<Theme | null> => {
           }
         } as Theme;
       }
-      
+
       return theme as Theme;
     }
   } catch (error) {
     console.error("Error importing theme:", error);
     throw error;
   }
-  
+
   return null;
 };
 
@@ -211,13 +241,13 @@ export const cleanupDuplicateThemes = (): void => {
   try {
     const stored = localStorage.getItem(SAVED_THEMES_KEY);
     if (!stored) return;
-    
+
     const userThemes: Theme[] = JSON.parse(stored);
     const builtinNames = BUILTIN_THEMES.map(t => t.name);
-    
+
     // Filter out themes that are now builtin
     const cleanedThemes = userThemes.filter(theme => !builtinNames.includes(theme.name));
-    
+
     if (cleanedThemes.length !== userThemes.length) {
       localStorage.setItem(SAVED_THEMES_KEY, JSON.stringify(cleanedThemes));
       console.log(`✅ Cleaned up ${userThemes.length - cleanedThemes.length} duplicate theme(s)`);
@@ -234,14 +264,14 @@ export const getSavedThemes = (): Theme[] => {
   try {
     // Clean up duplicates first
     cleanupDuplicateThemes();
-    
+
     const stored = localStorage.getItem(SAVED_THEMES_KEY);
     const userThemes: Partial<Theme>[] = stored ? JSON.parse(stored) : [];
-    
+
     // Migration: Add missing properties for old themes
     const migratedUserThemes = userThemes.map(theme => {
-      const needsMigration = 
-        !theme.colors?.gradientStart || 
+      const needsMigration =
+        !theme.colors?.gradientStart ||
         !theme.colors?.gradientEnd ||
         !theme.colors?.panelBackground ||
         !theme.colors?.panelBorder ||
@@ -256,7 +286,7 @@ export const getSavedThemes = (): Theme[] => {
         !theme.colors?.waveformColor ||
         !theme.colors?.waveformBackground ||
         !theme.colors?.waveformOutline;
-        
+
       if (needsMigration) {
         return {
           ...DEFAULT_THEME,
@@ -269,7 +299,7 @@ export const getSavedThemes = (): Theme[] => {
       }
       return theme as Theme;
     });
-    
+
     return [...BUILTIN_THEMES, ...migratedUserThemes];
   } catch (error) {
     console.error("Error loading saved themes:", error);
@@ -284,10 +314,10 @@ export const saveCustomTheme = (theme: Theme): void => {
   try {
     const stored = localStorage.getItem(SAVED_THEMES_KEY);
     const existingThemes: Theme[] = stored ? JSON.parse(stored) : [];
-    
+
     // Check if theme with same name exists
     const existingIndex = existingThemes.findIndex(t => t.name === theme.name);
-    
+
     if (existingIndex >= 0) {
       // Update existing theme
       existingThemes[existingIndex] = theme;
@@ -295,7 +325,7 @@ export const saveCustomTheme = (theme: Theme): void => {
       // Add new theme
       existingThemes.push(theme);
     }
-    
+
     localStorage.setItem(SAVED_THEMES_KEY, JSON.stringify(existingThemes));
   } catch (error) {
     console.error("Error saving custom theme:", error);
@@ -310,7 +340,7 @@ export const deleteCustomTheme = (themeName: string): void => {
   try {
     const stored = localStorage.getItem(SAVED_THEMES_KEY);
     const existingThemes: Theme[] = stored ? JSON.parse(stored) : [];
-    
+
     const filteredThemes = existingThemes.filter(t => t.name !== themeName);
     localStorage.setItem(SAVED_THEMES_KEY, JSON.stringify(filteredThemes));
   } catch (error) {
@@ -353,7 +383,7 @@ export const formatHSL = (h: number, s: number, l: number): string => {
  */
 export const hslToHex = (hsl: string): string => {
   const { h, s, l } = parseHSL(hsl);
-  
+
   const hDecimal = h / 360;
   const sDecimal = s / 100;
   const lDecimal = l / 100;

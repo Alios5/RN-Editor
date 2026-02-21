@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faBolt } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faBolt, faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,8 @@ import { EditGroupDialog } from "./EditGroupDialog";
 import { SpecificActionsDialog } from "./SpecificActionsDialog";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
+import { IconDoc } from "./PanelIcons";
+import { invoke } from "@tauri-apps/api/core";
 
 interface ProjectPanelProps {
   projectName: string;
@@ -29,13 +31,13 @@ interface ProjectPanelProps {
   onAssignTrackToGroup: (trackId: string, groupId: string | null) => void;
 }
 
-export const ProjectPanel = ({ 
-  projectName, 
-  groups, 
+export const ProjectPanel = ({
+  projectName,
+  groups,
   tracks,
   specificActions,
-  onCreateGroup, 
-  onUpdateGroup, 
+  onCreateGroup,
+  onUpdateGroup,
   onDeleteGroup,
   onCreateAction,
   onEditAction,
@@ -75,11 +77,22 @@ export const ProjectPanel = ({
     <>
       <Card className="m-4 border-0 hover:scale-100 transition-none">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <div className="h-8 w-8 rounded flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-              <span className="text-sm">📁</span>
+          <CardTitle className="text-base flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center">
+                <IconDoc className="h-6 w-6" />
+              </div>
+              {t("project.title")}
             </div>
-            {t("project.title")}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 rounded-full hover:bg-primary/20"
+              title="Help"
+              onClick={() => invoke("open_url", { url: "https://docs.rhythmnator.com/guide-launch.html#guide-project-launch" })}
+            >
+              <FontAwesomeIcon icon={faCircleQuestion} className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">

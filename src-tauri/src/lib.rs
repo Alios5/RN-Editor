@@ -80,6 +80,37 @@ fn open_folder(folder_path: String) -> Result<(), String> {
   Ok(())
 }
 
+/// Opens a URL in the system's default browser
+#[tauri::command]
+fn open_url(url: String) -> Result<(), String> {
+  #[cfg(target_os = "windows")]
+  {
+    // The empty string is for the window title, which start expects as the first argument if quoted
+    Command::new("cmd")
+      .args(["/C", "start", "", &url])
+      .spawn()
+      .map_err(|e| e.to_string())?;
+  }
+
+  #[cfg(target_os = "macos")]
+  {
+    Command::new("open")
+      .arg(&url)
+      .spawn()
+      .map_err(|e| e.to_string())?;
+  }
+
+  #[cfg(target_os = "linux")]
+  {
+    Command::new("xdg-open")
+      .arg(&url)
+      .spawn()
+      .map_err(|e| e.to_string())?;
+  }
+
+  Ok(())
+}
+
 /// Closes the application window with force option
 #[tauri::command]
 async fn close_window(app: tauri::AppHandle, force: bool) -> Result<(), String> {
@@ -158,6 +189,7 @@ pub fn run() {
       set_file_readonly, 
       is_file_readonly, 
       open_folder, 
+      open_url,
       close_window,
       allow_close,
       prevent_close,

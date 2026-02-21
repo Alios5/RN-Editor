@@ -21,15 +21,15 @@ export function UnsavedChangesDialog({ open, onConfirm, onCancel, onSaveAndQuit 
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col sm:flex-row gap-2 overflow-visible">
-          <AlertDialogCancel onClick={onCancel} className="rounded-full bg-secondary border-0">
+          <AlertDialogCancel onClick={onCancel} className="rounded bg-secondary border-0">
             {t("actions.cancel")}
           </AlertDialogCancel>
           {onSaveAndQuit && (
-            <AlertDialogAction onClick={onSaveAndQuit} className="bg-primary rounded-full">
+            <AlertDialogAction onClick={onSaveAndQuit} className="bg-primary rounded">
               {t("editor.saveAndQuit")}
             </AlertDialogAction>
           )}
-          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full">
+          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded">
             {t("editor.quitWithoutSaving")}
           </AlertDialogAction>
         </AlertDialogFooter>

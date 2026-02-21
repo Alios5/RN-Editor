@@ -73,6 +73,10 @@ All colors MUST be HSL.
     --panel-input-background-color: hsl(var(--panel-input-background) / 0.5);
     --panel-section-background-color: hsl(var(--panel-section-background) / 0.2);
 
+    /* Tool Icons Base Colors */
+    --icon-main: var(--primary);
+    --icon-accent: color-mix(in srgb, hsl(var(--primary)), black 45%);
+
     /* Track colors - final colors with opacity built-in */
     --track-border-color: hsl(var(--track-border) / 0.6);
     --track-grid-line-color: hsl(var(--track-grid-line) / 0.3);
@@ -113,7 +117,7 @@ All colors MUST be HSL.
     height: 100%;
     margin: 0;
     padding: 0;
-    cursor: url('/assets/cursors/pointer_b.svg') 10 8, auto;
+    cursor: var(--cursor-default, url('/assets/cursors/pointer_b.svg') 10 8, auto);
   }
 
   body {
@@ -178,39 +182,39 @@ All colors MUST be HSL.
 
   /* Custom SVG Cursors */
   .cursor-custom-default {
-    cursor: url('/assets/cursors/pointer_b.svg') 10 8, auto !important;
+    cursor: var(--cursor-default, url('/assets/cursors/pointer_b.svg') 10 8, auto) !important;
   }
 
   .cursor-custom-crosshair {
-    cursor: url('/assets/cursors/drawing_brush.svg') 4 28, crosshair !important;
+    cursor: var(--cursor-crosshair, url('/assets/cursors/drawing_brush.svg') 4 28, crosshair) !important;
   }
 
   .cursor-custom-grab {
-    cursor: url('/assets/cursors/hand_open.svg') 16 16, grab !important;
+    cursor: var(--cursor-grab, url('/assets/cursors/hand_open.svg') 16 16, grab) !important;
   }
 
   .cursor-custom-grabbing {
-    cursor: url('/assets/cursors/hand_closed.svg') 16 16, grabbing !important;
+    cursor: var(--cursor-grabbing, url('/assets/cursors/hand_closed.svg') 16 16, grabbing) !important;
   }
 
   .cursor-custom-ew-resize {
-    cursor: url('/assets/cursors/resize_a_horizontal.svg') 16 16, ew-resize !important;
+    cursor: var(--cursor-ew-resize, url('/assets/cursors/resize_a_horizontal.svg') 16 16, ew-resize) !important;
   }
 
   .cursor-custom-not-allowed {
-    cursor: url('/assets/cursors/drawing_eraser.svg') 16 16, not-allowed !important;
+    cursor: var(--cursor-not-allowed, url('/assets/cursors/drawing_eraser.svg') 16 16, not-allowed) !important;
   }
 
   .cursor-custom-text {
-    cursor: url('/assets/cursors/line_vertical.svg') 16 16, text !important;
+    cursor: var(--cursor-text, url('/assets/cursors/line_vertical.svg') 16 16, text) !important;
   }
 
   .cursor-custom-pointer {
-    cursor: url('/assets/cursors/hand_point.svg') 14 8, pointer !important;
+    cursor: var(--cursor-pointer, url('/assets/cursors/hand_point.svg') 14 8, pointer) !important;
   }
 
   .cursor-custom-move {
-    cursor: url('/assets/cursors/cross_large.svg') 16 16, move !important;
+    cursor: var(--cursor-move, url('/assets/cursors/cross_large.svg') 16 16, move) !important;
   }
 
   .gradient-primary {
@@ -567,6 +571,17 @@ All colors MUST be HSL.
   [data-testid="waveform"],
   .wavesurfer-wrapper,
   div[style*="wavesurfer"] {
-    cursor: url('/assets/cursors/line_vertical.svg') 16 16, text !important;
+    cursor: var(--cursor-text, url('/assets/cursors/line_vertical.svg') 16 16, text) !important;
+  }
+
+  /* Tool Icons Fill Styles */
+  .icon-main {
+    fill: var(--override-icon-main, hsl(var(--icon-main)));
+    transition: fill 0.3s ease;
+  }
+
+  .icon-accent {
+    fill: var(--override-icon-accent, var(--icon-accent));
+    transition: fill 0.3s ease;
   }
 }

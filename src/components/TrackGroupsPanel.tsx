@@ -10,6 +10,7 @@ import { CreateGroupDialog } from "./CreateGroupDialog";
 import { EditGroupDialog } from "./EditGroupDialog";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
+import { IconLayers } from "./PanelIcons";
 
 interface TrackGroupsPanelProps {
   groups: TrackGroup[];
@@ -62,8 +63,8 @@ export const TrackGroupsPanel = ({
         <CardHeader>
           <CardTitle className="text-base flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded flex items-center justify-center" style={{ backgroundColor: panelColors.iconBackground() }}>
-                <span className="text-sm">📁</span>
+              <div className="flex items-center justify-center">
+                <IconLayers className="h-6 w-6" />
               </div>
               {t("group.title")}
             </div>
