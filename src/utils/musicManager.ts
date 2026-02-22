@@ -36,19 +36,19 @@ export const copyMusicToProjectFolder = async (
   try {
     // Extract the file name
     const fileName = await basename(sourceMusicPath);
-    
+
     // Create the destination path
     const targetPath = await join(targetFolderPath, fileName);
-    
+
     // Check if the target folder exists, otherwise create it
     const folderExists = await exists(targetFolderPath);
     if (!folderExists) {
       await mkdir(targetFolderPath, { recursive: true });
     }
-    
+
     // Copy the file
     await copyFile(sourceMusicPath, targetPath);
-    
+
     return targetPath;
   } catch (error) {
     console.error("Error copying music file:", error);
@@ -123,7 +123,7 @@ export const resolveMusicPath = async (
     if (musicPath.includes("/") || musicPath.includes("\\")) {
       return musicPath;
     }
-    
+
     // Otherwise, it's a relative file name
     const rneDir = await dirname(rneFilePath);
     return await join(rneDir, musicPath);
@@ -140,5 +140,42 @@ export const resolveMusicPath = async (
  */
 export const convertFilePathToAudioUrl = (filePath: string): string => {
   if (!filePath) return "";
+  return convertFileSrc(filePath);
+};
+
+/**
+ * Loads audio file into a URL, using platform-specific behavior.
+ * Linux WebKitGTK struggles with large audio files over the asset:// protocol,
+ * so we load it into a memory Blob.
+ * @param filePath Path to the file
+ * @returns Promise with URL (blob: on Linux, asset:// on others)
+ */
+export const loadAudioPlatformSpecific = async (filePath: string): Promise<string> => {
+  if (!filePath) return "";
+
+  try {
+    const isLinux = navigator.userAgent.toLowerCase().includes('linux');
+
+    if (isLinux) {
+      // On Linux, read file to memory and create a Blob to fix webkitgtk streaming issues
+      const { readFile } = await import("@tauri-apps/plugin-fs");
+      const data = await readFile(filePath);
+
+      // Determine mime type from extension
+      const ext = filePath.split('.').pop()?.toLowerCase() || '';
+      let mimeType = 'audio/mpeg'; // default mp3
+      if (ext === 'wav') mimeType = 'audio/wav';
+      else if (ext === 'ogg') mimeType = 'audio/ogg';
+      else if (ext === 'flac') mimeType = 'audio/flac';
+      else if (ext === 'm4a' || ext === 'aac') mimeType = 'audio/aac';
+
+      const blob = new Blob([data], { type: mimeType });
+      return URL.createObjectURL(blob);
+    }
+  } catch (error) {
+    console.warn("Failed to load audio via platform-specific method, falling back to convertFileSrc:", error);
+  }
+
+  // Fallback / Windows / macOS behavior
   return convertFileSrc(filePath);
 };
