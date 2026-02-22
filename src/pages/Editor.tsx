@@ -14,7 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Separator } from "@/components/ui/separator";
 import { getProjects, updateProjectMetadata } from "@/utils/localStorage";
 import { saveProjectToFile, loadProjectFromFile, saveProjectAs } from "@/utils/fileSystem";
-import { selectAudioFile, isMusicInProjectFolder, copyMusicToProjectFolder, convertFilePathToAudioUrl } from "@/utils/musicManager";
+import { selectAudioFile, isMusicInProjectFolder, copyMusicToProjectFolder, convertFilePathToAudioUrl, loadAudioPlatformSpecific } from "@/utils/musicManager";
 import { dirname, basename } from "@tauri-apps/api/path";
 import { Project } from "@/types/project";
 import { Track } from "@/types/track";
@@ -722,7 +722,8 @@ const Editor = () => {
 
           if (musicExists) {
             setMusicFilePath(project.musicPath!);
-            setAudioUrl(convertFilePathToAudioUrl(project.musicPath!));
+            const url = await loadAudioPlatformSpecific(project.musicPath!);
+            setAudioUrl(url);
           } else {
             console.warn('Music file not found:', project.musicPath);
             setShowMissingMusicDialog(true);
@@ -743,7 +744,8 @@ const Editor = () => {
     if (project.specificActions) setSpecificActions(project.specificActions);
 
     // Initialize history with loaded state
-    setTimeout(() => {
+    setTimeout(async () => {
+      const url = project.musicPath ? await loadAudioPlatformSpecific(project.musicPath) : "";
       const initialState: EditorState = {
         tracks: project.tracks || [],
         trackGroups: project.trackGroups || [],
@@ -754,7 +756,7 @@ const Editor = () => {
         volume: project.volume !== undefined ? project.volume : 70,
         pitch: project.pitchShift !== undefined ? project.pitchShift : 1,
         startOffset: project.startOffset !== undefined ? project.startOffset : 0,
-        audioUrl: project.musicPath ? convertFilePathToAudioUrl(project.musicPath) : "",
+        audioUrl: url,
         audioFileName: project.musicFileName || "",
       };
       setHistory([initialState]);
@@ -932,14 +934,16 @@ const Editor = () => {
         } else {
           // Music is already in the project folder
           setMusicFilePath(filePath);
-          setAudioUrl(convertFilePathToAudioUrl(filePath));
+          const url = await loadAudioPlatformSpecific(filePath);
+          setAudioUrl(url);
           setAudioFileName(fileName);
           // History is now automatic via useEffect with debounce
         }
       } else {
         // No RNE file yet, load directly
         setMusicFilePath(filePath);
-        setAudioUrl(convertFilePathToAudioUrl(filePath));
+        const url = await loadAudioPlatformSpecific(filePath);
+        setAudioUrl(url);
         setAudioFileName(fileName);
         // History is now automatic via useEffect with debounce
       }
@@ -972,7 +976,8 @@ const Editor = () => {
       if (copiedPath) {
         const fileName = await basename(copiedPath);
         setMusicFilePath(copiedPath);
-        setAudioUrl(convertFilePathToAudioUrl(copiedPath));
+        const url = await loadAudioPlatformSpecific(copiedPath);
+        setAudioUrl(url);
         setAudioFileName(fileName);
         // History is now automatic via useEffect with debounce
       } else {
@@ -986,10 +991,11 @@ const Editor = () => {
     }
   };
 
-  const handleDeclineCopyMusic = () => {
+  const handleDeclineCopyMusic = async () => {
     if (pendingMusicPath && pendingMusicFileName) {
       setMusicFilePath(pendingMusicPath);
-      setAudioUrl(convertFilePathToAudioUrl(pendingMusicPath));
+      const url = await loadAudioPlatformSpecific(pendingMusicPath);
+      setAudioUrl(url);
       setAudioFileName(pendingMusicFileName);
       if (warningSound.current) {
         warningSound.current.currentTime = 0;
