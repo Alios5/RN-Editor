@@ -22,10 +22,10 @@ import { HexColorPicker } from "react-colorful";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Theme } from "@/types/theme";
 import {
-  loadTheme, 
-  applyTheme, 
-  exportTheme, 
-  importTheme, 
+  loadTheme,
+  applyTheme,
+  exportTheme,
+  importTheme,
   resetToDefaultTheme,
   hslToHex,
   hexToHsl,
@@ -100,7 +100,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
   const handleColorChange = (hex: string) => {
     setCurrentHex(hex);
     setCopied(false);
-    
+
     if (editingColor) {
       const hsl = hexToHsl(hex);
       setTheme({
@@ -162,7 +162,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
     try {
       // Generate a unique name if the theme name already exists
       const uniqueName = generateUniqueThemeName(saveThemeName.trim(), savedThemes);
-      
+
       const themeToSave = { ...theme, name: uniqueName };
       saveCustomTheme(themeToSave);
       setSavedThemes(getSavedThemes());
@@ -170,7 +170,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
       applyTheme(themeToSave);
       setShowSaveDialog(false);
       setSaveThemeName("");
-      
+
       // Show different message if name was changed
       if (uniqueName !== saveThemeName.trim()) {
       } else {
@@ -214,7 +214,7 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
   const renderColorBox = (colorKey: keyof Theme['colors'], label: string) => {
     const isSelected = editingColor === colorKey && popoverOpen;
     const hsl = theme.colors[colorKey];
-    
+
     return (
       <Popover key={colorKey} open={isSelected} onOpenChange={(open) => {
         if (!open && editingColor === colorKey) {
@@ -224,9 +224,8 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
       }}>
         <PopoverTrigger asChild>
           <div
-            className={`cursor-pointer rounded-lg p-3 border-2 transition-all ${
-              isSelected ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background" : "border-border hover:border-primary/50"
-            }`}
+            className={`cursor-pointer rounded-lg p-3 border-2 transition-all ${isSelected ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background" : "border-border hover:border-primary/50"
+              }`}
             onClick={() => handleColorClick(colorKey)}
           >
             <div
@@ -240,16 +239,16 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
         <PopoverContent className="w-80" side="top">
           <div className="space-y-3">
             <h4 className="font-medium text-sm">{label}</h4>
-            
+
             <div className="flex gap-3">
               <div className="flex-shrink-0">
-                <HexColorPicker 
-                  color={editingColor === colorKey ? currentHex : hslToHex(hsl)} 
-                  onChange={handleColorChange} 
-                  style={{ width: '180px', height: '180px' }} 
+                <HexColorPicker
+                  color={editingColor === colorKey ? currentHex : hslToHex(hsl)}
+                  onChange={handleColorChange}
+                  style={{ width: '180px', height: '180px' }}
                 />
               </div>
-              
+
               <div className="flex-1 space-y-2">
                 <div>
                   <Label className="text-xs mb-1 block">{t("theme.hexColor")}</Label>
@@ -297,8 +296,8 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
         {COLOR_CATEGORIES[category].map((colorKey) => {
           // Try to get translation first, fallback to camelCase conversion
           const translationKey = `theme.${colorKey}`;
-          const label = t(translationKey) !== translationKey 
-            ? t(translationKey) 
+          const label = t(translationKey) !== translationKey
+            ? t(translationKey)
             : colorKey.replace(/([A-Z])/g, ' $1').trim();
           return renderColorBox(colorKey, label);
         })}
@@ -308,171 +307,171 @@ export const ThemeEditor = ({ open, onOpenChange }: ThemeEditorProps) => {
 
   return (
     <>
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FontAwesomeIcon icon={faPalette} className="h-5 w-5" />
-            {t("theme.editor")}
-          </DialogTitle>
-          <DialogDescription>
-            {t("theme.editorDescription")}
-          </DialogDescription>
-        </DialogHeader>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FontAwesomeIcon icon={faPalette} className="h-5 w-5" />
+              {t("theme.editor")}
+            </DialogTitle>
+            <DialogDescription>
+              {t("theme.editorDescription")}
+            </DialogDescription>
+          </DialogHeader>
 
-        {/* Theme Selector */}
-        <div className="flex items-center gap-3 px-1">
-          <div className="flex-1">
-            <Label className="text-xs mb-1.5 block">{t("theme.selectTheme") || "Sélectionner un thème"}</Label>
-            <Select value={theme.name} onValueChange={handleLoadTheme}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("theme.selectTheme") || "Sélectionner un thème"} />
-              </SelectTrigger>
-              <SelectContent>
-                {savedThemes.map((t) => (
-                  <SelectItem key={t.name} value={t.name}>
-                    <div className="flex items-center justify-between w-full">
-                      <span>{t.name}</span>
-                      {!isBuiltinTheme(t.name) && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-5 w-5 ml-2 hover:text-destructive"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setThemeToDelete(t.name);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faTrash} className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button
-            variant="outline"
-            className="gap-2 mt-5"
-            onClick={() => {
-              setSaveThemeName(theme.name);
-              setShowSaveDialog(true);
-            }}
-          >
-            <FontAwesomeIcon icon={faFloppyDisk} className="h-4 w-4" />
-            {t("theme.saveAs") || "Enregistrer sous"}
-          </Button>
-        </div>
-
-        <div className="flex-1 overflow-hidden">
-          <Tabs defaultValue="base" className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-7">
-              <TabsTrigger value="base">{t("theme.categoryBase")}</TabsTrigger>
-              <TabsTrigger value="interactive">{t("theme.categoryInteractive")}</TabsTrigger>
-              <TabsTrigger value="status">{t("theme.categoryStatus")}</TabsTrigger>
-              <TabsTrigger value="borders">{t("theme.categoryBorders")}</TabsTrigger>
-              <TabsTrigger value="panels">{t("theme.categoryPanels")}</TabsTrigger>
-              <TabsTrigger value="tracks">{t("theme.categoryTracks") || "Pistes"}</TabsTrigger>
-              <TabsTrigger value="waveform">{t("theme.categoryWaveform") || "Waveform"}</TabsTrigger>
-            </TabsList>
-
-            <div className="flex-1 overflow-y-auto mt-4">
-              <TabsContent value="base">{renderCategoryColors("base")}</TabsContent>
-              <TabsContent value="interactive">{renderCategoryColors("interactive")}</TabsContent>
-              <TabsContent value="status">{renderCategoryColors("status")}</TabsContent>
-              <TabsContent value="borders">{renderCategoryColors("borders")}</TabsContent>
-              <TabsContent value="panels">{renderCategoryColors("panels")}</TabsContent>
-              <TabsContent value="tracks">{renderCategoryColors("tracks")}</TabsContent>
-              <TabsContent value="waveform">{renderCategoryColors("waveform")}</TabsContent>
+          {/* Theme Selector */}
+          <div className="flex items-center gap-3 px-1">
+            <div className="flex-1">
+              <Label className="text-xs mb-1.5 block">{t("theme.selectTheme") || "Sélectionner un thème"}</Label>
+              <Select value={theme.name} onValueChange={handleLoadTheme}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("theme.selectTheme") || "Sélectionner un thème"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {savedThemes.map((t) => (
+                    <SelectItem key={t.name} value={t.name}>
+                      <div className="flex items-center justify-between w-full">
+                        <span>{t.name}</span>
+                        {!isBuiltinTheme(t.name) && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-5 w-5 ml-2 hover:text-destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setThemeToDelete(t.name);
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faTrash} className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </Tabs>
-        </div>
-
-        <DialogFooter className="flex-row gap-2 sm:justify-between">
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleImportAndSave} className="gap-2">
-              <FontAwesomeIcon icon={faUpload} className="h-4 w-4" />
-              {t("theme.import")}
-            </Button>
-            <Button variant="outline" onClick={handleExport} className="gap-2">
-              <FontAwesomeIcon icon={faDownload} className="h-4 w-4" />
-              {t("theme.export")}
-            </Button>
-            <Button variant="outline" onClick={handleReset} className="gap-2">
-              <FontAwesomeIcon icon={faRotateLeft} className="h-4 w-4" />
-              {t("theme.reset")}
+            <Button
+              variant="outline"
+              className="gap-2 mt-5"
+              onClick={() => {
+                setSaveThemeName(theme.name);
+                setShowSaveDialog(true);
+              }}
+            >
+              <FontAwesomeIcon icon={faFloppyDisk} className="h-4 w-4" />
+              {t("theme.saveAs") || "Enregistrer sous"}
             </Button>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+
+          <div className="flex-1 overflow-hidden">
+            <Tabs defaultValue="base" className="h-full flex flex-col">
+              <TabsList className="grid w-full grid-cols-7">
+                <TabsTrigger value="base">{t("theme.categoryBase")}</TabsTrigger>
+                <TabsTrigger value="interactive">{t("theme.categoryInteractive")}</TabsTrigger>
+                <TabsTrigger value="status">{t("theme.categoryStatus")}</TabsTrigger>
+                <TabsTrigger value="borders">{t("theme.categoryBorders")}</TabsTrigger>
+                <TabsTrigger value="panels">{t("theme.categoryPanels")}</TabsTrigger>
+                <TabsTrigger value="tracks">{t("theme.categoryTracks") || "Pistes"}</TabsTrigger>
+                <TabsTrigger value="waveform">{t("theme.categoryWaveform") || "Waveform"}</TabsTrigger>
+              </TabsList>
+
+              <div className="flex-1 overflow-y-auto mt-4">
+                <TabsContent value="base">{renderCategoryColors("base")}</TabsContent>
+                <TabsContent value="interactive">{renderCategoryColors("interactive")}</TabsContent>
+                <TabsContent value="status">{renderCategoryColors("status")}</TabsContent>
+                <TabsContent value="borders">{renderCategoryColors("borders")}</TabsContent>
+                <TabsContent value="panels">{renderCategoryColors("panels")}</TabsContent>
+                <TabsContent value="tracks">{renderCategoryColors("tracks")}</TabsContent>
+                <TabsContent value="waveform">{renderCategoryColors("waveform")}</TabsContent>
+              </div>
+            </Tabs>
+          </div>
+
+          <DialogFooter className="flex-row gap-2 sm:justify-between">
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleImportAndSave} className="gap-2">
+                <FontAwesomeIcon icon={faUpload} className="h-4 w-4" />
+                {t("theme.import")}
+              </Button>
+              <Button variant="outline" onClick={handleExport} className="gap-2">
+                <FontAwesomeIcon icon={faDownload} className="h-4 w-4" />
+                {t("theme.export")}
+              </Button>
+              <Button variant="outline" onClick={handleReset} className="gap-2">
+                <FontAwesomeIcon icon={faRotateLeft} className="h-4 w-4" />
+                {t("theme.reset")}
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                {t("actions.cancel")}
+              </Button>
+              <Button onClick={handleApply}>
+                {t("theme.apply")}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Save Theme Dialog */}
+      <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("theme.saveTheme") || "Enregistrer le thème"}</DialogTitle>
+            <DialogDescription>
+              {t("theme.saveThemeDescription") || "Donnez un nom à votre thème personnalisé"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="theme-name">{t("theme.themeName") || "Nom du thème"}</Label>
+              <Input
+                id="theme-name"
+                value={saveThemeName}
+                onChange={(e) => setSaveThemeName(e.target.value)}
+                placeholder={t("theme.themeNamePlaceholder") || "Mon thème personnalisé"}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSaveTheme();
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
               {t("actions.cancel")}
             </Button>
-            <Button onClick={handleApply}>
-              {t("theme.apply")}
+            <Button onClick={handleSaveTheme}>
+              <FontAwesomeIcon icon={faFloppyDisk} className="h-4 w-4 mr-2" />
+              {t("actions.save") || "Enregistrer"}
             </Button>
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-    {/* Save Theme Dialog */}
-    <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t("theme.saveTheme") || "Enregistrer le thème"}</DialogTitle>
-          <DialogDescription>
-            {t("theme.saveThemeDescription") || "Donnez un nom à votre thème personnalisé"}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="theme-name">{t("theme.themeName") || "Nom du thème"}</Label>
-            <Input
-              id="theme-name"
-              value={saveThemeName}
-              onChange={(e) => setSaveThemeName(e.target.value)}
-              placeholder={t("theme.themeNamePlaceholder") || "Mon thème personnalisé"}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSaveTheme();
-                }
-              }}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
-            {t("actions.cancel")}
-          </Button>
-          <Button onClick={handleSaveTheme}>
-            <FontAwesomeIcon icon={faFloppyDisk} className="h-4 w-4 mr-2" />
-            {t("actions.save") || "Enregistrer"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-
-    {/* Delete Theme Dialog */}
-    <AlertDialog open={!!themeToDelete} onOpenChange={(open) => !open && setThemeToDelete(null)}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t("theme.deleteTheme") || "Supprimer le thème"}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t("theme.deleteThemeDescription") || `Êtes-vous sûr de vouloir supprimer le thème "${themeToDelete}" ? Cette action est irréversible.`}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDeleteTheme}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            {t("actions.delete") || "Supprimer"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      {/* Delete Theme Dialog */}
+      <AlertDialog open={!!themeToDelete} onOpenChange={(open) => !open && setThemeToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("theme.deleteTheme") || "Supprimer le thème"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("theme.deleteThemeDescription") || `Êtes-vous sûr de vouloir supprimer le thème "${themeToDelete}" ? Cette action est irréversible.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteTheme}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("actions.delete") || "Supprimer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

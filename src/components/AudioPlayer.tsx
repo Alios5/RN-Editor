@@ -11,6 +11,7 @@ export interface AudioPlayerRef {
     stop: () => void;
     seekBackward: (seconds?: number) => void;
     seekForward: (seconds?: number) => void;
+    seekTo: (time: number) => void;
 }
 
 interface AudioPlayerProps {
@@ -19,7 +20,6 @@ interface AudioPlayerProps {
     pitch: number;
     onTimeUpdate?: (currentTime: number) => void;
     onPlayStateChange?: (isPlaying: boolean) => void;
-    externalSeek?: number;
     onDurationChange?: (duration: number) => void;
     autoFollowPlayback?: boolean;
     onAutoFollowChange?: (enabled: boolean) => void;
@@ -27,7 +27,7 @@ interface AudioPlayerProps {
     scrollPosition?: number;
 }
 
-export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audioUrl, volume, pitch, onTimeUpdate, onPlayStateChange, externalSeek, onDurationChange, autoFollowPlayback = false, onAutoFollowChange, onResetScroll, scrollPosition = 0 }, ref) => {
+export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audioUrl, volume, pitch, onTimeUpdate, onPlayStateChange, onDurationChange, autoFollowPlayback = false, onAutoFollowChange, onResetScroll, scrollPosition = 0 }, ref) => {
     const { t } = useTranslation();
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -125,15 +125,6 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
         };
     }, [audioUrl, onDurationChange]);
 
-    // Handle external seek requests (from waveform clicks)
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio || externalSeek === undefined) return;
-
-        audio.currentTime = externalSeek;
-        setCurrentTime(externalSeek);
-        onTimeUpdate?.(externalSeek);
-    }, [externalSeek, onTimeUpdate]);
 
     // Synchroniser l'état React avec les événements natifs de l'audio
     // (contrôles média du casque, Media Session API, etc.)
@@ -219,12 +210,16 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
         onTimeUpdate?.(newTime);
     };
 
-    const handleSeek = (value: number[]) => {
+    const handleSeekTo = (time: number) => {
         const audio = audioRef.current;
         if (!audio) return;
-        audio.currentTime = value[0];
-        setCurrentTime(value[0]);
-        onTimeUpdate?.(value[0]);
+        audio.currentTime = time;
+        setCurrentTime(time);
+        onTimeUpdate?.(time);
+    };
+
+    const handleSeek = (value: number[]) => {
+        handleSeekTo(value[0]);
     };
 
     const formatTime = (time: number) => {
@@ -239,6 +234,7 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
         stop: handleStop,
         seekBackward: handleSkipBackward,
         seekForward: handleSkipForward,
+        seekTo: handleSeekTo,
     }));
 
     return (

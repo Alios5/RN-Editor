@@ -47,13 +47,6 @@ export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek,
     wavesurfer.load(audioUrl);
   }, [audioUrl, wavesurfer]);
 
-  // Direct and precise synchronization with audio player
-  useEffect(() => {
-    if (!wavesurfer || !isReady) return;
-
-    wavesurfer.setTime(currentTime);
-  }, [currentTime, wavesurfer, isReady]);
-
   // Listen to user interactions (clicks/drags) on waveform
   useEffect(() => {
     if (!wavesurfer) return;
@@ -97,3 +90,4 @@ export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek,
     </div>
   );
 };
+

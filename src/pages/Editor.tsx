@@ -34,7 +34,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { calculateAudioMetrics } from "@/utils/audioCalculations";
 import { exportToJson, exportToJsonFile } from "@/utils/exportJson";
-import { gridPositionToTime } from "@/utils/gridPositionCalculator";
+import { gridPositionToTime, timeToCellPosition } from "@/utils/gridPositionCalculator";
 import { CloseHandler } from "@/utils/closeHandler";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { CreateTrackDialog } from "@/components/CreateTrackDialog";
@@ -96,7 +96,6 @@ const Editor = () => {
   // Playback state for synchronization
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [seekTime, setSeekTime] = useState<number | undefined>(undefined);
   const [audioDuration, setAudioDuration] = useState(0);
   const [dragSeekTime, setDragSeekTime] = useState<number | null>(null);
   const [autoFollowPlayback, setAutoFollowPlayback] = useState(false);
@@ -323,14 +322,27 @@ const Editor = () => {
       prevTracks.map(track => ({
         ...track,
         notes: track.notes?.map(note => {
-          // Calculate time using standardized functions from gridPositionCalculator
-          // This guarantees perfect consistency and avoids drift accumulation on long tracks
-          const noteTime = gridPositionToTime(note.gridPosition, bpm, subRhythmSync);
-          const noteDuration = note.gridWidth === 1 ? 0 : gridPositionToTime(note.gridWidth, bpm, subRhythmSync);
+          let noteStartTime = note.startTime;
+          let noteDuration = note.duration;
+
+          // Backwards compatibility for projects without startTime
+          if (noteStartTime === undefined) {
+            const noteTime = gridPositionToTime(note.gridPosition, bpm, subRhythmSync);
+            noteStartTime = noteTime + offsetTime;
+            noteDuration = note.gridWidth === 1 ? 0 : gridPositionToTime(note.gridWidth, bpm, subRhythmSync);
+          }
+
+          // Calculate visual grid position based on absolute time
+          const relativeTime = Math.max(0, noteStartTime - offsetTime);
+
+          const newGridPosition = Math.max(0, Math.round(timeToCellPosition(relativeTime, bpm, subRhythmSync)));
+          const newGridWidth = noteDuration === 0 ? 1 : Math.max(1, Math.round(timeToCellPosition(noteDuration, bpm, subRhythmSync)));
 
           return {
             ...note,
-            startTime: noteTime + offsetTime, // Add offset time to all notes
+            gridPosition: newGridPosition,
+            gridWidth: newGridWidth,
+            startTime: noteStartTime,
             duration: noteDuration
           };
         })
@@ -596,7 +608,7 @@ const Editor = () => {
                 // Recalculate startTime and duration based on new position
                 const notePosition = newPosition * cellWidth;
                 const noteWidth = note.gridWidth * cellWidth;
-                const newStartTime = (notePosition / trackWidth) * audioDuration;
+                const newStartTime = ((notePosition / trackWidth) * audioDuration) + gridPositionToTime(startOffset / 24, bpm, subRhythmSync);
                 const newDuration = note.gridWidth === 1 ? 0 : (noteWidth / trackWidth) * audioDuration;
 
                 return {
@@ -1312,7 +1324,7 @@ const Editor = () => {
               // Recalculer startTime et duration
               const notePosition = newPos.newGridPosition * cellWidth;
               const noteWidth = note.gridWidth * cellWidth;
-              const newStartTime = (notePosition / trackWidth) * audioDuration;
+              const newStartTime = ((notePosition / trackWidth) * audioDuration) + gridPositionToTime(startOffset / 24, bpm, subRhythmSync);
               const newDuration = note.gridWidth === 1 ? 0 : (noteWidth / trackWidth) * audioDuration;
 
               return {
@@ -1370,7 +1382,7 @@ const Editor = () => {
             const newPosition = Math.max(0, note.gridPosition + offset);
             const notePosition = newPosition * cellWidth;
             const noteWidth = note.gridWidth * cellWidth;
-            const newStartTime = (notePosition / trackWidth) * audioDuration;
+            const newStartTime = ((notePosition / trackWidth) * audioDuration) + gridPositionToTime(startOffset / 24, bpm, subRhythmSync);
             const newDuration = note.gridWidth === 1 ? 0 : (noteWidth / trackWidth) * audioDuration;
 
             return {
@@ -1565,7 +1577,7 @@ const Editor = () => {
             // Recalculer les propriétés temporelles
             const notePosition = bestPosition * cellWidth;
             const noteWidth = note.gridWidth * cellWidth;
-            const newStartTime = (notePosition / trackWidth) * audioDuration;
+            const newStartTime = ((notePosition / trackWidth) * audioDuration) + gridPositionToTime(startOffset / 24, bpm, subRhythmSync);
             const newDuration = note.gridWidth === 1 ? 0 : (noteWidth / trackWidth) * audioDuration;
 
             return {
@@ -1688,7 +1700,7 @@ const Editor = () => {
           // Recalculer startTime et duration
           const notePosition = newPosition * cellWidth;
           const noteWidth = note.gridWidth * cellWidth;
-          const newStartTime = (notePosition / trackWidth) * audioDuration;
+          const newStartTime = ((notePosition / trackWidth) * audioDuration) + gridPositionToTime(startOffset / 24, bpm, subRhythmSync);
           const newDuration = note.gridWidth === 1 ? 0 : (noteWidth / trackWidth) * audioDuration;
 
           const duplicateNote: Note = {
@@ -1904,7 +1916,7 @@ const Editor = () => {
         const newGridPosition = note.gridPosition + offset;
         const notePosition = newGridPosition * cellWidth;
         const noteWidth = note.gridWidth * cellWidth;
-        const newStartTime = (notePosition / trackWidth) * audioDuration;
+        const newStartTime = ((notePosition / trackWidth) * audioDuration) + gridPositionToTime(startOffset / 24, bpm, subRhythmSync);
         const newDuration = note.gridWidth === 1 ? 0 : (noteWidth / trackWidth) * audioDuration;
 
         totalPasted++;
@@ -2556,7 +2568,7 @@ const Editor = () => {
                         isPlaying={isPlaying}
                         onDragSeek={setDragSeekTime}
                         onSeek={(time) => {
-                          setSeekTime(time);
+                          audioPlayerRef.current?.seekTo(time);
                           setDragSeekTime(null);
                         }}
                         width={audioMetrics.waveformWidth}
@@ -2672,7 +2684,6 @@ const Editor = () => {
                 pitch={pitch}
                 onTimeUpdate={setCurrentTime}
                 onPlayStateChange={setIsPlaying}
-                externalSeek={seekTime}
                 onDurationChange={setAudioDuration}
                 autoFollowPlayback={autoFollowPlayback}
                 onAutoFollowChange={setAutoFollowPlayback}
@@ -2932,3 +2943,4 @@ const Editor = () => {
 };
 
 export default Editor;
+
