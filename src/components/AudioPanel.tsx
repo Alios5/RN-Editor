@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolder, faBolt, faMusic, faVolumeHigh, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faBolt, faMusic, faVolumeHigh, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/hooks/useTranslation";
 import { panelColors } from "@/lib/panelColors";
-import { IconHeadphone } from "./PanelIcons";
+import { IconHeadphone, IconFolder } from "./PanelIcons";
 
 interface AudioPanelProps {
   audioFile: string;
@@ -80,7 +80,7 @@ export const AudioPanel = memo(({
               style={{ backgroundColor: panelColors.inputBackground() }}
             />
             <Button variant="outline" size="icon" onClick={onLoadAudio}>
-              <FontAwesomeIcon icon={faFolder} className="h-4 w-4" />
+              <IconFolder className="h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -217,7 +217,7 @@ export const AudioPanel = memo(({
           {/* Mouse Indicator Toggle */}
           <div className="flex items-center justify-between">
             <Label className="text-xs text-muted-foreground flex items-center gap-2">
-              {showMouseIndicator ? <FontAwesomeIcon icon={faEye} className="h-4 w-4" /> : <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" />}
+              {showMouseIndicator ? <FontAwesomeIcon icon={faEye} className="h-5 w-5" /> : <FontAwesomeIcon icon={faEyeSlash} className="h-5 w-5" />}
               {t("audio.mouseIndicator")}
             </Label>
             <Button

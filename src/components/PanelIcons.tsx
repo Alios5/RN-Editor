@@ -99,3 +99,173 @@ export const IconMenu = (props: SVGProps<SVGSVGElement>) => (
         </defs>
     </svg>
 );
+
+export const IconHome = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="38" height="35" viewBox="0 0 38 35" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_256_537)">
+            <path fillRule="evenodd" clipRule="evenodd" d="M0 19L19 0L38 19H33V35H5V19H0Z" className="icon-main" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M14 35V21H24V35H14Z" className="icon-accent" />
+        </g>
+        <defs>
+            <clipPath id="clip0_256_537">
+                <rect width="38" height="35" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconFolder = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="31" height="24" viewBox="0 0 31 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_263_28)">
+            <path d="M31 23.999H0V0H13V4.36328H31V23.999Z" className="icon-accent" />
+            <rect y="4" width="31" height="20" className="icon-main" />
+        </g>
+        <defs>
+            <clipPath id="clip0_263_28">
+                <rect width="31" height="24" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconFolderOpen = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="36" height="23" viewBox="0 0 36 23" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_263_13)">
+            <path d="M32.4092 23H0V0H13.5908V4.18164H32.4092V23Z" className="icon-accent" />
+            <path d="M4.23529 7L0 23H32.8235L36 7H4.23529Z" className="icon-main" />
+        </g>
+        <defs>
+            <clipPath id="clip0_263_13">
+                <rect width="36" height="23" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconExport = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="39" height="28" viewBox="0 0 39 28" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_256_433)">
+            <path d="M28 0H0V28H28V0Z" className="icon-main" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M12 15H34L31 18L33 20L39 14V13L33 7L31 9L34 12H12V15Z" className="icon-accent" />
+        </g>
+        <defs>
+            <clipPath id="clip0_256_433">
+                <rect width="39" height="28" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconRefresh = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="30" height="36" viewBox="0 0 30 36" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_256_705)">
+            <path fillRule="evenodd" clipRule="evenodd" d="M6.51816 17.936C6.49309 20.2105 7.37268 22.4019 8.96339 24.0278C10.5541 25.6538 12.7256 26.5812 15.0002 26.606V28.94L14.0562 33.226C6.07318 32.6307 -0.0768312 25.9408 0.000156421 17.936C-0.133675 10.712 4.91698 4.42564 12.0002 3H14.0002L14.0482 9.323C9.71558 9.86608 6.47765 13.5697 6.51816 17.936Z" className="icon-accent" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M14.9999 33.2751C14.6809 33.2751 14.3699 33.2461 14.0559 33.2261L14.9999 28.9401V26.6061C19.7157 26.5048 23.4857 22.6529 23.4857 17.9361C23.4857 13.2193 19.7157 9.36739 14.9999 9.2661C14.6828 9.26738 14.3659 9.28675 14.0509 9.3241L13.9999 7.0001C13.9999 7.0001 13.3419 2.6001 14.9999 2.6001C23.3763 2.69457 30.091 9.55973 29.9999 17.9361C30.0927 26.3136 23.3775 33.1806 14.9999 33.2751Z" className="icon-main" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M17.005 36V22L10 29L17.005 36Z" className="icon-main" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M12.9893 0V13L19.0133 6.506L12.9893 0Z" className="icon-accent" />
+        </g>
+        <defs>
+            <clipPath id="clip0_256_705">
+                <rect width="30" height="36" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconAngleLeft = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="18" height="30" viewBox="0 0 18 30" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_256_151)">
+            <path fillRule="evenodd" clipRule="evenodd" d="M15 0L0 15L15 30L18 27L6 15L18 3L15 0Z" className="icon-main" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M12.5 8.5L9.5 5.5L15 0L18 3L12.5 8.5ZM12.5 21.5L18 27L15 30L9.5 24.5L12.5 21.5Z" className="icon-accent" />
+        </g>
+        <defs>
+            <clipPath id="clip0_256_151">
+                <rect width="18" height="30" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconAngleRight = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="18" height="30" viewBox="0 0 18 30" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_256_143)">
+            <path fillRule="evenodd" clipRule="evenodd" d="M3 0L18 15L3 30L0 27L12 15L0 3L3 0Z" className="icon-main" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M5.5 8.5L8.5 5.5L3 0L0 3L5.5 8.5ZM5.5 21.5L0 27L3 30L8.5 24.5L5.5 21.5Z" className="icon-accent" />
+        </g>
+        <defs>
+            <clipPath id="clip0_256_143">
+                <rect width="18" height="30" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconSave = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <path d="M19 21H5C4.44772 21 4 20.5523 4 20V4C4 3.44772 4.44772 3 5 3H16L20 7V20C20 20.5523 19.5523 21 19 21Z" className="icon-main" />
+        <path fillRule="evenodd" clipRule="evenodd" d="M7 3V8H15V3H7ZM9 5H11V6H9V5ZM17 19H7V13H17V19ZM11 15V17H13V15H11Z" className="icon-accent" />
+    </svg>
+);
+
+export const IconEye = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="34" height="22" viewBox="0 0 34 22" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_256_441)">
+            <path fillRule="evenodd" clipRule="evenodd" d="M17 0C28.267 0 34 11.5 34 11.5C34 11.5 28.267 22 17 22C5.733 22 0 11.5 0 11.5C0 11.5 5.733 0 17 0Z" className="icon-main" />
+            <path d="M17 17C20.3137 17 23 14.3137 23 11C23 7.68629 20.3137 5 17 5C13.6863 5 11 7.68629 11 11C11 14.3137 13.6863 17 17 17Z" className="icon-accent" />
+        </g>
+        <defs>
+            <clipPath id="clip0_256_441">
+                <rect width="34" height="22" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconCrossedEye = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="34" height="29" viewBox="0 0 34 29" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_263_56)">
+            <rect x="8" y="1.40332" width="3" height="30.8627" transform="rotate(-27.8901 8 1.40332)" className="icon-accent" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M17 4C28.267 4 34 15.5 34 15.5C34 15.5 28.267 26 17 26C5.733 26 0 15.5 0 15.5C0 15.5 5.733 4 17 4Z" className="icon-main" />
+            <path d="M17 21C20.3137 21 23 18.3137 23 15C23 11.6863 20.3137 9 17 9C13.6863 9 11 11.6863 11 15C11 18.3137 13.6863 21 17 21Z" className="icon-accent" />
+            <mask id="mask0_263_56" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="8" y="0" width="18" height="29">
+                <rect x="8" y="1.40332" width="3" height="30.8627" transform="rotate(-27.8901 8 1.40332)" fill="white" />
+            </mask>
+            <g mask="url(#mask0_263_56)">
+                <circle cx="17" cy="15" r="6" fill="var(--background)" />
+            </g>
+        </g>
+        <defs>
+            <clipPath id="clip0_263_56">
+                <rect width="34" height="28.68" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconArrowLeft = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_256_175)">
+            <path fillRule="evenodd" clipRule="evenodd" d="M28 12H8L13 17L10 20L0 10L10 0L13 3L8 8H28V12Z" className="icon-main" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M20 8V12H28V8H20Z" className="icon-accent" />
+        </g>
+        <defs>
+            <clipPath id="clip0_256_175">
+                <rect width="28" height="20" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export const IconArrowRight = (props: SVGProps<SVGSVGElement>) => (
+    <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <g clipPath="url(#clip0_256_183)">
+            <path fillRule="evenodd" clipRule="evenodd" d="M0 12H20L15 17L18 20L28 10L18 0L15 3L20 8H0V12Z" className="icon-main" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M8 8V12H0V8H8Z" className="icon-accent" />
+        </g>
+        <defs>
+            <clipPath id="clip0_256_183">
+                <rect width="28" height="20" fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+);

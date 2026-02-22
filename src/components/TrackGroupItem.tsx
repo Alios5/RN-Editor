@@ -30,7 +30,7 @@ export const TrackGroupItem = ({
   const tracksInGroup = tracks.filter(track => track.groupId === group.id);
 
   return (
-    <div 
+    <div
       className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-secondary/50 transition-colors border-l-2 border-primary/30"
     >
       {/* Visibility toggle */}
@@ -41,9 +41,9 @@ export const TrackGroupItem = ({
         onClick={onToggleVisibility}
       >
         {group.visible ? (
-          <FontAwesomeIcon icon={faEye} className="h-4 w-4" />
+          <FontAwesomeIcon icon={faEye} className="h-5 w-5" />
         ) : (
-          <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4 text-muted-foreground" />
+          <FontAwesomeIcon icon={faEyeSlash} className="h-5 w-5 text-muted-foreground" />
         )}
       </Button>
 

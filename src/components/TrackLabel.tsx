@@ -7,7 +7,8 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faEye, faEyeSlash, faTrash, faFolderOpen, faGripVertical } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faTrash, faGripVertical, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { IconFolderOpen } from "./PanelIcons";
 import { getContrastColor } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useRef } from "react";
@@ -75,8 +76,8 @@ export const TrackLabel = ({
         {...dragHandleProps?.listeners}
         title={t("track.dragToReorder")}
         className={`h-[35px] w-[20px] flex items-center justify-center rounded-l-lg transition-all touch-none ${isDisabled
-            ? 'opacity-40 cursor-not-allowed'
-            : 'cursor-grab active:cursor-grabbing hover:brightness-110'
+          ? 'opacity-40 cursor-not-allowed'
+          : 'cursor-grab active:cursor-grabbing hover:brightness-110'
           }`}
         style={{ backgroundColor: track.color }}
       >
@@ -121,18 +122,18 @@ export const TrackLabel = ({
           <ContextMenuItem onClick={onToggleVisibility} className="gap-2">
             {track.visible ? (
               <>
-                <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" />
+                <FontAwesomeIcon icon={faEyeSlash} className="h-5 w-5" />
                 {t("actions.hide")}
               </>
             ) : (
               <>
-                <FontAwesomeIcon icon={faEye} className="h-4 w-4" />
+                <FontAwesomeIcon icon={faEye} className="h-5 w-5" />
                 {t("actions.show")}
               </>
             )}
           </ContextMenuItem>
           <ContextMenuItem onClick={onAssignToGroup} className="gap-2">
-            <FontAwesomeIcon icon={faFolderOpen} className="h-4 w-4" />
+            <IconFolderOpen className="h-5 w-5" />
             {t("group.assignToGroup")}
           </ContextMenuItem>
           <ContextMenuItem onClick={onDelete} className="gap-2 text-destructive">

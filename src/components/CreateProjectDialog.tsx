@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { z } from "zod";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolder, faMusic } from "@fortawesome/free-solid-svg-icons";
+import { faMusic } from "@fortawesome/free-solid-svg-icons";
+import { IconFolder } from "./PanelIcons";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   Dialog,
@@ -46,9 +47,9 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const result = projectNameSchema.safeParse(name);
-    
+
     if (!result.success) {
       setError(result.error.errors[0].message);
       return;
@@ -88,7 +89,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
         directory: true,
         multiple: false
       });
-      
+
       if (folder && !Array.isArray(folder)) {
         setProjectFolder(folder);
         setFolderError(""); // Réinitialiser l'erreur lors de la sélection
@@ -103,11 +104,11 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
       const filePath = await selectAudioFile();
       if (filePath) {
         const fileName = await basename(filePath);
-        
+
         // Check if project folder is selected
         if (projectFolder) {
           const musicDir = await dirname(filePath);
-          
+
           // If music is not in project folder, ask user
           if (musicDir !== projectFolder) {
             setPendingMusicPath(filePath);
@@ -116,7 +117,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
             return;
           }
         }
-        
+
         // Music is already in project folder or no project folder selected
         setMusicPath(filePath);
         setMusicFileName(fileName);
@@ -151,78 +152,78 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
 
   return (
     <>
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{t("project.createProject")}</DialogTitle>
-          <DialogDescription>
-            {t("project.noProjectsDescription")}
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">{t("project.projectName")}</Label>
-              <Input
-                id="name"
-                placeholder={t("project.projectNamePlaceholder")}
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  setError("");
-                }}
-                maxLength={100}
-                autoFocus
-              />
-              {error && <p className="text-sm text-destructive">{error}</p>}
-            </div>
-            
-            <div className="grid gap-2">
-              <Label>{t("project.projectFolder")} <span className="text-destructive">*</span></Label>
-              <div className="flex gap-2">
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{t("project.createProject")}</DialogTitle>
+            <DialogDescription>
+              {t("project.noProjectsDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">{t("project.projectName")}</Label>
                 <Input
-                  value={projectFolder}
-                  placeholder={t("project.projectFolderPlaceholder")}
-                  readOnly
-                  className="flex-1"
+                  id="name"
+                  placeholder={t("project.projectNamePlaceholder")}
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setError("");
+                  }}
+                  maxLength={100}
+                  autoFocus
                 />
-                <Button type="button" variant="outline" onClick={handleSelectFolder}>
-                  <FontAwesomeIcon icon={faFolder} className="h-4 w-4" />
-                </Button>
+                {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
-              {folderError && <p className="text-sm text-destructive">{folderError}</p>}
-              <p className="text-xs text-muted-foreground">
-                {t("project.projectFolderHint")}
-              </p>
-            </div>
-            
-            <div className="grid gap-2">
-              <Label>{t("project.music")}</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={musicFileName}
-                  placeholder={t("project.musicPlaceholder")}
-                  readOnly
-                  className="flex-1"
-                />
-                <Button type="button" variant="outline" onClick={handleSelectMusic}>
-                  <FontAwesomeIcon icon={faMusic} className="h-4 w-4" />
-                </Button>
+
+              <div className="grid gap-2">
+                <Label>{t("project.projectFolder")} <span className="text-destructive">*</span></Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={projectFolder}
+                    placeholder={t("project.projectFolderPlaceholder")}
+                    readOnly
+                    className="flex-1"
+                  />
+                  <Button type="button" variant="outline" onClick={handleSelectFolder}>
+                    <IconFolder className="h-5 w-5" />
+                  </Button>
+                </div>
+                {folderError && <p className="text-sm text-destructive">{folderError}</p>}
+                <p className="text-xs text-muted-foreground">
+                  {t("project.projectFolderHint")}
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {t("project.musicHint")}
-              </p>
+
+              <div className="grid gap-2">
+                <Label>{t("project.music")}</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={musicFileName}
+                    placeholder={t("project.musicPlaceholder")}
+                    readOnly
+                    className="flex-1"
+                  />
+                  <Button type="button" variant="outline" onClick={handleSelectMusic}>
+                    <IconFolder className="h-5 w-5" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {t("project.musicHint")}
+                </p>
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="ghost" onClick={handleCancel}>
-              {t("actions.cancel")}
-            </Button>
-            <Button type="submit">{t("actions.create")}</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <Button type="button" variant="ghost" onClick={handleCancel}>
+                {t("actions.cancel")}
+              </Button>
+              <Button type="submit">{t("actions.create")}</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <CopyMusicDialog
         open={showCopyMusicDialog}

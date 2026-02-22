@@ -23,7 +23,34 @@
   <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/kYrSOb2mOKcjVO5ZRkYHbDHSygI2/social-images/social-1761253418176-Group 43.png">
 </head>
 
-  <body style="margin: 0; padding: 0; background: hsl(230, 35%, 7%); overflow: hidden;">
+  <script>
+    (function() {
+      try {
+        var stored = localStorage.getItem("rhythmnator_theme");
+        var bg = "hsl(225, 7%, 11%)";
+        var fg = "hsl(0, 0%, 94%)";
+        var primary = "hsl(258, 100%, 68%)";
+        var border = "hsl(223, 6%, 21%)";
+        
+        if (stored) {
+          var data = JSON.parse(stored);
+          if (data && data.colors) {
+            bg = data.colors.background ? 'hsl(' + data.colors.background + ')' : bg;
+            fg = data.colors.foreground ? 'hsl(' + data.colors.foreground + ')' : fg;
+            primary = data.colors.primary ? 'hsl(' + data.colors.primary + ')' : primary;
+            border = data.colors.border ? 'hsl(' + data.colors.border + ')' : border;
+          }
+        }
+        
+        var root = document.documentElement;
+        root.style.setProperty('--splash-bg', bg);
+        root.style.setProperty('--splash-text', fg);
+        root.style.setProperty('--splash-spinner', primary);
+        root.style.setProperty('--splash-spinner-bg', border);
+      } catch (e) {}
+    })();
+  </script>
+  <body style="margin: 0; padding: 0; background: var(--splash-bg, hsl(230, 35%, 7%)); overflow: hidden;">
     <!-- Splash Screen -->
     <div id="splash-screen" style="
       position: fixed;
@@ -31,7 +58,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: hsl(230, 35%, 7%);
+      background: var(--splash-bg, hsl(230, 35%, 7%));
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -49,13 +76,9 @@
         <div style="
           width: 120px;
           height: 120px;
-          border-radius: 24px;
-          overflow: hidden;
-          border: 3px solid hsl(245, 75%, 60%);
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 60px hsl(245, 75%, 60%, 0.3);
           animation: pulse 2s ease-in-out infinite;
         ">
-          <img src="/logo.png" alt="RhythmNator Logo" style="width: 100%; height: 100%; object-fit: cover;" />
+          <img src="/logo.png" alt="RhythmNator Logo" style="width: 100%; height: 100%; object-fit: contain;" />
         </div>
         
         <!-- Nom de l'application -->
@@ -63,7 +86,7 @@
           font-family: 'Audiowide', sans-serif;
           font-size: 28px;
           font-weight: 700;
-          color: hsl(0, 0%, 98%);
+          color: var(--splash-text, hsl(0, 0%, 98%));
           margin: 0;
           letter-spacing: 1px;
         ">RhythmNator Editor</h1>
@@ -72,8 +95,8 @@
         <div style="
           width: 40px;
           height: 40px;
-          border: 3px solid hsl(230, 20%, 20%);
-          border-top-color: hsl(230, 70%, 60%);
+          border: 3px solid var(--splash-spinner-bg, hsl(230, 20%, 20%));
+          border-top-color: var(--splash-spinner, hsl(230, 70%, 60%));
           border-radius: 50%;
           animation: spin 1s linear infinite;
         "></div>

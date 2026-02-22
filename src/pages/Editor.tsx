@@ -48,6 +48,7 @@ import { UnsavedChangesDialog } from "@/components/UnsavedChangesDialog";
 import { LassoSelection } from "@/components/LassoSelection";
 import { TracksPanel } from "@/components/TracksPanel";
 import { SortableSidebarPanel } from "@/components/SortableSidebarPanel";
+import { IconHome, IconSave, IconExport, IconArrowLeft, IconArrowRight, IconAngleLeft, IconAngleRight, IconFolderOpen } from "@/components/PanelIcons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -2340,7 +2341,7 @@ const Editor = () => {
             <div className="flex items-center gap-3">
               <img src="/logo.png" alt="RhythmNator Logo" className="w-10 h-10 object-cover logo-animate" />
               <div>
-                <h1 className="text-xl font-bold leading-tight" style={{ fontFamily: 'Audiowide, sans-serif' }}>RhythmNator Editor</h1>
+                <h1 className="text-xl font-bold leading-tight uppercase" style={{ fontFamily: 'Audiowide, sans-serif' }}>RhythmNator Editor</h1>
                 <p className="text-xs text-muted-foreground">{project?.name}</p>
               </div>
             </div>
@@ -2495,9 +2496,9 @@ const Editor = () => {
                       onClick={() => setIsSidebarVisible(!isSidebarVisible)}
                     >
                       {isSidebarVisible ? (
-                        <FontAwesomeIcon icon={faAnglesLeft} className="h-5 w-5" />
-                      ) : (
                         <FontAwesomeIcon icon={faAnglesRight} className="h-5 w-5" />
+                      ) : (
+                        <FontAwesomeIcon icon={faAnglesLeft} className="h-5 w-5" />
                       )}
                     </Button>
                   </TooltipTrigger>

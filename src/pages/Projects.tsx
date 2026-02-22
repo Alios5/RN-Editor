@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMusic, faFolderOpen, faBox, faFileLines, faKeyboard, faPalette, faArrowUpRightFromSquare, faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faMusic, faBox, faFileLines, faKeyboard, faPalette, faArrowUpRightFromSquare, faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { ThemeEditor } from "@/components/ThemeEditor";
 import { FontSelectorButton } from "@/components/FontSelector";
-import { IconEqualiser, IconBox, IconClock } from "@/components/PanelIcons";
+import { IconEqualiser, IconBox, IconClock, IconFolderOpen } from "@/components/PanelIcons";
 import { invoke } from "@tauri-apps/api/core";
 import { getProjects, createProject, deleteProject } from "@/utils/localStorage";
 import { openProjectFile, saveProjectToFile } from "@/utils/fileSystem";
@@ -183,7 +183,7 @@ const Projects = () => {
                   variant="secondary"
                   className="w-full justify-start gap-2 btn-animate"
                 >
-                  <FontAwesomeIcon icon={faFolderOpen} className="h-4 w-4" />
+                  <IconFolderOpen className="h-5 w-5" />
                   {t("project.open")}
                 </Button>
                 <Button
