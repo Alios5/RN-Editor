@@ -1,63 +1,70 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RhythmNator Editor</title>
-    <meta name="description" content="Music mapper Editor for rhythm game">
-    <meta name="author" content="RhythmNator" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Audiowide&display=swap" rel="stylesheet">
 
-    <!-- PWA Setup -->
-    <meta name="theme-color" content="#1b1c23" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="RN Editor" />
-    <link rel="apple-touch-icon" href="/logo.png" />
-    
-    <!-- Open Graph Setup -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RhythmNator Editor</title>
+  <meta name="description" content="Music mapper Editor for rhythm game">
+  <meta name="author" content="RhythmNator" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Audiowide&display=swap"
+    rel="stylesheet">
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta property="og:title" content="RhythmNator Edito">
+  <!-- PWA Setup -->
+  <meta name="theme-color" content="#1b1c23" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RN Editor" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+
+  <!-- Open Graph Setup -->
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta property="og:title" content="RhythmNator Edito">
   <meta name="twitter:title" content="RhythmNator Edito">
   <meta property="og:description" content="Music mapper Editor for rhythm game">
   <meta name="twitter:description" content="Music mapper Editor for rhythm game">
-  <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/kYrSOb2mOKcjVO5ZRkYHbDHSygI2/social-images/social-1761253418176-Group 43.png">
-  <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/kYrSOb2mOKcjVO5ZRkYHbDHSygI2/social-images/social-1761253418176-Group 43.png">
+  <meta property="og:image"
+    content="https://storage.googleapis.com/gpt-engineer-file-uploads/kYrSOb2mOKcjVO5ZRkYHbDHSygI2/social-images/social-1761253418176-Group 43.png">
+  <meta name="twitter:image"
+    content="https://storage.googleapis.com/gpt-engineer-file-uploads/kYrSOb2mOKcjVO5ZRkYHbDHSygI2/social-images/social-1761253418176-Group 43.png">
 </head>
 
-  <script>
-    (function() {
-      try {
-        var stored = localStorage.getItem("rhythmnator_theme");
-        var bg = "hsl(225, 7%, 11%)";
-        var fg = "hsl(0, 0%, 94%)";
-        var primary = "hsl(258, 100%, 68%)";
-        var border = "hsl(223, 6%, 21%)";
-        
-        if (stored) {
-          var data = JSON.parse(stored);
-          if (data && data.colors) {
-            bg = data.colors.background ? 'hsl(' + data.colors.background + ')' : bg;
-            fg = data.colors.foreground ? 'hsl(' + data.colors.foreground + ')' : fg;
-            primary = data.colors.primary ? 'hsl(' + data.colors.primary + ')' : primary;
-            border = data.colors.border ? 'hsl(' + data.colors.border + ')' : border;
-          }
+<script>
+  (function () {
+    try {
+      var stored = localStorage.getItem("rhythmnator_theme");
+      var bg = "hsl(225, 7%, 11%)";
+      var fg = "hsl(0, 0%, 94%)";
+      var primary = "hsl(258, 100%, 68%)";
+      var border = "hsl(223, 6%, 21%)";
+
+      if (stored) {
+        var data = JSON.parse(stored);
+        if (data && data.colors) {
+          bg = data.colors.background ? 'hsl(' + data.colors.background + ')' : bg;
+          fg = data.colors.foreground ? 'hsl(' + data.colors.foreground + ')' : fg;
+          primary = data.colors.primary ? 'hsl(' + data.colors.primary + ')' : primary;
+          border = data.colors.border ? 'hsl(' + data.colors.border + ')' : border;
         }
-        
-        var root = document.documentElement;
-        root.style.setProperty('--splash-bg', bg);
-        root.style.setProperty('--splash-text', fg);
-        root.style.setProperty('--splash-spinner', primary);
-        root.style.setProperty('--splash-spinner-bg', border);
-      } catch (e) {}
-    })();
-  </script>
-  <body style="margin: 0; padding: 0; background: var(--splash-bg, hsl(230, 35%, 7%)); overflow: hidden;">
-    <!-- Splash Screen -->
-    <div id="splash-screen" style="
+      }
+
+      var root = document.documentElement;
+      root.style.setProperty('--splash-bg', bg);
+      root.style.setProperty('--splash-text', fg);
+      root.style.setProperty('--splash-spinner', primary);
+      root.style.setProperty('--splash-spinner-bg', border);
+    } catch (e) { }
+  })();
+</script>
+
+<body style="margin: 0; padding: 0; background: var(--splash-bg, hsl(230, 35%, 7%)); overflow: hidden;">
+  <!-- Splash Screen -->
+  <div id="splash-screen" style="
       position: fixed;
       top: 0;
       left: 0;
@@ -71,23 +78,23 @@
       z-index: 9999;
       transition: opacity 0.3s ease-out;
     ">
-      <div style="
+    <div style="
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 24px;
       ">
-        <!-- Logo/Icône -->
-        <div style="
+      <!-- Logo/Icône -->
+      <div style="
           width: 120px;
           height: 120px;
           animation: pulse 2s ease-in-out infinite;
         ">
-          <img src="/logo.png" alt="RhythmNator Logo" style="width: 100%; height: 100%; object-fit: contain;" />
-        </div>
-        
-        <!-- Nom de l'application -->
-        <h1 style="
+        <img src="/logo.png" alt="RhythmNator Logo" style="width: 100%; height: 100%; object-fit: contain;" />
+      </div>
+
+      <!-- Nom de l'application -->
+      <h1 style="
           font-family: 'Audiowide', sans-serif;
           font-size: 28px;
           font-weight: 700;
@@ -95,9 +102,9 @@
           margin: 0;
           letter-spacing: 1px;
         ">RhythmNator Editor</h1>
-        
-        <!-- Spinner de chargement -->
-        <div style="
+
+      <!-- Spinner de chargement -->
+      <div style="
           width: 40px;
           height: 40px;
           border: 3px solid var(--splash-spinner-bg, hsl(230, 20%, 20%));
@@ -105,21 +112,31 @@
           border-radius: 50%;
           animation: spin 1s linear infinite;
         "></div>
-      </div>
     </div>
-    
-    <style>
-      @keyframes spin {
-        to { transform: rotate(360deg); }
+  </div>
+
+  <style>
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
-      
-      @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
       }
-    </style>
-    
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+  </style>
+
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
