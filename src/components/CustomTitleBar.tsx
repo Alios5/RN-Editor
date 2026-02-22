@@ -2,8 +2,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { CloseHandler } from "@/utils/closeHandler";
+import { isDesktop } from "@/utils/platform";
 
 export const CustomTitleBar = () => {
+  if (!isDesktop()) {
+    return null;
+  }
+
   const handleMinimize = async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -44,15 +49,15 @@ export const CustomTitleBar = () => {
   };
 
   return (
-    <div 
+    <div
       className="fixed top-0 left-0 right-0 h-8 bg-background border-b flex items-center justify-between select-none z-50"
     >
-      <div 
+      <div
         onMouseDown={handleDragStart}
         className="flex items-center gap-2 text-sm font-medium px-2 flex-1 h-full cursor-move"
       >
       </div>
-      
+
       <div className="flex items-center shrink-0">
         <button
           onMouseDown={handleMinimize}
@@ -61,7 +66,7 @@ export const CustomTitleBar = () => {
         >
           <FontAwesomeIcon icon={faMinus} className="h-4 w-4" />
         </button>
-        
+
         <button
           onMouseDown={handleMaximize}
           className="hover:bg-accent h-8 w-10 flex items-center justify-center transition-colors cursor-pointer"
@@ -69,7 +74,7 @@ export const CustomTitleBar = () => {
         >
           <FontAwesomeIcon icon={faSquare} className="h-3 w-3" />
         </button>
-        
+
         <button
           onMouseDown={handleClose}
           className="hover:bg-destructive hover:text-destructive-foreground h-8 w-10 flex items-center justify-center transition-colors cursor-pointer"

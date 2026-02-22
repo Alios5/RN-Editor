@@ -23,6 +23,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useGitHubRelease } from "@/hooks/useGitHubRelease";
 import { panelColors } from "@/lib/panelColors";
 import { parseMarkdown } from "@/utils/markdownParser";
+import { isDesktop } from "@/utils/platform";
+import { saveProjectToDB, saveAudioToDB, deleteProjectFromDB } from "@/utils/indexedDB";
 
 // Import version from package.json
 const APP_VERSION = "0.3.4";
@@ -41,13 +43,13 @@ const Projects = () => {
     setProjects(getProjects());
   }, []);
 
-  const handleCreateProject = async (name: string, projectFolder?: string, musicPath?: string, musicFileName?: string, shouldCopyMusic?: boolean) => {
+  const handleCreateProject = async (name: string, projectFolder?: string, musicPath?: string, musicFileName?: string, shouldCopyMusic?: boolean, audioFile?: File) => {
     try {
       let finalMusicPath = musicPath;
       let finalMusicFileName = musicFileName;
 
-      // If music is provided and user chose to copy it to project folder
-      if (musicPath && projectFolder && shouldCopyMusic) {
+      // If music is provided and user chose to copy it to project folder (Desktop only)
+      if (isDesktop() && musicPath && projectFolder && shouldCopyMusic) {
         // Copy the music to the project folder
         const copiedPath = await copyMusicToProjectFolder(musicPath, projectFolder);
         if (copiedPath) {
@@ -58,17 +60,37 @@ const Projects = () => {
 
       const newProject = createProject(name, projectFolder, finalMusicPath, finalMusicFileName);
 
-      // If a project folder is specified, save the RNE file immediately
-      if (projectFolder) {
-        const rneFilePath = await join(projectFolder, `${name}.rne`);
-        await saveProjectToFile(newProject, rneFilePath);
-        newProject.filePath = rneFilePath;
+      if (isDesktop()) {
+        // If a project folder is specified, save the RNE file immediately
+        if (projectFolder) {
+          const rneFilePath = await join(projectFolder, `${name}.rne`);
+          await saveProjectToFile(newProject, rneFilePath);
+          newProject.filePath = rneFilePath;
+        }
+      } else {
+        // Web: Save Audio File to IndexedDB
+        if (audioFile) {
+          await saveAudioToDB(newProject.id, audioFile, finalMusicFileName || audioFile.name);
+        }
+
+        // Web: Save Project to IndexedDB
+        const rneData = {
+          version: "1.0.0",
+          project: {
+            ...newProject,
+            updatedAt: new Date().toISOString()
+          },
+          exportedAt: new Date().toISOString()
+        };
+        await saveProjectToDB(rneData);
       }
 
+      // Since navigate runs after saving, let's verify if the project is in projects list
       setProjects(getProjects());
       navigate(`/editor/${newProject.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating project:", error);
+      toast.error(`Error creating project: ${error.message || error}`);
     }
   };
 
@@ -76,9 +98,16 @@ const Projects = () => {
     navigate(`/editor/${id}`);
   };
 
-  const handleDeleteProject = (id: string) => {
+  const handleDeleteProject = async (id: string) => {
     const project = projects.find(p => p.id === id);
     deleteProject(id);
+    if (!isDesktop()) {
+      try {
+        await deleteProjectFromDB(id);
+      } catch (err) {
+        console.error("Failed to delete project from IDB", err);
+      }
+    }
     setProjects(getProjects());
   };
 
@@ -264,7 +293,7 @@ const Projects = () => {
                 {projects.length === 0 ? (
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center max-w-md">
-                      <div className="mb-6 flex items-center justify-center empty-state-icon">
+                      <div className="mb-6 flex items-center justify-center opacity-80 text-muted-foreground">
                         <IconClock className="h-16 w-16" />
                       </div>
                       <h3 className="mb-2 text-xl font-semibold">{t("project.noProjects")}</h3>

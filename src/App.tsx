@@ -12,6 +12,7 @@ import { CustomTitleBar } from "@/components/CustomTitleBar";
 import { CloseHandlerTranslations } from "@/components/CloseHandlerTranslations";
 import { useWindowShortcuts } from "@/hooks/useWindowShortcuts";
 import { loadTheme, applyTheme } from "@/utils/themeManager";
+import { isDesktop } from "@/utils/platform";
 import Projects from "./pages/Projects";
 import Editor from "./pages/Editor";
 import NotFound from "./pages/NotFound";
@@ -35,7 +36,7 @@ const App = () => {
         }, 300);
       }
     };
-    
+
     // Wait a bit for everything to be loaded
     setTimeout(removeSplash, 100);
   }, []);
@@ -65,7 +66,7 @@ const App = () => {
   useEffect(() => {
     // Initialize global close interception. Editor will override the dialog callback.
     let cleanupClose: (() => void) | undefined;
-    
+
     const init = async () => {
       cleanupClose = await CloseHandler.initialize({
         onShowDialog: () => {
@@ -74,7 +75,7 @@ const App = () => {
         },
       });
     };
-    
+
     init();
 
     return () => {
@@ -105,23 +106,23 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <FontProvider>
-        <CloseHandlerTranslations />
-        <TooltipProvider>
-          <CustomTitleBar />
-          <div className="fixed inset-0 top-8 overflow-hidden">
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Projects />} />
-                <Route path="/editor/:id" element={<Editor />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </div>
-        </TooltipProvider>
-      </FontProvider>
+          <CloseHandlerTranslations />
+          <TooltipProvider>
+            <CustomTitleBar />
+            <div className={`fixed inset-0 overflow-hidden ${isDesktop() ? "top-8" : "top-0"}`}>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Projects />} />
+                  <Route path="/editor/:id" element={<Editor />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </div>
+          </TooltipProvider>
+        </FontProvider>
       </LanguageProvider>
     </QueryClientProvider>
   );

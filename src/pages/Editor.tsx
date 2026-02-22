@@ -13,14 +13,17 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { getProjects, updateProjectMetadata } from "@/utils/localStorage";
-import { saveProjectToFile, loadProjectFromFile, saveProjectAs } from "@/utils/fileSystem";
-import { selectAudioFile, isMusicInProjectFolder, copyMusicToProjectFolder, convertFilePathToAudioUrl, loadAudioPlatformSpecific } from "@/utils/musicManager";
+import { saveProjectToFile, loadProjectFromFile, saveProjectAs, exportProjectToWeb } from "@/utils/fileSystem";
+import { selectAudioFile, isMusicInProjectFolder, copyMusicToProjectFolder, loadAudioPlatformSpecific } from "@/utils/musicManager";
 import { dirname, basename } from "@tauri-apps/api/path";
+import { isDesktop } from "@/utils/platform";
+import { loadProjectFromDB, saveAudioToDB } from "@/utils/indexedDB";
 import { Project } from "@/types/project";
 import { Track } from "@/types/track";
 import { TrackGroup } from "@/types/trackGroup";
 import { SpecificAction } from "@/types/specificAction";
 import { Note } from "@/types/note";
+import { generateId } from "@/utils/uuid";
 import { toast } from "sonner";
 import { AudioPanel } from "@/components/AudioPanel";
 import { Waveform } from "@/components/Waveform";
@@ -655,7 +658,7 @@ const Editor = () => {
       }
 
       // If the project has a filePath, load from file
-      if (found.filePath) {
+      if (isDesktop() && found.filePath) {
         console.log('Le projet a un filePath:', found.filePath);
         try {
           // Check if the file exists
@@ -686,8 +689,25 @@ const Editor = () => {
           console.error("Erreur lors du chargement:", error);
           navigate("/");
         }
+      } else if (!isDesktop()) {
+        console.log('Web project: loading from IndexedDB');
+        try {
+          const rneData = await loadProjectFromDB(found.id);
+          if (rneData && rneData.project) {
+            setProject(rneData.project);
+            loadProjectData(rneData.project);
+            console.log('Projet Web chargé avec succès !');
+          } else {
+            console.error('Projet introuvable dans IndexedDB, chargement des métadonnées basiques');
+            setProject(found);
+            loadProjectData(found);
+          }
+        } catch (error) {
+          console.error("Erreur chargement web:", error);
+          navigate("/");
+        }
       } else {
-        console.log('Projet sans fichier (ancien système)');
+        console.log('Projet natif sans fichier (ancien système)');
         // Project without file (legacy system)
         setProject(found);
         loadProjectData(found);
@@ -726,26 +746,44 @@ const Editor = () => {
     if (project.subRhythmSync) setSubRhythmSync(project.subRhythmSync);
     if (project.volume !== undefined) setVolume(project.volume);
     if (project.pitchShift !== undefined) setPitch(project.pitchShift);
-    if (project.musicPath) {
-      // Check if music file exists before loading
-      import('@tauri-apps/plugin-fs').then(async ({ exists }) => {
-        try {
-          const musicExists = await exists(project.musicPath!);
+    if (isDesktop()) {
+      if (project.musicPath) {
+        // Check if music file exists before loading for desktop
+        import('@tauri-apps/plugin-fs').then(async ({ exists }) => {
+          try {
+            const musicExists = await exists(project.musicPath!);
 
-          if (musicExists) {
-            setMusicFilePath(project.musicPath!);
-            const url = await loadAudioPlatformSpecific(project.musicPath!);
-            setAudioUrl(url);
-          } else {
-            console.warn('Music file not found:', project.musicPath);
+            if (musicExists) {
+              setMusicFilePath(project.musicPath!);
+              const url = await loadAudioPlatformSpecific(project.musicPath!);
+              setAudioUrl(url);
+            } else {
+              console.warn('Music file not found:', project.musicPath);
+              setShowMissingMusicDialog(true);
+            }
+          } catch (error) {
+            console.error('Error checking music file:', error);
             setShowMissingMusicDialog(true);
           }
-        } catch (error) {
-          console.error('Error checking music file:', error);
+        });
+      }
+    } else {
+      // Web: Check IDB for audio even if musicPath is unexpectedly empty 
+      // This handles cases where projects were created without the magic 'idb://audio' string
+      const webPath = project.musicPath || "idb://audio";
+      setMusicFilePath(webPath);
+      loadAudioPlatformSpecific(webPath, project.id).then(url => {
+        if (url) {
+          setAudioUrl(url);
+        } else if (project.musicPath) {
+          // Only show warning if there was originally a path but no audio was found
           setShowMissingMusicDialog(true);
         }
+      }).catch(() => {
+        if (project.musicPath) setShowMissingMusicDialog(true);
       });
     }
+
     if (project.musicFileName) setAudioFileName(project.musicFileName);
     if (project.startOffset !== undefined) setStartOffset(project.startOffset);
     // Load tracks
@@ -757,7 +795,7 @@ const Editor = () => {
 
     // Initialize history with loaded state
     setTimeout(async () => {
-      const url = project.musicPath ? await loadAudioPlatformSpecific(project.musicPath) : "";
+      const url = project.musicPath ? await loadAudioPlatformSpecific(project.musicPath, project.id) : "";
       const initialState: EditorState = {
         tracks: project.tracks || [],
         trackGroups: project.trackGroups || [],
@@ -794,7 +832,7 @@ const Editor = () => {
       };
 
       try {
-        if (project.filePath) {
+        if (isDesktop() && project.filePath) {
           // Save to existing file
           await saveProjectToFile(updatedProject, project.filePath);
           setHasUnsavedChanges(false); // Reset after save
@@ -807,10 +845,15 @@ const Editor = () => {
               }
             }
           });
+        } else if (!isDesktop()) {
+          // Web: Just save to IDB
+          await saveProjectToFile(updatedProject);
+          setHasUnsavedChanges(false); // Reset after save
+          toast.success(t("project.saveSuccess"));
         } else {
           // First save - ask where to save
           const filePath = await saveProjectToFile(updatedProject);
-          if (filePath) {
+          if (filePath && filePath !== "web_saved") {
             setProject({ ...updatedProject, filePath });
             setHasUnsavedChanges(false); // Reset after save
             const dirPath = await dirname(filePath);
@@ -849,8 +892,17 @@ const Editor = () => {
       };
 
       try {
+        if (!isDesktop()) {
+          // On web, "Save As" implies exporting the current state to a downloaded file.
+          await saveProjectToFile(updatedProject);
+          await exportProjectToWeb(updatedProject);
+          setHasUnsavedChanges(false);
+          toast.success(t("export.success") || "Projet exporté avec succès.");
+          return;
+        }
+
         const filePath = await saveProjectAs(updatedProject);
-        if (filePath) {
+        if (filePath && filePath !== "web_saved") {
           setProject({ ...updatedProject, filePath });
           setHasUnsavedChanges(false); // Reset after save
           toast.success(t("project.saveAsSuccess", { path: filePath }));
@@ -927,9 +979,22 @@ const Editor = () => {
   const proceedWithMusicSelection = async () => {
     try {
       // Select audio file
-      const filePath = await selectAudioFile();
-      if (!filePath) return;
+      const result = await selectAudioFile();
+      if (!result) return;
 
+      if (result instanceof File) {
+        // Web: handle File directly
+        setMusicFilePath("idb://audio"); // Magic string instead of empty so Editor knows it exists
+        const url = URL.createObjectURL(result);
+        setAudioUrl(url);
+        setAudioFileName(result.name);
+        if (project && project.id) {
+          await saveAudioToDB(project.id, result, result.name);
+        }
+        return;
+      }
+
+      const filePath = result as string;
       const fileName = await basename(filePath);
 
       // Proceed with loading
@@ -1030,7 +1095,7 @@ const Editor = () => {
   // Track management
   const handleCreateTrack = (name: string, color: string, assignedKey?: string) => {
     const newTrack: Track = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name,
       color,
       visible: true,
@@ -1127,7 +1192,7 @@ const Editor = () => {
   // Track Groups Management
   const handleCreateGroup = (name: string, selectedTrackIds: string[]) => {
     const newGroup: TrackGroup = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name,
       visible: true,
       collapsed: false,
@@ -1170,7 +1235,7 @@ const Editor = () => {
   // Specific Actions Management
   const handleCreateAction = (name: string, icon: string) => {
     const newAction: SpecificAction = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name,
       icon,
     };
@@ -1230,7 +1295,7 @@ const Editor = () => {
     setTracks(prevTracks => prevTracks.map(track => {
       if (track.id === trackId) {
         const newNote = {
-          id: crypto.randomUUID(),
+          id: generateId(),
           trackId: track.id,
           trackName: track.name,
           ...noteData
@@ -1711,7 +1776,7 @@ const Editor = () => {
 
           const duplicateNote: Note = {
             ...note,
-            id: crypto.randomUUID(),
+            id: generateId(),
             gridPosition: newPosition,
             startTime: newStartTime,
             duration: newDuration
@@ -1819,7 +1884,7 @@ const Editor = () => {
       // Créer la note fusionnée (garder les propriétés de la première note sauf les dimensions)
       const mergedNote = {
         ...firstNote,
-        id: crypto.randomUUID(),
+        id: generateId(),
         startTime: mergedStartTime,
         duration: mergedDuration,
         gridPosition: mergedGridPosition,
@@ -2250,6 +2315,12 @@ const Editor = () => {
   const handleExportJson = async () => {
     if (project) {
       try {
+        if (!isDesktop()) {
+          const count = exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
+          toast.success(`Le fichier JSON (${count} notes) a été téléchargé avec succès !`);
+          return;
+        }
+
         if (lastExportPath) {
           // Exporter vers le chemin existant
           const result = await exportToJsonFile(bpm, tracks, trackGroups, project.name, audioDuration, lastExportPath);
@@ -2315,6 +2386,12 @@ const Editor = () => {
   const handleExportJsonAs = async () => {
     if (project) {
       try {
+        if (!isDesktop()) {
+          const count = exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
+          toast.success(`Le fichier JSON (${count} notes) a été téléchargé !`);
+          return;
+        }
+
         const result = await exportToJsonFile(bpm, tracks, trackGroups, project.name, audioDuration);
         if (result.success && result.filePath) {
           setLastExportPath(result.filePath);

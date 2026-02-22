@@ -2,6 +2,8 @@ import { copyFile, exists, mkdir } from "@tauri-apps/plugin-fs";
 import { dirname, join, basename } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc } from "@tauri-apps/api/core";
+import { isDesktop } from "./platform";
+import { loadAudioFromDB } from "./indexedDB";
 
 /**
  * Checks if a music file is in the same folder as the RNE file
@@ -13,6 +15,7 @@ export const isMusicInProjectFolder = async (
   musicPath: string,
   rneFilePath: string
 ): Promise<boolean> => {
+  if (!isDesktop()) return false;
   try {
     const musicDir = await dirname(musicPath);
     const rneDir = await dirname(rneFilePath);
@@ -33,6 +36,7 @@ export const copyMusicToProjectFolder = async (
   sourceMusicPath: string,
   targetFolderPath: string
 ): Promise<string | null> => {
+  if (!isDesktop()) return null;
   try {
     // Extract the file name
     const fileName = await basename(sourceMusicPath);
@@ -60,7 +64,21 @@ export const copyMusicToProjectFolder = async (
  * Opens a dialog to select an audio file
  * @returns The path of the selected file or null if cancelled
  */
-export const selectAudioFile = async (): Promise<string | null> => {
+export const selectAudioFile = async (): Promise<string | File | null> => {
+  if (!isDesktop()) {
+    return new Promise((resolve) => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "audio/*";
+      input.onchange = (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        resolve(file || null);
+      };
+      input.oncancel = () => resolve(null);
+      input.click();
+    });
+  }
+
   try {
     const filePath = await open({
       filters: [
@@ -94,6 +112,7 @@ export const getRelativeMusicPath = async (
   musicPath: string,
   rneFilePath: string
 ): Promise<string> => {
+  if (!isDesktop()) return musicPath;
   try {
     const isInSameFolder = await isMusicInProjectFolder(musicPath, rneFilePath);
     if (isInSameFolder) {
@@ -118,6 +137,7 @@ export const resolveMusicPath = async (
   musicPath: string,
   rneFilePath: string
 ): Promise<string> => {
+  if (!isDesktop()) return musicPath;
   try {
     // If the path contains a folder separator, it's an absolute path
     if (musicPath.includes("/") || musicPath.includes("\\")) {
@@ -150,8 +170,26 @@ export const convertFilePathToAudioUrl = (filePath: string): string => {
  * @param filePath Path to the file
  * @returns Promise with URL (blob: on Linux, asset:// on others)
  */
-export const loadAudioPlatformSpecific = async (filePath: string): Promise<string> => {
+export const loadAudioPlatformSpecific = async (filePath: string, projectId?: string): Promise<string> => {
   if (!filePath) return "";
+
+  if (!isDesktop() && projectId) {
+    try {
+      // On web, try to load from IndexedDB first
+      const audioData = await loadAudioFromDB(projectId);
+      if (audioData) {
+        return URL.createObjectURL(audioData.file);
+      }
+    } catch (e) {
+      console.error("Failed to load audio from DB:", e);
+    }
+    // If not found in DB or error (e.g. provided as a direct web URL instead)
+    // we can fallback to standard URL loading if it's a blob or http link
+    if (filePath.startsWith("blob:") || filePath.startsWith("http")) {
+      return filePath;
+    }
+    return "";
+  }
 
   try {
     const isLinux = navigator.userAgent.toLowerCase().includes('linux');

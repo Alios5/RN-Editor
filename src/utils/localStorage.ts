@@ -2,6 +2,14 @@ import { Project } from "@/types/project";
 
 const STORAGE_KEY = "rhythmnator_projects";
 
+// Helper for generating UUIDs, especially useful for insecure HTTP contexts on mobile/LAN
+const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
+
 // Interface for locally stored project metadata
 export interface ProjectMetadata {
   id: string;
@@ -37,23 +45,23 @@ export const addProjectMetadata = (project: Project): void => {
     createdAt: project.createdAt,
     updatedAt: project.updatedAt,
   };
-  
+
   const projects = getProjectsMetadata();
   const existingIndex = projects.findIndex(p => p.id === project.id);
-  
+
   if (existingIndex !== -1) {
     projects[existingIndex] = metadata;
   } else {
     projects.push(metadata);
   }
-  
+
   saveProjectsMetadata(projects);
 };
 
 export const updateProjectMetadata = (id: string, updates: Partial<ProjectMetadata>): void => {
   const projects = getProjectsMetadata();
   const index = projects.findIndex((p) => p.id === id);
-  
+
   if (index !== -1) {
     projects[index] = {
       ...projects[index],
@@ -79,7 +87,7 @@ export const getProjects = (): Project[] => {
     createdAt: meta.createdAt,
     updatedAt: meta.updatedAt,
     filePath: meta.filePath,
-  }));
+  } as Project));
 };
 
 export const saveProjects = (projects: Project[]): void => {
@@ -100,15 +108,15 @@ export const createProject = (
   musicFileName?: string
 ): Project => {
   const newProject: Project = {
-    id: crypto.randomUUID(),
+    id: generateId(),
     name,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    projectPath: projectFolder,
+    filePath: projectFolder ? `${projectFolder}/${name}.rne` : undefined,
     musicPath: musicPath,
     musicFileName: musicFileName,
-  };
-  
+  } as Project;
+
   addProjectMetadata(newProject);
   return newProject;
 };

@@ -5,6 +5,8 @@ import { addProjectMetadata, updateProjectMetadata } from "./localStorage";
 import { getRelativeMusicPath, resolveMusicPath } from "./musicManager";
 import { setFileReadonly, isFileReadonly } from "./fileProtection";
 import pako from "pako";
+import { isDesktop } from "./platform";
+import { saveProjectToDB, loadProjectFromDB } from "./indexedDB";
 
 export interface RNEFileFormat {
   version: string;
@@ -67,8 +69,27 @@ function isEncodedContent(content: string): boolean {
  */
 export const saveProjectToFile = async (project: Project, filePath?: string): Promise<string | null> => {
   try {
+    if (!isDesktop()) {
+      // Web: Save to IndexedDB
+      const rneData: RNEFileFormat = {
+        version: "1.0.0",
+        project: {
+          ...project,
+          updatedAt: new Date().toISOString()
+        },
+        exportedAt: new Date().toISOString()
+      };
+      await saveProjectToDB(rneData);
+
+      // Update metadata in localStorage 
+      const updatedProject = { ...project };
+      addProjectMetadata(updatedProject);
+
+      return "web_saved";
+    }
+
     let targetPath = filePath;
-    
+
     if (!targetPath) {
       // Open the save dialog
       targetPath = await save({
@@ -80,7 +101,7 @@ export const saveProjectToFile = async (project: Project, filePath?: string): Pr
         ],
         defaultPath: `${project.name}.rne`
       });
-      
+
       if (!targetPath) {
         return null; // User cancelled
       }
@@ -136,6 +157,35 @@ export const saveProjectToFile = async (project: Project, filePath?: string): Pr
 };
 
 /**
+ * Triggers a download of the .rne file in the Web browser.
+ * @param project The project to export
+ */
+export const exportProjectToWeb = async (project: Project): Promise<void> => {
+  if (isDesktop()) return;
+
+  const rneData: RNEFileFormat = {
+    version: "1.0.0",
+    project: {
+      ...project,
+      updatedAt: new Date().toISOString()
+    },
+    exportedAt: new Date().toISOString()
+  };
+
+  const encodedData = encodeProjectData(rneData);
+  const blob = new Blob([encodedData], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${project.name}.rne`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+/**
  * Saves a project with a new name (Save As)
  * @param project The project to save
  * @returns The path of the saved file or null if cancelled
@@ -159,7 +209,7 @@ export const loadProjectFromFile = async (filePath: string): Promise<Project | n
 
     // Read the file
     const fileContent = await readTextFile(filePath);
-    
+
     // Detect if the content is encoded or plain JSON (backward compatibility)
     let rneData: RNEFileFormat;
     if (isEncodedContent(fileContent)) {
@@ -205,6 +255,59 @@ export const loadProjectFromFile = async (filePath: string): Promise<Project | n
  * @returns The loaded project or null if cancelled/error
  */
 export const openProjectFile = async (): Promise<Project | null> => {
+  if (!isDesktop()) {
+    return new Promise((resolve, reject) => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".rne";
+      input.onchange = async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return resolve(null);
+
+        try {
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            const fileContent = event.target?.result as string;
+            if (!fileContent) return resolve(null);
+
+            let rneData: RNEFileFormat;
+            if (isEncodedContent(fileContent)) {
+              console.log("Loading encoded project file...");
+              rneData = decodeProjectData(fileContent);
+            } else {
+              console.log("Loading legacy plain JSON project file...");
+              rneData = JSON.parse(fileContent);
+            }
+
+            if (!rneData.project) {
+              throw new Error("Invalid file format");
+            }
+
+            // Define the project and store it in IndexedDB for the Web to use
+            const project: Project = {
+              ...rneData.project,
+              filePath: undefined // Web projects don't have filepaths
+            };
+
+            // Save to DB so when Editor loads it, it's there
+            await saveProjectToDB({ ...rneData, project });
+            addProjectMetadata(project);
+
+            // Since we loaded from disk, we probably don't have the audio blob immediately.
+            // The user will see a missing audio error in the editor.
+            resolve(project);
+          };
+          reader.readAsText(file);
+        } catch (error) {
+          console.error("Error parsing RNE:", error);
+          reject(error);
+        }
+      };
+      input.oncancel = () => resolve(null);
+      input.click();
+    });
+  }
+
   try {
     // Open the open dialog
     const filePath = await open({

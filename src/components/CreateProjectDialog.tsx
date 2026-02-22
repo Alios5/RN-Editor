@@ -19,6 +19,7 @@ import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { selectAudioFile, copyMusicToProjectFolder } from "@/utils/musicManager";
 import { basename, dirname } from "@tauri-apps/api/path";
 import { CopyMusicDialog } from "@/components/CopyMusicDialog";
+import { isDesktop } from "@/utils/platform";
 
 const projectNameSchema = z
   .string()
@@ -29,7 +30,7 @@ const projectNameSchema = z
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (name: string, projectFolder?: string, musicPath?: string, musicFileName?: string, shouldCopyMusic?: boolean) => void;
+  onCreate: (name: string, projectFolder?: string, musicPath?: string, musicFileName?: string, shouldCopyMusic?: boolean, audioFile?: File) => void;
 }
 
 export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProjectDialogProps) => {
@@ -39,6 +40,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
   const [projectFolder, setProjectFolder] = useState<string>("");
   const [musicPath, setMusicPath] = useState<string>("");
   const [musicFileName, setMusicFileName] = useState<string>("");
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [showCopyMusicDialog, setShowCopyMusicDialog] = useState(false);
   const [pendingMusicPath, setPendingMusicPath] = useState<string | null>(null);
   const [pendingMusicFileName, setPendingMusicFileName] = useState<string | null>(null);
@@ -55,17 +57,18 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
       return;
     }
 
-    // Vérifier que le dossier projet est sélectionné
-    if (!projectFolder) {
+    // Vérifier que le dossier projet est sélectionné sur desktop
+    if (isDesktop() && !projectFolder) {
       setFolderError(t("project.folderRequired"));
       return;
     }
 
-    onCreate(result.data, projectFolder, musicPath || undefined, musicFileName || undefined, shouldCopyMusic);
+    onCreate(result.data, projectFolder, musicPath || undefined, musicFileName || undefined, shouldCopyMusic, audioFile || undefined);
     setName("");
     setProjectFolder("");
     setMusicPath("");
     setMusicFileName("");
+    setAudioFile(null);
     setShouldCopyMusic(false);
     setError("");
     setFolderError("");
@@ -77,6 +80,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
     setProjectFolder("");
     setMusicPath("");
     setMusicFileName("");
+    setAudioFile(null);
     setShouldCopyMusic(false);
     setError("");
     setFolderError("");
@@ -101,27 +105,37 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
 
   const handleSelectMusic = async () => {
     try {
-      const filePath = await selectAudioFile();
-      if (filePath) {
-        const fileName = await basename(filePath);
+      const result = await selectAudioFile();
+      if (result) {
+        if (result instanceof File) {
+          // Web handling
+          setAudioFile(result);
+          setMusicFileName(result.name);
+          setMusicPath("idb://audio"); // Magic string so Editor knows we have audio
+          setShouldCopyMusic(false);
+        } else {
+          // Native Desktop handling
+          const filePath = result as string;
+          const fileName = await basename(filePath);
 
-        // Check if project folder is selected
-        if (projectFolder) {
-          const musicDir = await dirname(filePath);
+          // Check if project folder is selected
+          if (projectFolder) {
+            const musicDir = await dirname(filePath);
 
-          // If music is not in project folder, ask user
-          if (musicDir !== projectFolder) {
-            setPendingMusicPath(filePath);
-            setPendingMusicFileName(fileName);
-            setShowCopyMusicDialog(true);
-            return;
+            // If music is not in project folder, ask user
+            if (musicDir !== projectFolder) {
+              setPendingMusicPath(filePath);
+              setPendingMusicFileName(fileName);
+              setShowCopyMusicDialog(true);
+              return;
+            }
           }
-        }
 
-        // Music is already in project folder or no project folder selected
-        setMusicPath(filePath);
-        setMusicFileName(fileName);
-        setShouldCopyMusic(false);
+          // Music is already in project folder or no project folder selected
+          setMusicPath(filePath);
+          setMusicFileName(fileName);
+          setShouldCopyMusic(false);
+        }
       }
     } catch (error) {
       console.error("Erreur lors de la sélection de la musique:", error);
@@ -178,24 +192,26 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
                 {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
 
-              <div className="grid gap-2">
-                <Label>{t("project.projectFolder")} <span className="text-destructive">*</span></Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={projectFolder}
-                    placeholder={t("project.projectFolderPlaceholder")}
-                    readOnly
-                    className="flex-1"
-                  />
-                  <Button type="button" variant="outline" onClick={handleSelectFolder}>
-                    <IconFolder className="h-5 w-5" />
-                  </Button>
+              {isDesktop() && (
+                <div className="grid gap-2">
+                  <Label>{t("project.projectFolder")} <span className="text-destructive">*</span></Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={projectFolder}
+                      placeholder={t("project.projectFolderPlaceholder")}
+                      readOnly
+                      className="flex-1"
+                    />
+                    <Button type="button" variant="outline" onClick={handleSelectFolder}>
+                      <IconFolder className="h-5 w-5" />
+                    </Button>
+                  </div>
+                  {folderError && <p className="text-sm text-destructive">{folderError}</p>}
+                  <p className="text-xs text-muted-foreground">
+                    {t("project.projectFolderHint")}
+                  </p>
                 </div>
-                {folderError && <p className="text-sm text-destructive">{folderError}</p>}
-                <p className="text-xs text-muted-foreground">
-                  {t("project.projectFolderHint")}
-                </p>
-              </div>
+              )}
 
               <div className="grid gap-2">
                 <Label>{t("project.music")}</Label>
