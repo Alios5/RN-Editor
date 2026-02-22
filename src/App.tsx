@@ -112,7 +112,7 @@ const App = () => {
             <div className={`fixed inset-0 overflow-hidden ${isDesktop() ? "top-8" : "top-0"}`}>
               <Toaster />
               <Sonner />
-              <BrowserRouter>
+              <BrowserRouter basename={import.meta.env.BASE_URL}>
                 <Routes>
                   <Route path="/" element={<Projects />} />
                   <Route path="/editor/:id" element={<Editor />} />
