@@ -1,0 +1,2421 @@
+{
+  "App.tsx": [
+    {
+      "line": 23,
+      "text": " Enable global window shortcuts",
+      "indent": "  //"
+    },
+    {
+      "line": 27,
+      "text": " Remove splash screen once React is mounted",
+      "indent": "    //"
+    },
+    {
+      "line": 34,
+      "text": " Restaurer l'overflow du body",
+      "indent": "          //"
+    },
+    {
+      "line": 40,
+      "text": " Wait a bit for everything to be loaded",
+      "indent": "    //"
+    },
+    {
+      "line": 45,
+      "text": " Restore window state on startup and setup persistence",
+      "indent": "    //"
+    },
+    {
+      "line": 67,
+      "text": " Initialize global close interception. Editor will override the dialog callback.",
+      "indent": "    //"
+    },
+    {
+      "line": 73,
+      "text": " Let any mounted Editor react to this event",
+      "indent": "          //"
+    },
+    {
+      "line": 87,
+      "text": " Désactiver le menu contextuel système de Chromium/Tauri",
+      "indent": "    //"
+    },
+    {
+      "line": 100,
+      "text": " Apply saved theme on startup",
+      "indent": "    //"
+    }
+  ],
+  "components\\AudioPlayer.tsx": [
+    {
+      "line": 38,
+      "text": " Mise à jour du temps avec requestAnimationFrame - synchronisé avec audio.currentTime",
+      "indent": "    //"
+    },
+    {
+      "line": 45,
+      "text": " Utiliser directement audio.currentTime (source de vérité absolue)",
+      "indent": "                //"
+    },
+    {
+      "line": 46,
+      "text": " Sans throttling artificiel pour éviter les désynchronisations sur ordinateurs moins performants",
+      "indent": "                //"
+    },
+    {
+      "line": 65,
+      "text": " Chargement de la métadonnée pour la durée",
+      "indent": "    //"
+    },
+    {
+      "line": 78,
+      "text": " Update volume when volume prop changes",
+      "indent": "    //"
+    },
+    {
+      "line": 85,
+      "text": " Update playback rate (pitch) when pitch prop changes",
+      "indent": "    //"
+    },
+    {
+      "line": 92,
+      "text": " Reset playback when audio URL changes",
+      "indent": "    //"
+    },
+    {
+      "line": 96,
+      "text": " Arrêter la lecture",
+      "indent": "        //"
+    },
+    {
+      "line": 100,
+      "text": " Réinitialiser les états",
+      "indent": "        //"
+    },
+    {
+      "line": 104,
+      "text": " Notifier le parent",
+      "indent": "        //"
+    },
+    {
+      "line": 109,
+      "text": " Handle audio metadata load (duration)",
+      "indent": "    //"
+    },
+    {
+      "line": 129,
+      "text": " Synchroniser l'état React avec les événements natifs de l'audio",
+      "indent": "    //"
+    },
+    {
+      "line": 130,
+      "text": " (contrôles média du casque, Media Session API, etc.)",
+      "indent": "    //"
+    },
+    {
+      "line": 146,
+      "text": " Quand la musique se termine, revenir à zéro comme un stop",
+      "indent": "            //"
+    },
+    {
+      "line": 231,
+      "text": " Exposer les fonctions via ref",
+      "indent": "    //"
+    }
+  ],
+  "components\\CreateProjectDialog.tsx": [
+    {
+      "line": 60,
+      "text": " Vérifier que le dossier projet est sélectionné sur desktop",
+      "indent": "    //"
+    },
+    {
+      "line": 111,
+      "text": " Web handling",
+      "indent": "          //"
+    },
+    {
+      "line": 117,
+      "text": " Native Desktop handling",
+      "indent": "          //"
+    },
+    {
+      "line": 121,
+      "text": " Check if project folder is selected",
+      "indent": "          //"
+    },
+    {
+      "line": 125,
+      "text": " If music is not in project folder, ask user",
+      "indent": "            //"
+    },
+    {
+      "line": 134,
+      "text": " Music is already in project folder or no project folder selected",
+      "indent": "          //"
+    }
+  ],
+  "components\\EditGroupDialog.tsx": [
+    {
+      "line": 52,
+      "text": " Vérifier si le nom existe déjà (sauf si c'est le nom actuel du groupe)",
+      "indent": "    //"
+    }
+  ],
+  "components\\EditTrackDialog.tsx": [
+    {
+      "line": 57,
+      "text": " Vérifier si le nom existe déjà (sauf si c'est le nom actuel de la piste)",
+      "indent": "    //"
+    },
+    {
+      "line": 112,
+      "text": " Allow the same key that was already assigned to this track",
+      "indent": "                    //"
+    }
+  ],
+  "components\\NoteBlock.tsx": [
+    {
+      "line": 87,
+      "text": " Use resizedWidth during resize, otherwise normal width",
+      "indent": "  //"
+    },
+    {
+      "line": 89,
+      "text": " Use draggedPosition during drag, otherwise normal position",
+      "indent": "  //"
+    },
+    {
+      "line": 90,
+      "text": " Add startOffset because position:absolute ignores parent's paddingLeft",
+      "indent": "  //"
+    },
+    {
+      "line": 93,
+      "text": " Determine if the playhead is on this note",
+      "indent": "  //"
+    },
+    {
+      "line": 94,
+      "text": " For notes with duration 0, use a small tolerance window for visual effect",
+      "indent": "  //"
+    },
+    {
+      "line": 101,
+      "text": " Delete note immediately if right click is held and dragged over it",
+      "indent": "    //"
+    },
+    {
+      "line": 126,
+      "text": " En mode édition : clic droit supprime directement la note",
+      "indent": "      //"
+    },
+    {
+      "line": 131,
+      "text": " En mode sélection : clic droit ouvre le menu contextuel",
+      "indent": "      //"
+    },
+    {
+      "line": 133,
+      "text": " Capturer la position du clic pour positionner le menu",
+      "indent": "      //"
+    },
+    {
+      "line": 136,
+      "text": " Si la note n'est pas déjà sélectionnée, la sélectionner exclusivement",
+      "indent": "      //"
+    },
+    {
+      "line": 140,
+      "text": " Attendre que le state soit mis à jour avant d'ouvrir le menu",
+      "indent": "        //"
+    },
+    {
+      "line": 145,
+      "text": " Si déjà sélectionnée, ouvrir le menu immédiatement",
+      "indent": "        //"
+    },
+    {
+      "line": 153,
+      "text": " Vérifier si le clic est dans la zone de resize (2px à droite)",
+      "indent": "      //"
+    },
+    {
+      "line": 160,
+      "text": " Si le clic est dans les 2 derniers pixels à droite, c'est pour le resize",
+      "indent": "        //"
+    },
+    {
+      "line": 166,
+      "text": " Mode sélection avec clic gauche",
+      "indent": "      //"
+    },
+    {
+      "line": 170,
+      "text": " Calculer l'offset du clic par rapport au début de la note",
+      "indent": "      //"
+    },
+    {
+      "line": 178,
+      "text": " Si la note n'est pas sélectionnée, la sélectionner d'abord",
+      "indent": "      //"
+    },
+    {
+      "line": 180,
+      "text": " Sélectionner la note (avec Ctrl pour ajouter à la sélection existante)",
+      "indent": "        //"
+    },
+    {
+      "line": 184,
+      "text": " Démarrer le drag immédiatement (que la note soit déjà sélectionnée ou non)",
+      "indent": "      //"
+    },
+    {
+      "line": 192,
+      "text": " En mode sélection, empêcher la propagation pour éviter le drag",
+      "indent": "    //"
+    },
+    {
+      "line": 376,
+      "text": " Fonction de comparaison personnalisée pour optimiser les re-renders",
+      "indent": "//"
+    },
+    {
+      "line": 378,
+      "text": " Vérifier si isActive a changé",
+      "indent": "  //"
+    },
+    {
+      "line": 387,
+      "text": " Si l'état actif change, on doit re-render",
+      "indent": "  //"
+    },
+    {
+      "line": 390,
+      "text": " Comparer les autres props importantes",
+      "indent": "  //"
+    }
+  ],
+  "components\\RhythmGrid.tsx": [
+    {
+      "line": 114,
+      "text": " Calculate visible notes with 300px buffer for performance optimization",
+      "indent": "  //"
+    },
+    {
+      "line": 123,
+      "text": " Calculate total subdivisions based on BPM and duration",
+      "indent": "  //"
+    },
+    {
+      "line": 124,
+      "text": " This ensures each subdivision gets exactly one cell",
+      "indent": "  //"
+    },
+    {
+      "line": 128,
+      "text": " Use exact number of subdivisions (cells) from BPM calculation",
+      "indent": "  //"
+    },
+    {
+      "line": 143,
+      "text": " Resize state",
+      "indent": "  //"
+    },
+    {
+      "line": 152,
+      "text": " Canvas Grid Drawing",
+      "indent": "  //"
+    },
+    {
+      "line": 168,
+      "text": " Only allocate what is visible",
+      "indent": "      //"
+    },
+    {
+      "line": 176,
+      "text": " Move canvas to visible area",
+      "indent": "      //"
+    },
+    {
+      "line": 179,
+      "text": " Clear canvas",
+      "indent": "      //"
+    },
+    {
+      "line": 182,
+      "text": " Setup styles",
+      "indent": "      //"
+    },
+    {
+      "line": 185,
+      "text": " Resolve CSS variables to actual colors",
+      "indent": "      //"
+    },
+    {
+      "line": 197,
+      "text": " Calculate visible bounds",
+      "indent": "      //"
+    },
+    {
+      "line": 201,
+      "text": " Determine the range of beats to draw backgrounds for",
+      "indent": "      //"
+    },
+    {
+      "line": 211,
+      "text": " Skip if out of bounds",
+      "indent": "        //"
+    },
+    {
+      "line": 217,
+      "text": " Convert world coordinate to local canvas coordinate",
+      "indent": "        //"
+    },
+    {
+      "line": 223,
+      "text": " Alternating background per beat (BPM visualization)",
+      "indent": "        //"
+    },
+    {
+      "line": 228,
+      "text": " Draw lines and text",
+      "indent": "      //"
+    },
+    {
+      "line": 243,
+      "text": " Skip drawing if outside local canvas area (padding safety)",
+      "indent": "        //"
+    },
+    {
+      "line": 253,
+      "text": " Draw measure number",
+      "indent": "          //"
+    },
+    {
+      "line": 285,
+      "text": " Handler for opening/closing the context menu",
+      "indent": "  //"
+    },
+    {
+      "line": 313,
+      "text": " Block creation if a menu is open",
+      "indent": "    //"
+    },
+    {
+      "line": 323,
+      "text": " In select mode: right click on empty area opens paste menu",
+      "indent": "    //"
+    },
+    {
+      "line": 331,
+      "text": " In select mode, disable creation/deletion",
+      "indent": "    //"
+    },
+    {
+      "line": 336,
+      "text": " In edit mode: right click activates deletion",
+      "indent": "    //"
+    },
+    {
+      "line": 343,
+      "text": " In edit mode: left click creates notes",
+      "indent": "    //"
+    },
+    {
+      "line": 357,
+      "text": " Track hover position",
+      "indent": "    //"
+    },
+    {
+      "line": 360,
+      "text": " Always track mouse position for pasting",
+      "indent": "    //"
+    },
+    {
+      "line": 365,
+      "text": " Resize mode",
+      "indent": "    //"
+    },
+    {
+      "line": 373,
+      "text": " Creation mode",
+      "indent": "    //"
+    },
+    {
+      "line": 379,
+      "text": " Drag mode in Select - call global handler",
+      "indent": "    //"
+    },
+    {
+      "line": 394,
+      "text": " Notify parent that resize started",
+      "indent": "    //"
+    },
+    {
+      "line": 403,
+      "text": " Notify parent that resize ended",
+      "indent": "    //"
+    },
+    {
+      "line": 415,
+      "text": " Calculate new grid width",
+      "indent": "    //"
+    },
+    {
+      "line": 424,
+      "text": " Calculate new duration using standardized function for perfect consistency",
+      "indent": "    //"
+    },
+    {
+      "line": 427,
+      "text": " Find and delete overlapping notes",
+      "indent": "    //"
+    },
+    {
+      "line": 437,
+      "text": " Delete overlapping notes",
+      "indent": "    //"
+    },
+    {
+      "line": 442,
+      "text": " Update note dimensions",
+      "indent": "    //"
+    },
+    {
+      "line": 456,
+      "text": " Handle resize end",
+      "indent": "    //"
+    },
+    {
+      "line": 467,
+      "text": " Use standardized function for perfect consistency (no drift accumulation)",
+      "indent": "        //"
+    },
+    {
+      "line": 469,
+      "text": " If gridWidth = 1, duration should be 0 (instant note)",
+      "indent": "        //"
+    },
+    {
+      "line": 484,
+      "text": " Delete all collected notes at once with onDeleteNotes",
+      "indent": "      //"
+    },
+    {
+      "line": 494,
+      "text": " End global drag",
+      "indent": "    //"
+    },
+    {
+      "line": 509,
+      "text": " End resize if leaving the grid",
+      "indent": "    //"
+    },
+    {
+      "line": 514,
+      "text": " End global drag if leaving the grid",
+      "indent": "    //"
+    },
+    {
+      "line": 524,
+      "text": " Ghost note during creation",
+      "indent": "  //"
+    },
+    {
+      "line": 560,
+      "text": " Calculer la position ajustée pendant le drag global",
+      "indent": "        //"
+    }
+  ],
+  "components\\ui\\sidebar.tsx": [
+    {
+      "line": 55,
+      "text": " This is the internal state of the sidebar.",
+      "indent": "  //"
+    },
+    {
+      "line": 56,
+      "text": " We use openProp and setOpenProp for control from outside the component.",
+      "indent": "  //"
+    },
+    {
+      "line": 68,
+      "text": " This sets the cookie to keep the sidebar state.",
+      "indent": "      //"
+    },
+    {
+      "line": 74,
+      "text": " Helper to toggle the sidebar.",
+      "indent": "  //"
+    },
+    {
+      "line": 79,
+      "text": " Adds a keyboard shortcut to toggle the sidebar.",
+      "indent": "  //"
+    },
+    {
+      "line": 92,
+      "text": " We add a state so that we can do data-state=\"expanded\" or \"collapsed\".",
+      "indent": "  //"
+    },
+    {
+      "line": 93,
+      "text": " This makes it easier to style the sidebar with Tailwind classes.",
+      "indent": "  //"
+    },
+    {
+      "line": 200,
+      "text": " Adjust the padding for floating and inset variants.",
+      "indent": "          //"
+    },
+    {
+      "line": 386,
+      "text": " Increases the hit area of the button on mobile.",
+      "indent": "          //"
+    },
+    {
+      "line": 493,
+      "text": " Increases the hit area of the button on mobile.",
+      "indent": "        //"
+    },
+    {
+      "line": 535,
+      "text": " Random width between 50 to 90%.",
+      "indent": "  //"
+    }
+  ],
+  "components\\Waveform.tsx": [
+    {
+      "line": 17,
+      "text": " Get waveform colors from CSS variables (theme-aware)",
+      "indent": "  //"
+    },
+    {
+      "line": 46,
+      "text": " Load new audio URL",
+      "indent": "    //"
+    },
+    {
+      "line": 50,
+      "text": " Listen to user interactions (clicks/drags) on waveform",
+      "indent": "  //"
+    },
+    {
+      "line": 54,
+      "text": " During drag - visual update only",
+      "indent": "    //"
+    },
+    {
+      "line": 60,
+      "text": " At the end of drag/click - update actual audio position",
+      "indent": "    //"
+    },
+    {
+      "line": 66,
+      "text": " Listen to drags (visual update)",
+      "indent": "    //"
+    },
+    {
+      "line": 69,
+      "text": " Listen to interaction end (audio update)",
+      "indent": "    //"
+    }
+  ],
+  "contexts\\LanguageContext.tsx": [
+    {
+      "line": 5,
+      "text": " Types pour les traductions",
+      "indent": "//"
+    },
+    {
+      "line": 18,
+      "text": " Map des traductions disponibles",
+      "indent": "//"
+    },
+    {
+      "line": 24,
+      "text": " Liste des langues disponibles avec leurs noms",
+      "indent": "//"
+    },
+    {
+      "line": 37,
+      "text": " Charger la langue depuis localStorage ou utiliser l'anglais par défaut",
+      "indent": "  //"
+    },
+    {
+      "line": 45,
+      "text": " Sauvegarder et changer la langue",
+      "indent": "  //"
+    },
+    {
+      "line": 52,
+      "text": " Fonction de traduction avec support des paramètres",
+      "indent": "  //"
+    },
+    {
+      "line": 57,
+      "text": " Naviguer dans l'objet de traduction",
+      "indent": "    //"
+    },
+    {
+      "line": 62,
+      "text": " Si la clé n'existe pas, retourner la clé brute",
+      "indent": "        //"
+    },
+    {
+      "line": 68,
+      "text": " Si la valeur finale n'est pas une string, retourner la clé",
+      "indent": "    //"
+    },
+    {
+      "line": 74,
+      "text": " Remplacer les paramètres dans la traduction",
+      "indent": "    //"
+    }
+  ],
+  "hooks\\useRealtimeNoteCreation.ts": [
+    {
+      "line": 44,
+      "text": " Map pour suivre les touches actuellement enfoncées",
+      "indent": "  //"
+    },
+    {
+      "line": 49,
+      "text": " Le mode temps réel est actif seulement si auto-follow est activé ET la musique joue",
+      "indent": "  //"
+    },
+    {
+      "line": 53,
+      "text": " Si on quitte le mode temps réel, créer toutes les notes des touches encore enfoncées",
+      "indent": "    //"
+    },
+    {
+      "line": 64,
+      "text": " Mettre à jour les notes de prévisualisation en fonction du temps actuel",
+      "indent": "  //"
+    },
+    {
+      "line": 106,
+      "text": " Si la durée est nulle ou négative, créer une note courte",
+      "indent": "      //"
+    },
+    {
+      "line": 128,
+      "text": " Ignorer si on est en train de taper dans un input/textarea",
+      "indent": "      //"
+    },
+    {
+      "line": 133,
+      "text": " Éviter les répétitions de l'événement keydown lors d'un appui long",
+      "indent": "      //"
+    },
+    {
+      "line": 138,
+      "text": " Trouver la piste assignée à cette touche",
+      "indent": "      //"
+    },
+    {
+      "line": 142,
+      "text": " Empêcher le comportement par défaut",
+      "indent": "      //"
+    },
+    {
+      "line": 145,
+      "text": " Si la touche n'est pas encore enfoncée, l'enregistrer",
+      "indent": "      //"
+    },
+    {
+      "line": 147,
+      "text": " Use standardized function for perfect consistency",
+      "indent": "        //"
+    },
+    {
+      "line": 166,
+      "text": " Calculer la durée et créer la note",
+      "indent": "      //"
+    },
+    {
+      "line": 170,
+      "text": " Si l'appui est très court (< 100ms), créer une note courte",
+      "indent": "        //"
+    },
+    {
+      "line": 173,
+      "text": " Sinon créer une longue note",
+      "indent": "        //"
+    },
+    {
+      "line": 177,
+      "text": " Retirer la touche de la map",
+      "indent": "      //"
+    },
+    {
+      "line": 180,
+      "text": " Mettre à jour les preview notes",
+      "indent": "      //"
+    }
+  ],
+  "hooks\\useScrollPosition.ts": [
+    {
+      "line": 15,
+      "text": " Cache label references for better performance",
+      "indent": "    //"
+    },
+    {
+      "line": 22,
+      "text": " Initial setup",
+      "indent": "    //"
+    },
+    {
+      "line": 30,
+      "text": " MutationObserver to update cache when tracks are added/removed",
+      "indent": "    //"
+    },
+    {
+      "line": 37,
+      "text": " Only update if horizontal scroll changed",
+      "indent": "      //"
+    },
+    {
+      "line": 44,
+      "text": " Cancel any pending RAF",
+      "indent": "      //"
+    },
+    {
+      "line": 49,
+      "text": " Schedule update on next animation frame for smooth rendering",
+      "indent": "      //"
+    }
+  ],
+  "hooks\\useShortcuts.ts": [
+    {
+      "line": 9,
+      "text": " Charger les raccourcis depuis localStorage",
+      "indent": "  //"
+    },
+    {
+      "line": 22,
+      "text": " Sauvegarder les raccourcis dans localStorage",
+      "indent": "  //"
+    },
+    {
+      "line": 28,
+      "text": " Mettre à jour un raccourci",
+      "indent": "  //"
+    },
+    {
+      "line": 36,
+      "text": " Réinitialiser tous les raccourcis",
+      "indent": "  //"
+    },
+    {
+      "line": 41,
+      "text": " Réinitialiser un raccourci spécifique",
+      "indent": "  //"
+    },
+    {
+      "line": 49,
+      "text": " Obtenir un raccourci par ID",
+      "indent": "  //"
+    },
+    {
+      "line": 54,
+      "text": " Vérifier si une touche correspond à un raccourci",
+      "indent": "  //"
+    },
+    {
+      "line": 62,
+      "text": " Normaliser les touches spéciales de l'événement",
+      "indent": "    //"
+    },
+    {
+      "line": 72,
+      "text": " Gérer les raccourcis avec combinaisons de modificateurs (ex: Ctrl+Shift+M)",
+      "indent": "    //"
+    },
+    {
+      "line": 88,
+      "text": " Gérer les raccourcis avec un seul modificateur",
+      "indent": "    //"
+    },
+    {
+      "line": 104,
+      "text": " Raccourci simple (sans modificateur)",
+      "indent": "    //"
+    }
+  ],
+  "hooks\\useVisibleNotes.ts": [
+    {
+      "line": 29,
+      "text": " If no container, show all notes",
+      "indent": "      //"
+    },
+    {
+      "line": 38,
+      "text": " Calculate visible range in pixels (relative to the grid)",
+      "indent": "    //"
+    },
+    {
+      "line": 42,
+      "text": " Convert to cell positions",
+      "indent": "    //"
+    },
+    {
+      "line": 46,
+      "text": " Filter notes that intersect with visible range",
+      "indent": "    //"
+    },
+    {
+      "line": 51,
+      "text": " Check if note intersects with visible range",
+      "indent": "      //"
+    },
+    {
+      "line": 64,
+      "text": " Initial calculation",
+      "indent": "    //"
+    },
+    {
+      "line": 68,
+      "text": " Listen to scroll events with throttling via RAF",
+      "indent": "    //"
+    },
+    {
+      "line": 72,
+      "text": " Only update if horizontal scroll changed significantly (more than 20px)",
+      "indent": "      //"
+    },
+    {
+      "line": 91,
+      "text": " Also update on resize",
+      "indent": "    //"
+    },
+    {
+      "line": 106,
+      "text": " Update when notes change",
+      "indent": "  //"
+    }
+  ],
+  "hooks\\useVisibleTracks.ts": [
+    {
+      "line": 27,
+      "text": " If no container, show all tracks",
+      "indent": "      //"
+    },
+    {
+      "line": 36,
+      "text": " Calculate visible range in pixels",
+      "indent": "    //"
+    },
+    {
+      "line": 40,
+      "text": " Convert to track indices",
+      "indent": "    //"
+    },
+    {
+      "line": 44,
+      "text": " Get IDs of visible tracks",
+      "indent": "    //"
+    },
+    {
+      "line": 59,
+      "text": " Initial calculation",
+      "indent": "    //"
+    },
+    {
+      "line": 63,
+      "text": " Listen to scroll events with throttling via RAF",
+      "indent": "    //"
+    },
+    {
+      "line": 67,
+      "text": " Only update if vertical scroll changed significantly (more than 10px)",
+      "indent": "      //"
+    },
+    {
+      "line": 86,
+      "text": " Also update on resize",
+      "indent": "    //"
+    },
+    {
+      "line": 101,
+      "text": " Update when tracks change",
+      "indent": "  //"
+    }
+  ],
+  "lib\\utils.ts": [
+    {
+      "line": 8,
+      "text": " Calculer la luminosité d'une couleur hexadécimale pour déterminer si le texte doit être clair ou foncé",
+      "indent": "//"
+    },
+    {
+      "line": 10,
+      "text": " Retirer le # si présent",
+      "indent": "  //"
+    },
+    {
+      "line": 13,
+      "text": " Convertir en RGB",
+      "indent": "  //"
+    },
+    {
+      "line": 18,
+      "text": " Calculer la luminosité relative (formule YIQ)",
+      "indent": "  //"
+    },
+    {
+      "line": 21,
+      "text": " Si la couleur est claire (luminosité > 128), utiliser du texte foncé, sinon texte clair",
+      "indent": "  //"
+    }
+  ],
+  "pages\\Editor.tsx": [
+    {
+      "line": 88,
+      "text": " Audio controls state",
+      "indent": "  //"
+    },
+    {
+      "line": 99,
+      "text": " Playback state for synchronization",
+      "indent": "  //"
+    },
+    {
+      "line": 109,
+      "text": " UI state",
+      "indent": "  //"
+    },
+    {
+      "line": 114,
+      "text": " Tracks state",
+      "indent": "  //"
+    },
+    {
+      "line": 127,
+      "text": " Track groups state",
+      "indent": "  //"
+    },
+    {
+      "line": 132,
+      "text": " Specific actions state",
+      "indent": "  //"
+    },
+    {
+      "line": 137,
+      "text": " Editor mode state",
+      "indent": "  //"
+    },
+    {
+      "line": 140,
+      "text": " Selection state",
+      "indent": "  //"
+    },
+    {
+      "line": 150,
+      "text": " Global drag state for multi-track dragging",
+      "indent": "  //"
+    },
+    {
+      "line": 156,
+      "text": " Track reordering drag state",
+      "indent": "  //"
+    },
+    {
+      "line": 159,
+      "text": " Sound for note movement",
+      "indent": "  //"
+    },
+    {
+      "line": 163,
+      "text": " Sounds for various actions",
+      "indent": "  //"
+    },
+    {
+      "line": 169,
+      "text": " Initialize sounds",
+      "indent": "  //"
+    },
+    {
+      "line": 188,
+      "text": " Sidebar visibility",
+      "indent": "  //"
+    },
+    {
+      "line": 192,
+      "text": " Sidebar panels order (drag and drop) - persisted in localStorage",
+      "indent": "  //"
+    },
+    {
+      "line": 205,
+      "text": " Ref pour l'AudioPlayer",
+      "indent": "  //"
+    },
+    {
+      "line": 208,
+      "text": " Ref pour le conteneur scrollable",
+      "indent": "  //"
+    },
+    {
+      "line": 211,
+      "text": " Hook de raccourcis",
+      "indent": "  //"
+    },
+    {
+      "line": 214,
+      "text": " Copy/Paste state",
+      "indent": "  //"
+    },
+    {
+      "line": 219,
+      "text": " History state for undo/redo",
+      "indent": "  //"
+    },
+    {
+      "line": 225,
+      "text": " State for save and export paths",
+      "indent": "  //"
+    },
+    {
+      "line": 228,
+      "text": " State to track unsaved changes (for navigation only)",
+      "indent": "  //"
+    },
+    {
+      "line": 234,
+      "text": " Calculate audio metrics based on parameters",
+      "indent": "  //"
+    },
+    {
+      "line": 248,
+      "text": " Calculate which tracks are visible in the viewport (with 300px buffer)",
+      "indent": "  //"
+    },
+    {
+      "line": 256,
+      "text": " Display all tracks (virtualization disabled to prevent scroll jitter)",
+      "indent": "  //"
+    },
+    {
+      "line": 257,
+      "text": " The visible track optimization caused layout shifts when scrolling to bottom",
+      "indent": "  //"
+    },
+    {
+      "line": 260,
+      "text": " Calculate notes that overlap with other notes",
+      "indent": "  //"
+    },
+    {
+      "line": 270,
+      "text": " Check only for selected notes",
+      "indent": "        //"
+    },
+    {
+      "line": 273,
+      "text": " Check if it overlaps with unselected notes",
+      "indent": "        //"
+    },
+    {
+      "line": 290,
+      "text": " Recalculate note times dynamically based on startOffset",
+      "indent": "  //"
+    },
+    {
+      "line": 291,
+      "text": " Keyboard shortcuts management",
+      "indent": "  //"
+    },
+    {
+      "line": 294,
+      "text": " CTRL+S to save (only if there are unsaved changes)",
+      "indent": "      //"
+    },
+    {
+      "line": 302,
+      "text": " CTRL+E to export",
+      "indent": "      //"
+    },
+    {
+      "line": 319,
+      "text": " Convert startOffset (pixels) to time (seconds) using BPM",
+      "indent": "    //"
+    },
+    {
+      "line": 331,
+      "text": " Backwards compatibility for projects without startTime",
+      "indent": "          //"
+    },
+    {
+      "line": 338,
+      "text": " Calculate visual grid position based on absolute time",
+      "indent": "          //"
+    },
+    {
+      "line": 356,
+      "text": " Automatic history save with debounce (500ms)",
+      "indent": "  //"
+    },
+    {
+      "line": 358,
+      "text": " Skip if we're currently restoring from history",
+      "indent": "    //"
+    },
+    {
+      "line": 363,
+      "text": " Skip if no project loaded yet (initial load)",
+      "indent": "    //"
+    },
+    {
+      "line": 368,
+      "text": " Clear existing timer",
+      "indent": "    //"
+    },
+    {
+      "line": 373,
+      "text": " Set new timer to save state after 500ms of inactivity",
+      "indent": "    //"
+    },
+    {
+      "line": 390,
+      "text": " Don't save if state hasn't changed",
+      "indent": "        //"
+    },
+    {
+      "line": 396,
+      "text": " Remove all states after current index (discard redo states)",
+      "indent": "        //"
+    },
+    {
+      "line": 398,
+      "text": " Add new state",
+      "indent": "        //"
+    },
+    {
+      "line": 400,
+      "text": " Limit history size",
+      "indent": "        //"
+    },
+    {
+      "line": 410,
+      "text": " Only mark as unsaved if this is not the initial load",
+      "indent": "      //"
+    },
+    {
+      "line": 414,
+      "text": " After first history save, consider future changes as real modifications",
+      "indent": "        //"
+    },
+    {
+      "line": 426,
+      "text": " Restore state from history",
+      "indent": "  //"
+    },
+    {
+      "line": 440,
+      "text": " Re-enable history updates after state restoration",
+      "indent": "    //"
+    },
+    {
+      "line": 444,
+      "text": " Undo function",
+      "indent": "  //"
+    },
+    {
+      "line": 453,
+      "text": " Redo function",
+      "indent": "  //"
+    },
+    {
+      "line": 462,
+      "text": " Keyboard shortcuts for undo/redo",
+      "indent": "  //"
+    },
+    {
+      "line": 478,
+      "text": " Auto-follow playback - scroll automatique pendant la lecture",
+      "indent": "  //"
+    },
+    {
+      "line": 486,
+      "text": " Instant scroll (auto) to avoid stuttering on low-end devices",
+      "indent": "      //"
+    },
+    {
+      "line": 494,
+      "text": " Fonction pour remettre le scroll au début",
+      "indent": "  //"
+    },
+    {
+      "line": 504,
+      "text": " Track scroll position for reset button state",
+      "indent": "  //"
+    },
+    {
+      "line": 514,
+      "text": " Initial check",
+      "indent": "    //"
+    },
+    {
+      "line": 520,
+      "text": " Keyboard shortcuts for selection",
+      "indent": "  //"
+    },
+    {
+      "line": 523,
+      "text": " Ignore shortcuts if typing in a field",
+      "indent": "      //"
+    },
+    {
+      "line": 527,
+      "text": " E : switch to Edit mode",
+      "indent": "      //"
+    },
+    {
+      "line": 531,
+      "text": " Save if notes have been modified before changing mode",
+      "indent": "        //"
+    },
+    {
+      "line": 533,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "          //"
+    },
+    {
+      "line": 541,
+      "text": " S : switch to Select mode",
+      "indent": "      //"
+    },
+    {
+      "line": 547,
+      "text": " Delete : delete selected notes",
+      "indent": "      //"
+    },
+    {
+      "line": 564,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "        //"
+    },
+    {
+      "line": 567,
+      "text": " Escape : deselect all",
+      "indent": "      //"
+    },
+    {
+      "line": 573,
+      "text": " Ctrl+A : select all notes",
+      "indent": "      //"
+    },
+    {
+      "line": 586,
+      "text": " Left/right arrows : move selected notes",
+      "indent": "      //"
+    },
+    {
+      "line": 594,
+      "text": " Constants for time calculation",
+      "indent": "        //"
+    },
+    {
+      "line": 611,
+      "text": " Recalculate startTime and duration based on new position",
+      "indent": "                //"
+    },
+    {
+      "line": 629,
+      "text": " Mark that notes have been modified",
+      "indent": "        //"
+    },
+    {
+      "line": 632,
+      "text": " Do not save to history during movement",
+      "indent": "        //"
+    },
+    {
+      "line": 633,
+      "text": " History will be updated on deselection",
+      "indent": "        //"
+    },
+    {
+      "line": 660,
+      "text": " If the project has a filePath, load from file",
+      "indent": "      //"
+    },
+    {
+      "line": 664,
+      "text": " Check if the file exists",
+      "indent": "          //"
+    },
+    {
+      "line": 711,
+      "text": " Project without file (legacy system)",
+      "indent": "        //"
+    },
+    {
+      "line": 721,
+      "text": " Override the dialog callback when Editor mounts",
+      "indent": "  //"
+    },
+    {
+      "line": 733,
+      "text": " Update close handler when unsaved changes state changes",
+      "indent": "  //"
+    },
+    {
+      "line": 739,
+      "text": " Reset unsaved changes state for new project load",
+      "indent": "    //"
+    },
+    {
+      "line": 743,
+      "text": " Load saved audio parameters",
+      "indent": "    //"
+    },
+    {
+      "line": 751,
+      "text": " Check if music file exists before loading for desktop",
+      "indent": "        //"
+    },
+    {
+      "line": 771,
+      "text": " Web: Check IDB for audio even if musicPath is unexpectedly empty ",
+      "indent": "      //"
+    },
+    {
+      "line": 779,
+      "text": " Only show warning if there was originally a path but no audio was found",
+      "indent": "          //"
+    },
+    {
+      "line": 789,
+      "text": " Load tracks",
+      "indent": "    //"
+    },
+    {
+      "line": 791,
+      "text": " Load track groups",
+      "indent": "    //"
+    },
+    {
+      "line": 793,
+      "text": " Load specific actions",
+      "indent": "    //"
+    },
+    {
+      "line": 796,
+      "text": " Initialize history with loaded state",
+      "indent": "    //"
+    },
+    {
+      "line": 836,
+      "text": " Save to existing file",
+      "indent": "          //"
+    },
+    {
+      "line": 849,
+      "text": " Web: Just save to IDB",
+      "indent": "          //"
+    },
+    {
+      "line": 854,
+      "text": " First save - ask where to save",
+      "indent": "          //"
+    },
+    {
+      "line": 896,
+      "text": " On web, \"Save As\" implies exporting the current state to a downloaded file.",
+      "indent": "          //"
+    },
+    {
+      "line": 932,
+      "text": " Check if we're trying to close the window or just navigate back",
+      "indent": "    //"
+    },
+    {
+      "line": 936,
+      "text": " Close the window without saving",
+      "indent": "      //"
+    },
+    {
+      "line": 944,
+      "text": " User cancelled, no action needed",
+      "indent": "    //"
+    },
+    {
+      "line": 952,
+      "text": " Save the project first",
+      "indent": "    //"
+    },
+    {
+      "line": 955,
+      "text": " Then close window or navigate",
+      "indent": "    //"
+    },
+    {
+      "line": 959,
+      "text": " Close the window after saving",
+      "indent": "      //"
+    },
+    {
+      "line": 965,
+      "text": " If music is already loaded, check if the user wants to see the warning",
+      "indent": "    //"
+    },
+    {
+      "line": 974,
+      "text": " Otherwise, proceed directly to selection",
+      "indent": "      //"
+    },
+    {
+      "line": 981,
+      "text": " Select audio file",
+      "indent": "      //"
+    },
+    {
+      "line": 986,
+      "text": " Web: handle File directly",
+      "indent": "        //"
+    },
+    {
+      "line": 1000,
+      "text": " Proceed with loading",
+      "indent": "      //"
+    },
+    {
+      "line": 1001,
+      "text": " Check if the project has a defined save folder",
+      "indent": "      //"
+    },
+    {
+      "line": 1007,
+      "text": " Music is not in the project folder, offer to copy it",
+      "indent": "          //"
+    },
+    {
+      "line": 1012,
+      "text": " Music is already in the project folder",
+      "indent": "          //"
+    },
+    {
+      "line": 1017,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "          //"
+    },
+    {
+      "line": 1020,
+      "text": " No RNE file yet, load directly",
+      "indent": "        //"
+    },
+    {
+      "line": 1025,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "        //"
+    },
+    {
+      "line": 1059,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "        //"
+    },
+    {
+      "line": 1081,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "      //"
+    },
+    {
+      "line": 1088,
+      "text": " Calculate used keys from all tracks",
+      "indent": "  //"
+    },
+    {
+      "line": 1095,
+      "text": " Track management",
+      "indent": "  //"
+    },
+    {
+      "line": 1107,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1113,
+      "text": " Mettre à jour le nom de la piste ET le trackName de toutes ses notes",
+      "indent": "        //"
+    },
+    {
+      "line": 1127,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1134,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1140,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1143,
+      "text": " dnd-kit sensors for track reordering",
+      "indent": "  //"
+    },
+    {
+      "line": 1155,
+      "text": " Handle track reordering via dnd-kit",
+      "indent": "  //"
+    },
+    {
+      "line": 1171,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1174,
+      "text": " Handle sidebar panel reordering via dnd-kit",
+      "indent": "  //"
+    },
+    {
+      "line": 1192,
+      "text": " Track Groups Management",
+      "indent": "  //"
+    },
+    {
+      "line": 1212,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1220,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1226,
+      "text": " Remove groupId from all tracks in this group",
+      "indent": "    //"
+    },
+    {
+      "line": 1232,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1235,
+      "text": " Specific Actions Management",
+      "indent": "  //"
+    },
+    {
+      "line": 1243,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1247,
+      "text": " Find the old action name for notes update",
+      "indent": "    //"
+    },
+    {
+      "line": 1251,
+      "text": " Update the action",
+      "indent": "    //"
+    },
+    {
+      "line": 1256,
+      "text": " Update all notes using this action",
+      "indent": "    //"
+    },
+    {
+      "line": 1266,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1270,
+      "text": " Remove the action from all notes using it",
+      "indent": "    //"
+    },
+    {
+      "line": 1281,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1291,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1315,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1326,
+      "text": " Realtime note creation during auto-playback",
+      "indent": "  //"
+    },
+    {
+      "line": 1339,
+      "text": " Metronome",
+      "indent": "  //"
+    },
+    {
+      "line": 1358,
+      "text": " Play delete note sound",
+      "indent": "    //"
+    },
+    {
+      "line": 1363,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1376,
+      "text": " Play delete note sound",
+      "indent": "    //"
+    },
+    {
+      "line": 1381,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1395,
+      "text": " Recalculer startTime et duration",
+      "indent": "              //"
+    },
+    {
+      "line": 1415,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1438,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1471,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1480,
+      "text": " Use a dummy note to open the selection dialog",
+      "indent": "    //"
+    },
+    {
+      "line": 1481,
+      "text": " The action will be applied to all selected notes",
+      "indent": "    //"
+    },
+    {
+      "line": 1500,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1521,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1526,
+      "text": " Special case: apply to all selected notes",
+      "indent": "      //"
+    },
+    {
+      "line": 1549,
+      "text": " Normal case: apply to a single note",
+      "indent": "        //"
+    },
+    {
+      "line": 1569,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "      //"
+    },
+    {
+      "line": 1573,
+      "text": " Selection Management",
+      "indent": "  //"
+    },
+    {
+      "line": 1581,
+      "text": " Ctrl+click: add/remove from selection",
+      "indent": "      //"
+    },
+    {
+      "line": 1588,
+      "text": " Simple click: select only this note",
+      "indent": "      //"
+    },
+    {
+      "line": 1597,
+      "text": " Push back selected notes that overlap before deselecting",
+      "indent": "    //"
+    },
+    {
+      "line": 1614,
+      "text": " Vérifier si cette note chevauche une note non sélectionnée",
+      "indent": "            //"
+    },
+    {
+      "line": 1624,
+      "text": " Trouver le côté le plus proche pour repousser",
+      "indent": "            //"
+    },
+    {
+      "line": 1629,
+      "text": " Essayer à gauche",
+      "indent": "              //"
+    },
+    {
+      "line": 1639,
+      "text": " Essayer à droite",
+      "indent": "              //"
+    },
+    {
+      "line": 1648,
+      "text": " Recalculer les propriétés temporelles",
+      "indent": "            //"
+    },
+    {
+      "line": 1664,
+      "text": " Sauvegarder dans l'historique uniquement si les notes ont été modifiées",
+      "indent": "      //"
+    },
+    {
+      "line": 1666,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "        //"
+    },
+    {
+      "line": 1677,
+      "text": " Capturer les notes à supprimer immédiatement pour éviter les problèmes de closure",
+      "indent": "    //"
+    },
+    {
+      "line": 1688,
+      "text": " Désélectionner immédiatement",
+      "indent": "    //"
+    },
+    {
+      "line": 1691,
+      "text": " Supprimer les notes",
+      "indent": "    //"
+    },
+    {
+      "line": 1704,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1708,
+      "text": " Utiliser le paramètre ou le state actuel",
+      "indent": "    //"
+    },
+    {
+      "line": 1712,
+      "text": " Capturer les notes sélectionnées immédiatement pour éviter les problèmes de closure",
+      "indent": "    //"
+    },
+    {
+      "line": 1718,
+      "text": " Trouver la position de fin la plus à droite parmi toutes les notes sélectionnées",
+      "indent": "    //"
+    },
+    {
+      "line": 1735,
+      "text": " Position de départ pour les duplicatas (1 cellule après la note la plus à droite)",
+      "indent": "    //"
+    },
+    {
+      "line": 1738,
+      "text": " Trouver la position minimale parmi les notes sélectionnées (pour calculer l'offset relatif)",
+      "indent": "    //"
+    },
+    {
+      "line": 1767,
+      "text": " Calculer l'offset relatif par rapport à la position minimale",
+      "indent": "          //"
+    },
+    {
+      "line": 1771,
+      "text": " Recalculer startTime et duration",
+      "indent": "          //"
+    },
+    {
+      "line": 1796,
+      "text": " Sélectionner les duplicatas",
+      "indent": "    //"
+    },
+    {
+      "line": 1798,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1802,
+      "text": " Sélectionner uniquement cette note et la dupliquer",
+      "indent": "    //"
+    },
+    {
+      "line": 1806,
+      "text": " Utiliser setTimeout pour permettre à l'état de se mettre à jour avant la duplication",
+      "indent": "    //"
+    },
+    {
+      "line": 1813,
+      "text": " Vérifier qu'il y a des notes sélectionnées",
+      "indent": "    //"
+    },
+    {
+      "line": 1816,
+      "text": " Capturer immédiatement l'état actuel pour éviter la perte lors de la fermeture du menu",
+      "indent": "    //"
+    },
+    {
+      "line": 1819,
+      "text": " Exécuter la duplication de manière asynchrone pour éviter les conflits avec la fermeture du menu",
+      "indent": "    //"
+    },
+    {
+      "line": 1831,
+      "text": " Regrouper les notes sélectionnées par piste",
+      "indent": "    //"
+    },
+    {
+      "line": 1841,
+      "text": " Désélectionner immédiatement",
+      "indent": "    //"
+    },
+    {
+      "line": 1844,
+      "text": " Pour chaque piste, fusionner les notes sélectionnées",
+      "indent": "    //"
+    },
+    {
+      "line": 1852,
+      "text": " Ne fusionner que s'il y a au moins 2 notes",
+      "indent": "      //"
+    },
+    {
+      "line": 1857,
+      "text": " Récupérer les notes sélectionnées",
+      "indent": "      //"
+    },
+    {
+      "line": 1862,
+      "text": " Trouver la note avec le plus petit startTime",
+      "indent": "      //"
+    },
+    {
+      "line": 1867,
+      "text": " Trouver la note avec le plus grand temps de fin (startTime + duration)",
+      "indent": "      //"
+    },
+    {
+      "line": 1874,
+      "text": " Calculer les propriétés de la note fusionnée",
+      "indent": "      //"
+    },
+    {
+      "line": 1879,
+      "text": " Calculer gridPosition et gridWidth",
+      "indent": "      //"
+    },
+    {
+      "line": 1884,
+      "text": " Créer la note fusionnée (garder les propriétés de la première note sauf les dimensions)",
+      "indent": "      //"
+    },
+    {
+      "line": 1894,
+      "text": " Supprimer TOUTES les notes qui se trouvent entre la première et la dernière note",
+      "indent": "      //"
+    },
+    {
+      "line": 1895,
+      "text": " (y compris les notes non sélectionnées)",
+      "indent": "      //"
+    },
+    {
+      "line": 1897,
+      "text": " Si c'est une note sélectionnée, la supprimer",
+      "indent": "        //"
+    },
+    {
+      "line": 1902,
+      "text": " Sinon, vérifier si la note se trouve dans l'intervalle de fusion",
+      "indent": "        //"
+    },
+    {
+      "line": 1906,
+      "text": " Supprimer si la note commence entre mergedStartTime et mergedEndTime",
+      "indent": "        //"
+    },
+    {
+      "line": 1907,
+      "text": " OU si la note se chevauche avec l'intervalle de fusion",
+      "indent": "        //"
+    },
+    {
+      "line": 1923,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 1926,
+      "text": " Copy/Paste handlers",
+      "indent": "  //"
+    },
+    {
+      "line": 1969,
+      "text": " Trouver la position minimale parmi toutes les notes copiées",
+      "indent": "    //"
+    },
+    {
+      "line": 1979,
+      "text": " Calculer l'offset pour coller à la position de la souris",
+      "indent": "    //"
+    },
+    {
+      "line": 2009,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "    //"
+    },
+    {
+      "line": 2012,
+      "text": " BPM Detection handler",
+      "indent": "  //"
+    },
+    {
+      "line": 2023,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "      //"
+    },
+    {
+      "line": 2031,
+      "text": " Mode change handler",
+      "indent": "  //"
+    },
+    {
+      "line": 2033,
+      "text": " Si on passe en mode Edit, désélectionner toutes les notes",
+      "indent": "    //"
+    },
+    {
+      "line": 2035,
+      "text": " Sauvegarder si les notes ont été modifiées",
+      "indent": "      //"
+    },
+    {
+      "line": 2037,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "        //"
+    },
+    {
+      "line": 2045,
+      "text": " Global drag handlers",
+      "indent": "  //"
+    },
+    {
+      "line": 2055,
+      "text": " Ajuster l'offset en fonction de l'endroit où l'utilisateur a cliqué dans la note",
+      "indent": "      //"
+    },
+    {
+      "line": 2058,
+      "text": " Play sound when moving to a different cell",
+      "indent": "      //"
+    },
+    {
+      "line": 2083,
+      "text": " Resize sound handlers",
+      "indent": "  //"
+    },
+    {
+      "line": 2098,
+      "text": " Keyboard shortcuts for copy/paste and duplication",
+      "indent": "  //"
+    },
+    {
+      "line": 2104,
+      "text": " Ctrl+C : copier les notes sélectionnées",
+      "indent": "      //"
+    },
+    {
+      "line": 2110,
+      "text": " Ctrl+X : couper les notes sélectionnées",
+      "indent": "      //"
+    },
+    {
+      "line": 2116,
+      "text": " Ctrl+V : coller les notes copiées",
+      "indent": "      //"
+    },
+    {
+      "line": 2122,
+      "text": " Ctrl+D : dupliquer les notes sélectionnées",
+      "indent": "      //"
+    },
+    {
+      "line": 2128,
+      "text": " F : fusionner les notes sélectionnées",
+      "indent": "      //"
+    },
+    {
+      "line": 2134,
+      "text": " Raccourcis audio",
+      "indent": "      //"
+    },
+    {
+      "line": 2136,
+      "text": " Space : Play/Pause",
+      "indent": "        //"
+    },
+    {
+      "line": 2142,
+      "text": " Escape : Stop",
+      "indent": "        //"
+    },
+    {
+      "line": 2148,
+      "text": " ArrowLeft : Reculer de 5s",
+      "indent": "        //"
+    },
+    {
+      "line": 2154,
+      "text": " ArrowRight : Avancer de 5s",
+      "indent": "        //"
+    },
+    {
+      "line": 2166,
+      "text": " Lasso Selection Handler - MouseUp (défini avant le useEffect qui l'utilise)",
+      "indent": "  //"
+    },
+    {
+      "line": 2170,
+      "text": " Calculer le rectangle de sélection en coordonnées relatives",
+      "indent": "    //"
+    },
+    {
+      "line": 2176,
+      "text": " Rectangle du lasso trop petit ? Pas de sélection (c'est un clic simple)",
+      "indent": "    //"
+    },
+    {
+      "line": 2178,
+      "text": " Clic simple sur zone vide sans Ctrl : désélectionner tout",
+      "indent": "      //"
+    },
+    {
+      "line": 2192,
+      "text": " Obtenir le conteneur pour conversion des coordonnées",
+      "indent": "    //"
+    },
+    {
+      "line": 2200,
+      "text": " Détecter les notes dans le lasso",
+      "indent": "    //"
+    },
+    {
+      "line": 2206,
+      "text": " Convertir les positions viewport des notes en coordonnées relatives au conteneur",
+      "indent": "      //"
+    },
+    {
+      "line": 2212,
+      "text": " Vérifier si la note intersecte le rectangle de lasso",
+      "indent": "      //"
+    },
+    {
+      "line": 2216,
+      "text": " Extraire trackId et noteId des attributs data",
+      "indent": "        //"
+    },
+    {
+      "line": 2224,
+      "text": " Si Ctrl était pressé, ajouter à la sélection existante",
+      "indent": "    //"
+    },
+    {
+      "line": 2239,
+      "text": " Lasso global mouse events",
+      "indent": "  //"
+    },
+    {
+      "line": 2267,
+      "text": " Lasso Selection Handlers",
+      "indent": "  //"
+    },
+    {
+      "line": 2271,
+      "text": " Ignorer si un menu contextuel est ouvert",
+      "indent": "    //"
+    },
+    {
+      "line": 2274,
+      "text": " Ignorer si on est en train de déplacer une piste",
+      "indent": "    //"
+    },
+    {
+      "line": 2277,
+      "text": " Ignorer si on clique sur une note (elle gérera son propre clic)",
+      "indent": "    //"
+    },
+    {
+      "line": 2284,
+      "text": " Si Ctrl n'est pas pressé, désélectionner tout avant de commencer le lasso",
+      "indent": "    //"
+    },
+    {
+      "line": 2289,
+      "text": " Stocker la référence au conteneur",
+      "indent": "    //"
+    },
+    {
+      "line": 2292,
+      "text": " Obtenir les coordonnées relatives au conteneur",
+      "indent": "    //"
+    },
+    {
+      "line": 2306,
+      "text": " Obtenir les coordonnées relatives au conteneur",
+      "indent": "    //"
+    },
+    {
+      "line": 2325,
+      "text": " Exporter vers le chemin existant",
+      "indent": "          //"
+    },
+    {
+      "line": 2338,
+      "text": " Première export - demander le chemin",
+      "indent": "          //"
+    },
+    {
+      "line": 2366,
+      "text": " Ouvrir le dossier via la commande Tauri personnalisée",
+      "indent": "        //"
+    },
+    {
+      "line": 2684,
+      "text": " Trouver la preview note pour cette piste",
+      "indent": "                                //"
+    },
+    {
+      "line": 2830,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "                                //"
+    },
+    {
+      "line": 2835,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "                                //"
+    },
+    {
+      "line": 2840,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "                                //"
+    },
+    {
+      "line": 2845,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "                                //"
+    },
+    {
+      "line": 2850,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "                                //"
+    },
+    {
+      "line": 2855,
+      "text": " History is now automatic via useEffect with debounce",
+      "indent": "                                //"
+    }
+  ],
+  "types\\shortcuts.ts": [
+    {
+      "line": 12,
+      "text": " Raccourcis immodifiables",
+      "indent": "  //"
+    },
+    {
+      "line": 58,
+      "text": " Raccourcis modifiables",
+      "indent": "  //"
+    },
+    {
+      "line": 104,
+      "text": " Raccourcis de lecture audio",
+      "indent": "  //"
+    },
+    {
+      "line": 141,
+      "text": " Raccourcis de fenêtre",
+      "indent": "  //"
+    }
+  ],
+  "utils\\gridPositionCalculator.ts": [
+    {
+      "line": 15,
+      "text": " Calculer le nombre de beats écoulés",
+      "indent": "  //"
+    },
+    {
+      "line": 18,
+      "text": " Calculer le nombre de cellules (chaque beat contient subRhythmSync cellules)",
+      "indent": "  //"
+    },
+    {
+      "line": 46,
+      "text": " Convertir les pixels en cellules",
+      "indent": "  //"
+    },
+    {
+      "line": 49,
+      "text": " Convertir les cellules en beats",
+      "indent": "  //"
+    },
+    {
+      "line": 52,
+      "text": " Convertir les beats en secondes",
+      "indent": "  //"
+    }
+  ],
+  "utils\\localStorage.ts": [
+    {
+      "line": 5,
+      "text": " Helper for generating UUIDs, especially useful for insecure HTTP contexts on mobile/LAN",
+      "indent": "//"
+    },
+    {
+      "line": 13,
+      "text": " Interface for locally stored project metadata",
+      "indent": "//"
+    },
+    {
+      "line": 81,
+      "text": " Compatibility functions for the old system",
+      "indent": "//"
+    }
+  ],
+  "utils\\musicManager.ts": [
+    {
+      "line": 41,
+      "text": " Extract the file name",
+      "indent": "    //"
+    },
+    {
+      "line": 44,
+      "text": " Create the destination path",
+      "indent": "    //"
+    },
+    {
+      "line": 47,
+      "text": " Check if the target folder exists, otherwise create it",
+      "indent": "    //"
+    },
+    {
+      "line": 53,
+      "text": " Copy the file",
+      "indent": "    //"
+    },
+    {
+      "line": 119,
+      "text": " Return only the file name",
+      "indent": "      //"
+    },
+    {
+      "line": 122,
+      "text": " Return the absolute path",
+      "indent": "    //"
+    },
+    {
+      "line": 142,
+      "text": " If the path contains a folder separator, it's an absolute path",
+      "indent": "    //"
+    },
+    {
+      "line": 147,
+      "text": " Otherwise, it's a relative file name",
+      "indent": "    //"
+    },
+    {
+      "line": 178,
+      "text": " On web, try to load from IndexedDB first",
+      "indent": "      //"
+    },
+    {
+      "line": 186,
+      "text": " If not found in DB or error (e.g. provided as a direct web URL instead)",
+      "indent": "    //"
+    },
+    {
+      "line": 187,
+      "text": " we can fallback to standard URL loading if it's a blob or http link",
+      "indent": "    //"
+    },
+    {
+      "line": 198,
+      "text": " On Linux, read file to memory and create a Blob to fix webkitgtk streaming issues",
+      "indent": "      //"
+    },
+    {
+      "line": 202,
+      "text": " Determine mime type from extension",
+      "indent": "      //"
+    },
+    {
+      "line": 217,
+      "text": " Fallback / Windows / macOS behavior",
+      "indent": "  //"
+    }
+  ],
+  "utils\\windowState.ts": [
+    {
+      "line": 20,
+      "text": " Check if window is minimized - don't save state if minimized",
+      "indent": "    //"
+    },
+    {
+      "line": 27,
+      "text": " Get window properties",
+      "indent": "    //"
+    },
+    {
+      "line": 60,
+      "text": " Restore maximized state",
+      "indent": "    //"
+    },
+    {
+      "line": 64,
+      "text": " Restore size and position",
+      "indent": "      //"
+    },
+    {
+      "line": 81,
+      "text": " Debounce timer to avoid saving too frequently",
+      "indent": "  //"
+    },
+    {
+      "line": 93,
+      "text": " Listen to window resize and move events",
+      "indent": "  //"
+    },
+    {
+      "line": 97,
+      "text": " Save on window close",
+      "indent": "  //"
+    },
+    {
+      "line": 102,
+      "text": " Return cleanup function",
+      "indent": "  //"
+    }
+  ]
+}

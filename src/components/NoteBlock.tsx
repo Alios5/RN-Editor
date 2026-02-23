@@ -123,26 +123,26 @@ const NoteBlockComponent = ({
     e.stopPropagation();
 
     if (editorMode === 'edit') {
-      // En mode édition : clic droit supprime directement la note
+      // In edit mode: right click deletes the note directly
       if (onDelete) {
         onDelete();
       }
     } else {
-      // En mode sélection : clic droit ouvre le menu contextuel
+      // In select mode: right click opens context menu
 
-      // Capturer la position du clic pour positionner le menu
+      // Capture click position to position menu
       setMenuPosition({ x: e.clientX, y: e.clientY });
 
-      // Si la note n'est pas déjà sélectionnée, la sélectionner exclusivement
+      // If note is not already selected, select it exclusively
       if (!isSelected && onNoteClick) {
         onNoteClick(false); // false = pas de Ctrl, donc sélection exclusive
 
-        // Attendre que le state soit mis à jour avant d'ouvrir le menu
+        // Wait for state to update before opening menu
         setTimeout(() => {
           handleMenuOpenChange(true);
         }, 0);
       } else {
-        // Si déjà sélectionnée, ouvrir le menu immédiatement
+        // If already selected, open menu immediately
         handleMenuOpenChange(true);
       }
     }
@@ -150,24 +150,24 @@ const NoteBlockComponent = ({
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (editorMode === 'select' && e.button === 0) {
-      // Vérifier si le clic est dans la zone de resize (2px à droite)
+      // Check if click is in resize area (2px on the right)
       if (onStartResize) {
         const target = e.currentTarget as HTMLElement;
         const rect = target.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
         const noteWidth = rect.width;
 
-        // Si le clic est dans les 2 derniers pixels à droite, c'est pour le resize
+        // If click is in the last 2 pixels on the right, it's for resizing
         if (clickX > noteWidth - 2) {
           return; // Ne rien faire, la poignée va gérer
         }
       }
 
-      // Mode sélection avec clic gauche
+      // Select mode with left click
       e.preventDefault();
       e.stopPropagation();
 
-      // Calculer l'offset du clic par rapport au début de la note
+      // Calculate click offset relative to the start of the note
       const target = e.currentTarget as HTMLElement;
       const rect = target.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
@@ -175,13 +175,13 @@ const NoteBlockComponent = ({
       const clickOffsetInCells = Math.floor(clickOffsetInPixels / cellWidth);
       const cellPosition = note.gridPosition;
 
-      // Si la note n'est pas sélectionnée, la sélectionner d'abord
+      // If note is not selected, select it first
       if (!isSelected && onNoteClick) {
-        // Sélectionner la note (avec Ctrl pour ajouter à la sélection existante)
+        // Select note (with Ctrl to add to existing selection)
         onNoteClick(e.ctrlKey || e.metaKey);
       }
 
-      // Démarrer le drag immédiatement (que la note soit déjà sélectionnée ou non)
+      // Start drag immediately (whether the note is already selected or not)
       if (onStartDrag) {
         onStartDrag(cellPosition, clickOffsetInCells);
       }
@@ -189,7 +189,7 @@ const NoteBlockComponent = ({
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent) => {
-    // En mode sélection, empêcher la propagation pour éviter le drag
+    // In select mode, prevent propagation to avoid drag
     e.preventDefault();
     e.stopPropagation();
 
@@ -207,10 +207,10 @@ const NoteBlockComponent = ({
               data-note-block
               data-note-id={`${trackId}:${note.id}`}
               className={`absolute top-0 bottom-0 rounded ${isDragging || isResizing
-                  ? 'cursor-custom-grabbing transition-none'
-                  : editorMode === 'select'
-                    ? 'cursor-custom-grab transition-all'
-                    : 'transition-all'
+                ? 'cursor-custom-grabbing transition-none'
+                : editorMode === 'select'
+                  ? 'cursor-custom-grab transition-all'
+                  : 'transition-all'
                 } ${isDragging
                   ? 'border-4 border-dashed border-blue-400 ring-2 ring-blue-200'
                   : isResizing
@@ -239,14 +239,14 @@ const NoteBlockComponent = ({
               onMouseDown={handleMouseDown}
               onContextMenu={handleContextMenu}
             >
-              {/* Icône de l'action en haut à gauche */}
+              {/* Action icon on top left */}
               {actionIcon && (
                 <div className="absolute top-0.5 left-0.5 bg-background/90 rounded p-0.5 shadow-sm flex items-center justify-center w-4 h-4">
                   <FontAwesomeIcon icon={actionIcon} className="h-3 w-3" style={{ width: '12px', height: '12px' }} />
                 </div>
               )}
 
-              {/* Poignée de redimensionnement en mode sélection */}
+              {/* Resize handle in select mode */}
               {editorMode === 'select' && onStartResize && (
                 <div
                   className="absolute top-0 bottom-0 right-0 w-0.5 cursor-custom-ew-resize hover:bg-primary/50 transition-all"
@@ -274,7 +274,7 @@ const NoteBlockComponent = ({
         </Tooltip>
       </TooltipProvider>
 
-      {/* Menu contextuel séparé, ouvert seulement programmatiquement */}
+      {/* Separate context menu, opened only programmatically */}
       <DropdownMenu open={isMenuOpen} onOpenChange={handleMenuOpenChange}>
         <DropdownMenuTrigger asChild>
           <div style={{ position: 'fixed', left: `${menuPosition.x}px`, top: `${menuPosition.y}px`, width: 0, height: 0, pointerEvents: 'none', zIndex: 9999 }} />
@@ -287,7 +287,7 @@ const NoteBlockComponent = ({
           avoidCollisions={true}
           collisionPadding={10}
         >
-          {/* Lier action */}
+          {/* Link action */}
           <DropdownMenuItem onClick={selectedCount > 1 ? onAssignActionToSelected : onAssignAction}>
             <FontAwesomeIcon icon={faLink} className="mr-2 h-4 w-4" />
             {selectedCount > 1
@@ -295,7 +295,7 @@ const NoteBlockComponent = ({
               : t("action.selectAction")}
           </DropdownMenuItem>
 
-          {/* Délier action (seulement si au moins une note a une action) */}
+          {/* Unlink action (only if at least one note has an action) */}
           {note.specificAction && (
             <DropdownMenuItem onClick={selectedCount > 1 ? onUnlinkActionFromSelected : onUnlinkAction}>
               <FontAwesomeIcon icon={faLinkSlash} className="mr-2 h-4 w-4" />
@@ -318,7 +318,7 @@ const NoteBlockComponent = ({
             <span className="ml-auto pl-4 text-xs text-muted-foreground">Ctrl+D</span>
           </DropdownMenuItem>
 
-          {/* Fusionner (seulement si plusieurs notes sélectionnées) */}
+          {/* Merge (only if multiple notes selected) */}
           {selectedCount > 1 && (
             <DropdownMenuItem onClick={onMergeSelected}>
               <FontAwesomeIcon icon={faCodeMerge} className="mr-2 h-4 w-4" />
@@ -331,21 +331,21 @@ const NoteBlockComponent = ({
 
           <div className="h-px bg-border my-1" />
 
-          {/* Copier */}
+          {/* Copy */}
           <DropdownMenuItem onClick={onCopy}>
             <FontAwesomeIcon icon={faCopy} className="mr-2 h-4 w-4" />
             <span className="flex-1">{t("actions.copy")}</span>
             <span className="ml-auto pl-4 text-xs text-muted-foreground">Ctrl+C</span>
           </DropdownMenuItem>
 
-          {/* Couper */}
+          {/* Cut */}
           <DropdownMenuItem onClick={onCut}>
             <FontAwesomeIcon icon={faScissors} className="mr-2 h-4 w-4" />
             <span className="flex-1">{t("actions.cut")}</span>
             <span className="ml-auto pl-4 text-xs text-muted-foreground">Ctrl+X</span>
           </DropdownMenuItem>
 
-          {/* Coller */}
+          {/* Paste */}
           <DropdownMenuItem onClick={onPaste}>
             <FontAwesomeIcon icon={faClipboard} className="mr-2 h-4 w-4" />
             <span className="flex-1">{t("actions.paste")}</span>
@@ -354,7 +354,7 @@ const NoteBlockComponent = ({
 
           <div className="h-px bg-border my-1" />
 
-          {/* Suppression */}
+          {/* Deletion */}
           <DropdownMenuItem
             onClick={selectedCount > 1 ? onDeleteSelected : onDelete}
             className="text-destructive"
@@ -373,9 +373,9 @@ const NoteBlockComponent = ({
   );
 };
 
-// Fonction de comparaison personnalisée pour optimiser les re-renders
+// Custom comparison function to optimize re-renders
 const arePropsEqual = (prevProps: NoteBlockProps, nextProps: NoteBlockProps) => {
-  // Vérifier si isActive a changé
+  // Check if isActive changed
   const prevEffectiveDuration = prevProps.note.duration === 0 ? 0.1 : prevProps.note.duration;
   const nextEffectiveDuration = nextProps.note.duration === 0 ? 0.1 : nextProps.note.duration;
 
@@ -384,10 +384,10 @@ const arePropsEqual = (prevProps: NoteBlockProps, nextProps: NoteBlockProps) => 
   const nextIsActive = nextProps.currentTime >= nextProps.note.startTime &&
     nextProps.currentTime <= nextProps.note.startTime + nextEffectiveDuration;
 
-  // Si l'état actif change, on doit re-render
+  // If active state changes, we must re-render
   if (prevIsActive !== nextIsActive) return false;
 
-  // Comparer les autres props importantes
+  // Compare other important props
   return prevProps.note === nextProps.note &&
     prevProps.trackId === nextProps.trackId &&
     prevProps.trackColor === nextProps.trackColor &&

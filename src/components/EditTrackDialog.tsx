@@ -12,12 +12,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Track } from "@/types/track";
 import { useTranslation } from "@/hooks/useTranslation";
-import { 
-  TRACK_PRESET_COLORS, 
-  STYLES, 
+import {
+  TRACK_PRESET_COLORS,
+  STYLES,
   VALIDATION,
   getColorButtonClasses,
-  truncateToMaxLength 
+  truncateToMaxLength
 } from "@/lib/designTokens";
 
 interface EditTrackDialogProps {
@@ -48,18 +48,18 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
 
   const handleEdit = () => {
     const trimmedName = name.trim();
-    
+
     if (!trimmedName) {
       setError(t("track.errorNameRequired"));
       return;
     }
-    
-    // Vérifier si le nom existe déjà (sauf si c'est le nom actuel de la piste)
+
+    // Check if the name already exists (unless it's the current track name)
     if (existingTrackNames.includes(trimmedName) && trimmedName !== track?.name) {
       setError(t("track.errorNameExists"));
       return;
     }
-    
+
     onEdit(trimmedName, color, assignedKey || undefined);
     setError("");
     onOpenChange(false);
@@ -79,7 +79,7 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
             {t("track.noTracksDescription")}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="edit-track-name">{t("track.trackName")}</Label>
@@ -95,7 +95,7 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
               <p className={STYLES.errorMessage}>{error}</p>
             )}
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="edit-assigned-key">{t("track.assignedKey")}</Label>
             <div className="flex gap-2">
@@ -139,7 +139,7 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
               {t("track.assignedKeyDescription")}
             </p>
           </div>
-          
+
           <div className="space-y-2">
             <Label>{t("track.trackColor")}</Label>
             <div className="grid grid-cols-5 gap-2">
@@ -165,7 +165,7 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
             </div>
           </div>
         </div>
-        
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t("actions.cancel")}

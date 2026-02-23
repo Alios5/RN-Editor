@@ -35,15 +35,15 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
     const audioRef = useRef<HTMLAudioElement>(null);
     const animationFrameRef = useRef<number>();
 
-    // Mise à jour du temps avec requestAnimationFrame - synchronisé avec audio.currentTime
+    // Update time with requestAnimationFrame - synchronized with audio.currentTime
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
 
         const updateTime = () => {
             if (audio && !audio.paused && !audio.ended) {
-                // Utiliser directement audio.currentTime (source de vérité absolue)
-                // Sans throttling artificiel pour éviter les désynchronisations sur ordinateurs moins performants
+                // Use audio.currentTime directly (absolute truth source)
+                // No artificial throttling to avoid desynchronizations on slower computers
                 const time = audio.currentTime;
                 setCurrentTime(time);
                 onTimeUpdate?.(time);
@@ -62,7 +62,7 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
         };
     }, [isPlaying, onTimeUpdate]);
 
-    // Chargement de la métadonnée pour la durée
+    // Load metadata for duration
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -93,15 +93,15 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
     useEffect(() => {
         if (!audioRef.current) return;
 
-        // Arrêter la lecture
+        // Stop playback
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
 
-        // Réinitialiser les états
+        // Reset states
         setIsPlaying(false);
         setCurrentTime(0);
 
-        // Notifier le parent
+        // Notify parent
         onPlayStateChange?.(false);
         onTimeUpdate?.(0);
     }, [audioUrl, onPlayStateChange, onTimeUpdate]);
@@ -126,8 +126,8 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
     }, [audioUrl, onDurationChange]);
 
 
-    // Synchroniser l'état React avec les événements natifs de l'audio
-    // (contrôles média du casque, Media Session API, etc.)
+    // Synchronize React state with native audio events
+    // (headset media controls, Media Session API, etc.)
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -143,7 +143,7 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
         };
 
         const handleEnded = () => {
-            // Quand la musique se termine, revenir à zéro comme un stop
+            // When music ends, return to zero like a stop
             audio.pause();
             audio.currentTime = 0;
             setIsPlaying(false);
@@ -228,7 +228,7 @@ export const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(({ audio
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    // Exposer les fonctions via ref
+    // Expose functions via ref
     useImperativeHandle(ref, () => ({
         togglePlay,
         stop: handleStop,
