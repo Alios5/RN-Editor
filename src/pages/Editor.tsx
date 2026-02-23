@@ -2018,7 +2018,7 @@ const Editor = () => {
     setIsDetectingBPM(true);
     try {
       const { detectBPM } = await import('@/utils/bpmDetector');
-      const detectedBPM = await detectBPM(musicFilePath);
+      const detectedBPM = await detectBPM(musicFilePath, audioUrl);
       setBpm(detectedBPM);
       // History is now automatic via useEffect with debounce
     } catch (error) {
