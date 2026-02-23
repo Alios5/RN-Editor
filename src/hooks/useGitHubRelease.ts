@@ -13,7 +13,7 @@ const API_BASE = `https://api.github.com/repos/${REPO}/releases`;
 
 // In-memory cache
 let cache: {
-    currentRelease: GitHubRelease | null;
+    release: GitHubRelease | null;
     latestVersion: string | null;
     latestDownloadUrl: string | null;
     updateAvailable: boolean;
@@ -21,7 +21,7 @@ let cache: {
 
 function parseVersion(tag: string): number[] {
     return tag
-        .replace(/^v/, "")
+        .replace(/^v\.?/, "")
         .split(".")
         .map((n) => parseInt(n, 10) || 0);
 }
@@ -49,8 +49,8 @@ function parseRelease(data: Record<string, unknown>): GitHubRelease {
 }
 
 export function useGitHubRelease(appVersion: string) {
-    const [currentRelease, setCurrentRelease] = useState<GitHubRelease | null>(
-        cache?.currentRelease ?? null
+    const [release, setRelease] = useState<GitHubRelease | null>(
+        cache?.release ?? null
     );
     const [updateAvailable, setUpdateAvailable] = useState(
         cache?.updateAvailable ?? false
@@ -65,7 +65,7 @@ export function useGitHubRelease(appVersion: string) {
 
     useEffect(() => {
         if (cache) {
-            setCurrentRelease(cache.currentRelease);
+            setRelease(cache.release);
             setUpdateAvailable(cache.updateAvailable);
             setLatestVersion(cache.latestVersion);
             setLatestDownloadUrl(cache.latestDownloadUrl);
@@ -87,29 +87,33 @@ export function useGitHubRelease(appVersion: string) {
             ),
         ])
             .then(([currentResult, latestResult]) => {
+                // Latest release info
+                const latestData =
+                    latestResult.status === "fulfilled" ? latestResult.value : null;
+                const latestTag = latestData?.tag_name as string | undefined;
+
                 // Current version release notes
                 const currentData =
                     currentResult.status === "fulfilled" ? currentResult.value : null;
                 const parsedCurrent = currentData ? parseRelease(currentData) : null;
 
-                // Latest release info
-                const latestData =
-                    latestResult.status === "fulfilled" ? latestResult.value : null;
-                const latestTag = latestData?.tag_name as string | undefined;
                 const hasUpdate = latestTag
                     ? isNewer(latestTag, appVersion)
                     : false;
 
+                // The release notes shown are always for the currently installed version
+                const releaseToShow = parsedCurrent;
+
                 cache = {
-                    currentRelease: parsedCurrent,
-                    latestVersion: hasUpdate ? latestTag!.replace(/^v/, "") : null,
+                    release: releaseToShow,
+                    latestVersion: hasUpdate ? latestTag!.replace(/^v\.?/, "") : null,
                     latestDownloadUrl: hasUpdate
                         ? (latestData?.html_url as string)
                         : null,
                     updateAvailable: hasUpdate,
                 };
 
-                setCurrentRelease(parsedCurrent);
+                setRelease(releaseToShow);
                 setUpdateAvailable(hasUpdate);
                 setLatestVersion(cache.latestVersion);
                 setLatestDownloadUrl(cache.latestDownloadUrl);
@@ -123,7 +127,7 @@ export function useGitHubRelease(appVersion: string) {
     }, [appVersion]);
 
     return {
-        release: currentRelease,
+        release,
         loading,
         updateAvailable,
         latestVersion,
