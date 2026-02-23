@@ -183,7 +183,13 @@ const Projects = () => {
                     size="icon"
                     className="h-6 w-6 rounded-full hover:bg-primary/20"
                     title="Help"
-                    onClick={() => invoke("open_url", { url: "https://docs.rhythmnator.com/guide-launch.html#guide-project-launch" })}
+                    onClick={() => {
+                      if (isDesktop()) {
+                        invoke("open_url", { url: "https://docs.rhythmnator.com/guide-launch.html#guide-project-launch" });
+                      } else {
+                        window.open("https://docs.rhythmnator.com/guide-launch.html#guide-project-launch", "_blank");
+                      }
+                    }}
                   >
                     <FontAwesomeIcon icon={faCircleQuestion} className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
                   </Button>
@@ -218,7 +224,13 @@ const Projects = () => {
                 <Button
                   variant="ghost"
                   className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-                  onClick={() => invoke("open_url", { url: "https://docs.rhythmnator.com/" })}
+                  onClick={() => {
+                    if (isDesktop()) {
+                      invoke("open_url", { url: "https://docs.rhythmnator.com/" });
+                    } else {
+                      window.open("https://docs.rhythmnator.com/", "_blank");
+                    }
+                  }}
                 >
                   <FontAwesomeIcon icon={faFileLines} className="h-4 w-4" />
                   {t("project.documentation")}
