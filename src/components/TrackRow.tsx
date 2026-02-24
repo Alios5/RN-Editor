@@ -124,7 +124,7 @@ export const TrackRow = ({
   const style: React.CSSProperties = {
     transform: transform ? `translateY(${transform.y}px)` : undefined,
     transition,
-    width: audioMetrics.waveformWidth,
+    width: audioMetrics.waveformWidth + startOffset,
   };
 
   return (
@@ -148,7 +148,7 @@ export const TrackRow = ({
       </div>
       {isGridVisible && (
         <RhythmGrid
-          width={audioMetrics.waveformWidth}
+          width={audioMetrics.waveformWidth + startOffset}
           totalTime={audioMetrics.totalTime}
           rhythmSync={rhythmSync}
           subRhythmSync={subRhythmSync}

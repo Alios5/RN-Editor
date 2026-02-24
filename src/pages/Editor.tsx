@@ -2194,29 +2194,45 @@ const Editor = () => {
     if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
-    const scrollLeft = (container as HTMLElement).scrollLeft;
     const scrollTop = (container as HTMLElement).scrollTop;
 
-    // Détecter les notes dans le lasso
-    const noteElements = document.querySelectorAll('[data-note-block]');
+    // Détecter les notes dans le lasso (on utilise les pistes plutôt que le DOM des notes 
+    // pour pouvoir sélectionner les notes non visibles qui ont été déchargées par l'optimisation)
+    const gridElements = document.querySelectorAll('[data-track-grid]');
+    const CELL_WIDTH = 24;
 
-    noteElements.forEach((element) => {
-      const rect = element.getBoundingClientRect();
+    gridElements.forEach((gridElem) => {
+      const trackId = gridElem.getAttribute('data-track-grid');
+      if (!trackId) return;
 
-      // Convertir les positions viewport des notes en coordonnées relatives au conteneur
-      const noteLeft = rect.left - containerRect.left + scrollLeft;
-      const noteRight = rect.right - containerRect.left + scrollLeft;
-      const noteTop = rect.top - containerRect.top + scrollTop;
-      const noteBottom = rect.bottom - containerRect.top + scrollTop;
+      const gridRect = gridElem.getBoundingClientRect();
 
-      // Vérifier si la note intersecte le rectangle de lasso
-      const intersects = !(noteRight < minX || noteLeft > maxX || noteBottom < minY || noteTop > maxY);
+      // Convertir la position Y de la piste en coordonnées relatives au conteneur lasso
+      const gridTop = gridRect.top - containerRect.top + scrollTop;
+      const gridBottom = gridRect.bottom - containerRect.top + scrollTop;
 
-      if (intersects) {
-        // Extraire trackId et noteId des attributs data
-        const noteData = element.getAttribute('data-note-id');
-        if (noteData) {
-          notesInLasso.add(noteData);
+      // Vérifier si la piste intersecte verticalement le lasso
+      const intersectsY = !(gridBottom < minY || gridTop > maxY);
+
+      if (intersectsY) {
+        const track = tracks.find(t => t.id === trackId);
+        if (track) {
+          track.notes.forEach(note => {
+            // Position X (relative au conteneur lasso)
+            const noteLeft = startOffset + note.gridPosition * CELL_WIDTH;
+            // Ne pas oublier qu'en lasso, un chevauchement partiel suffit
+            const noteRight = noteLeft + note.gridWidth * CELL_WIDTH;
+
+            // Position Y (approximative basée sur la grille : top-2 et bottom-2)
+            const noteTop = gridTop + 8; // 0.5rem = 8px
+            const noteBottom = gridBottom - 8;
+
+            const intersects = !(noteRight < minX || noteLeft > maxX || noteBottom < minY || noteTop > maxY);
+
+            if (intersects) {
+              notesInLasso.add(`${trackId}:${note.id}`);
+            }
+          });
         }
       }
     });
@@ -2615,10 +2631,10 @@ const Editor = () => {
             <div className="flex flex-col h-full">
               {/* Waveform Area - Zone de travail avec scroll horizontal */}
               <div ref={scrollContainerRef} className="flex-1 p-6 overflow-x-auto overflow-y-auto overscroll-contain">
-                {/* Conteneur interne avec largeur dynamique */}
+                {/* Conteneur interne avec largeur dynamique - on ajoute startOffset pour la taille totale */}
                 <div
                   data-lasso-container
-                  style={{ width: `${audioMetrics.waveformWidth}px`, minWidth: '100%' }}
+                  style={{ width: `${audioMetrics.waveformWidth + startOffset}px`, minWidth: '100%' }}
                   className="relative"
                   onMouseDown={handleLassoMouseDown}
                   onMouseMove={handleLassoMouseMove}
@@ -2655,6 +2671,7 @@ const Editor = () => {
                           setDragSeekTime(null);
                         }}
                         width={audioMetrics.waveformWidth}
+                        startOffset={startOffset}
                       />
                     </div>
 

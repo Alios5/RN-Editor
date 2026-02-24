@@ -9,9 +9,10 @@ interface WaveformProps {
   onSeek?: (time: number) => void;
   onDragSeek?: (time: number) => void;
   width?: number;
+  startOffset?: number;
 }
 
-export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek, onDragSeek, width }: WaveformProps) => {
+export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek, onDragSeek, width, startOffset = 0 }: WaveformProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Get waveform colors from CSS variables (theme-aware)
@@ -51,27 +52,41 @@ export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek,
   useEffect(() => {
     if (!wavesurfer) return;
 
-    // During drag - visual update only
-    const handleDrag = () => {
-      const newTime = wavesurfer.getCurrentTime();
+    let isDragging = false;
+
+    // Fired continuously on drag, AND once on initial mousedown
+    const handleInteraction = (newTime: number) => {
       onDragSeek?.(newTime);
     };
 
-    // At the end of drag/click - update actual audio position
-    const handleInteraction = () => {
+    const handleDragStart = () => {
+      isDragging = true;
+    };
+
+    const handleDragEnd = () => {
+      isDragging = false;
       const newTime = wavesurfer.getCurrentTime();
       onSeek?.(newTime);
     };
 
-    // Listen to drags (visual update)
-    wavesurfer.on('drag', handleDrag);
+    const handleClick = () => {
+      // Ignorer le clic s'il s'agit de la fin d'un glissement (drag)
+      if (isDragging) return;
 
-    // Listen to interaction end (audio update)
+      const newTime = wavesurfer.getCurrentTime();
+      onSeek?.(newTime);
+    };
+
     wavesurfer.on('interaction', handleInteraction);
+    wavesurfer.on('dragstart', handleDragStart);
+    wavesurfer.on('dragend', handleDragEnd);
+    wavesurfer.on('click', handleClick);
 
     return () => {
-      wavesurfer.un('drag', handleDrag);
       wavesurfer.un('interaction', handleInteraction);
+      wavesurfer.un('dragstart', handleDragStart);
+      wavesurfer.un('dragend', handleDragEnd);
+      wavesurfer.un('click', handleClick);
     };
   }, [wavesurfer, onSeek, onDragSeek]);
 
@@ -80,7 +95,11 @@ export const Waveform = ({ audioUrl, currentTime = 0, isPlaying = false, onSeek,
       <div
         ref={containerRef}
         className="h-full"
-        style={{ width: width ? `${width}px` : '100%', cursor: "url('/assets/cursors/line_vertical.svg') 16 16, text" }}
+        style={{
+          width: width ? `${width}px` : '100%',
+          marginLeft: `${startOffset}px`,
+          cursor: "url('/assets/cursors/line_vertical.svg') 16 16, text"
+        }}
       />
       {!isReady && audioUrl && (
         <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: waveformBackgroundHSL }}>

@@ -530,6 +530,7 @@ export const RhythmGrid = ({
   return (
     <div
       ref={containerRef}
+      data-track-grid={trackId}
       className={`relative h-[80px] rounded-lg select-none overflow-hidden ${isRightClickDeleting ? 'cursor-custom-not-allowed' : isResizing ? 'cursor-custom-ew-resize' : editorMode === 'edit' ? 'cursor-custom-crosshair' : 'cursor-custom-default'
         }`}
       style={{
