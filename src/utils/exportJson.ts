@@ -20,20 +20,31 @@ interface ExportNote {
 }
 
 interface ExportData {
+  musicName: string;
   bpm: number;
-  musicDuration: number;
-  [key: string]: number | ExportNote[]; // bpm, musicDuration (number) or note lists
+  duration: number;
+  groups: {
+    [key: string]: ExportNote[];
+  };
 }
 
-export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number): Promise<number> => {
+export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number, musicName: string): Promise<number> => {
   // 1. Organize notes by group
-  const notesByGroup: { [groupName: string]: ExportNote[] } = {
-    "Notes": []
-  };
+  const notesByGroup: { [groupName: string]: ExportNote[] } = {};
 
-  // Create categories for each group
+  // Check if there are any tracks without a group
+  const hasUngroupedTracks = tracks.some(track => !track.groupId);
+  if (hasUngroupedTracks) {
+    notesByGroup["Notes"] = [];
+  }
+
+  // Create categories for each group that actually contains tracks
   trackGroups.forEach(group => {
-    notesByGroup[group.name] = [];
+    // Only create the group if it has tracks associated with it
+    const hasTracksInGroup = tracks.some(track => track.groupId === group.id);
+    if (hasTracksInGroup) {
+      notesByGroup[group.name] = [];
+    }
   });
 
   let totalNotes = 0;
@@ -74,9 +85,10 @@ export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: Tr
 
   // 4. Create JSON structure
   const exportData: ExportData = {
+    musicName: musicName || 'nom de musique introuvable',
     bpm,
-    musicDuration: formatTimeValue(musicDuration),
-    ...nonEmptyNotesByGroup
+    duration: formatTimeValue(musicDuration),
+    groups: nonEmptyNotesByGroup
   };
 
   // 5. Create the file and trigger download
@@ -84,6 +96,7 @@ export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: Tr
 
   try {
     if ('showSaveFilePicker' in window) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const handle = await (window as any).showSaveFilePicker({
         suggestedName: `${projectName || 'projet-sans-nom'}.json`,
         types: [{
@@ -96,6 +109,7 @@ export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: Tr
       await writable.close();
       return totalNotes;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     if (err.name !== 'AbortError') {
       console.error(err);
@@ -117,16 +131,24 @@ export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: Tr
   return totalNotes;
 };
 
-export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number, filePath?: string): Promise<{ success: boolean; filePath?: string; count: number }> => {
+export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number, musicName: string, filePath?: string): Promise<{ success: boolean; filePath?: string; count: number }> => {
   try {
     // 1. Organize notes by group
-    const notesByGroup: { [groupName: string]: ExportNote[] } = {
-      "Notes": []
-    };
+    const notesByGroup: { [groupName: string]: ExportNote[] } = {};
 
-    // Create categories for each group
+    // Check if there are any tracks without a group
+    const hasUngroupedTracks = tracks.some(track => !track.groupId);
+    if (hasUngroupedTracks) {
+      notesByGroup["Notes"] = [];
+    }
+
+    // Create categories for each group that actually contains tracks
     trackGroups.forEach(group => {
-      notesByGroup[group.name] = [];
+      // Only create the group if it has tracks associated with it
+      const hasTracksInGroup = tracks.some(track => track.groupId === group.id);
+      if (hasTracksInGroup) {
+        notesByGroup[group.name] = [];
+      }
     });
 
     let totalNotes = 0;
@@ -167,9 +189,10 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
 
     // 4. Create JSON structure
     const exportData: ExportData = {
+      musicName: musicName || 'nom de musique introuvable',
       bpm,
-      musicDuration: formatTimeValue(musicDuration),
-      ...nonEmptyNotesByGroup
+      duration: formatTimeValue(musicDuration),
+      groups: nonEmptyNotesByGroup
     };
 
     let targetPath = filePath;
