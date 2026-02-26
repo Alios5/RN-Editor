@@ -291,6 +291,9 @@ const Editor = () => {
   // Keyboard shortcuts management
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      const isDialogOpen = document.querySelector('[role="dialog"], [role="alertdialog"]') !== null;
+      if (isDialogOpen) return;
+
       // CTRL+S to save (only if there are unsaved changes)
       if (event.ctrlKey && event.key === 's') {
         event.preventDefault();
@@ -462,6 +465,9 @@ const Editor = () => {
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isDialogOpen = document.querySelector('[role="dialog"], [role="alertdialog"]') !== null;
+      if (isDialogOpen) return;
+
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
         e.preventDefault();
         handleUndo();
@@ -520,6 +526,9 @@ const Editor = () => {
   // Keyboard shortcuts for selection
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isDialogOpen = document.querySelector('[role="dialog"], [role="alertdialog"]') !== null;
+      if (isDialogOpen) return;
+
       // Ignore shortcuts if typing in a field
       const target = e.target as HTMLElement;
       const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
@@ -2098,6 +2107,9 @@ const Editor = () => {
   // Keyboard shortcuts for copy/paste and duplication
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isDialogOpen = document.querySelector('[role="dialog"], [role="alertdialog"]') !== null;
+      if (isDialogOpen) return;
+
       const target = e.target as HTMLElement;
       const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
 
@@ -2507,36 +2519,40 @@ const Editor = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <DropdownMenu>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="rounded-lg"
-                        >
-                          <FontAwesomeIcon icon={faDownload} className="h-5 w-5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>{t("editor.exportTooltip")}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleExportJson}>
-                    {t("actions.export")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleExportJsonAs}>
-                    {t("actions.exportAs")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {isDesktop() && (
+                <>
+                  <DropdownMenu>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="rounded-lg"
+                            >
+                              <FontAwesomeIcon icon={faDownload} className="h-5 w-5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p>{t("editor.exportTooltip")}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={handleExportJson}>
+                        {t("actions.export")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleExportJsonAs}>
+                        {t("actions.exportAs")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
 
-              <Separator orientation="vertical" className="h-6 mx-1" />
+                  <Separator orientation="vertical" className="h-6 mx-1" />
+                </>
+              )}
 
               {/* History controls group */}
               <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ backgroundColor: panelColors.sectionBackground() }}>
@@ -2614,12 +2630,12 @@ const Editor = () => {
           <ResizablePanel defaultSize={75} minSize={50} maxSize={80}>
             <div className="flex flex-col h-full">
               {/* Waveform Area - Zone de travail avec scroll horizontal */}
-              <div ref={scrollContainerRef} className="flex-1 p-6 overflow-x-auto overflow-y-auto overscroll-contain">
+              <div ref={scrollContainerRef} className="flex-1 px-6 pb-6 pt-0 overflow-x-auto overflow-y-auto overscroll-contain">
                 {/* Conteneur interne avec largeur dynamique */}
                 <div
                   data-lasso-container
                   style={{ width: `${audioMetrics.waveformWidth}px`, minWidth: '100%' }}
-                  className="relative"
+                  className="relative pt-2"
                   onMouseDown={handleLassoMouseDown}
                   onMouseMove={handleLassoMouseMove}
                 >
@@ -2641,7 +2657,7 @@ const Editor = () => {
                   )}
 
                   <div className="space-y-6">
-                    <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm pb-4">
+                    <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm pt-6 pb-4">
                       <div className="sticky left-0 h-[32px] w-fit px-4 py-1 flex items-center mb-3 rounded-lg border border-border/30" style={{ backgroundColor: panelColors.sectionBackground() }}>
                         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">{t("editor.waveform")}</h2>
                       </div>
