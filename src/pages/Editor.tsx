@@ -2328,7 +2328,7 @@ const Editor = () => {
     if (project) {
       try {
         if (!isDesktop()) {
-          const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration, audioFileName || '');
+          const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
           if (count > 0) {
             toast.success(t("editor.exportSuccessWeb", { count: String(count) }));
           } else if (count === -1) {
@@ -2341,7 +2341,7 @@ const Editor = () => {
 
         if (lastExportPath) {
           // Exporter vers le chemin existant
-          const result = await exportToJsonFile(bpm, tracks, trackGroups, project.name, audioDuration, audioFileName || '', lastExportPath);
+          const result = await exportToJsonFile(bpm, tracks, trackGroups, project.name, audioDuration, lastExportPath);
           if (result.success) {
             toast.success(t("editor.exportSuccess", { count: String(result.count), path: lastExportPath }), {
               action: {
@@ -2354,7 +2354,7 @@ const Editor = () => {
           }
         } else {
           // Première export - demander le chemin
-          const result = await exportToJsonFile(bpm, tracks, trackGroups, project.name, audioDuration, audioFileName || '');
+          const result = await exportToJsonFile(bpm, tracks, trackGroups, project.name, audioDuration);
           if (result.success && result.filePath) {
             setLastExportPath(result.filePath);
             toast.success(t("editor.exportSuccess", { count: String(result.count), path: result.filePath }), {
@@ -2405,7 +2405,7 @@ const Editor = () => {
     if (project) {
       try {
         if (!isDesktop()) {
-          const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration, audioFileName || '');
+          const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
           if (count > 0) {
             toast.success(t("editor.exportSuccessWeb", { count: String(count) }));
           } else if (count === -1) {
@@ -2416,7 +2416,7 @@ const Editor = () => {
           return;
         }
 
-        const result = await exportToJsonFile(bpm, tracks, trackGroups, project.name, audioDuration, audioFileName || '');
+        const result = await exportToJsonFile(bpm, tracks, trackGroups, project.name, audioDuration);
         if (result.success && result.filePath) {
           setLastExportPath(result.filePath);
           toast.success(t("editor.exportSuccess", { count: String(result.count), path: result.filePath }), {

@@ -20,7 +20,7 @@ interface ExportNote {
 }
 
 interface ExportData {
-  musicName: string;
+  projectName: string;
   bpm: number;
   duration: number;
   groups: {
@@ -28,7 +28,7 @@ interface ExportData {
   };
 }
 
-export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number, musicName: string): Promise<number> => {
+export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number): Promise<number> => {
   // 1. Organize notes by group
   const notesByGroup: { [groupName: string]: ExportNote[] } = {};
 
@@ -85,7 +85,7 @@ export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: Tr
 
   // 4. Create JSON structure
   const exportData: ExportData = {
-    musicName: musicName || 'nom de musique introuvable',
+    projectName: projectName || 'projet-sans-nom',
     bpm,
     duration: formatTimeValue(musicDuration),
     groups: nonEmptyNotesByGroup
@@ -131,7 +131,7 @@ export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: Tr
   return totalNotes;
 };
 
-export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number, musicName: string, filePath?: string): Promise<{ success: boolean; filePath?: string; count: number }> => {
+export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number, filePath?: string): Promise<{ success: boolean; filePath?: string; count: number }> => {
   try {
     // 1. Organize notes by group
     const notesByGroup: { [groupName: string]: ExportNote[] } = {};
@@ -189,7 +189,7 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
 
     // 4. Create JSON structure
     const exportData: ExportData = {
-      musicName: musicName || 'nom de musique introuvable',
+      projectName: projectName || 'projet-sans-nom',
       bpm,
       duration: formatTimeValue(musicDuration),
       groups: nonEmptyNotesByGroup
