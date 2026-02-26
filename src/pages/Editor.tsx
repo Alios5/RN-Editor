@@ -2330,7 +2330,7 @@ const Editor = () => {
         if (!isDesktop()) {
           const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
           if (count > 0) {
-            toast.success(`Le fichier JSON (${count} notes) a été téléchargé avec succès !`);
+            toast.success(t("editor.exportSuccessWeb", { count: String(count) }));
           } else if (count === -1) {
             toast.info(t("editor.exportCancelled"));
           } else {
@@ -2407,7 +2407,7 @@ const Editor = () => {
         if (!isDesktop()) {
           const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
           if (count > 0) {
-            toast.success(`Le fichier JSON (${count} notes) a été téléchargé !`);
+            toast.success(t("editor.exportSuccessWeb", { count: String(count) }));
           } else if (count === -1) {
             toast.info(t("editor.exportCancelled"));
           } else {

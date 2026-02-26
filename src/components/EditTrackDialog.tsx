@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Track } from "@/types/track";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useShortcuts } from "@/hooks/useShortcuts";
 import {
   TRACK_PRESET_COLORS,
   STYLES,
@@ -36,6 +37,15 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
   const [isCapturingKey, setIsCapturingKey] = useState(false);
   const [error, setError] = useState("");
   const { t } = useTranslation();
+  const { shortcuts } = useShortcuts();
+
+  const reservedKeys = shortcuts
+    .map(s => s.currentKey.toLowerCase())
+    .filter(k => k && !k.includes('+'));
+
+  const formattedReservedKeys = reservedKeys
+    .map(k => k.length === 1 ? k.toUpperCase() : k)
+    .join(', ');
 
   useEffect(() => {
     if (track) {
@@ -108,9 +118,13 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
                 onKeyDown={(e) => {
                   if (isCapturingKey) {
                     e.preventDefault();
-                    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+                    let key = e.key.toLowerCase();
+                    if (key === ' ') key = 'space';
                     // Allow the same key that was already assigned to this track
-                    if (usedKeys.includes(key) && key !== track?.assignedKey) {
+                    if (reservedKeys.includes(key)) {
+                      setError(t("track.errorKeyReserved"));
+                      setIsCapturingKey(false);
+                    } else if (usedKeys.includes(key) && key !== track?.assignedKey) {
                       setError(t("track.errorKeyAlreadyUsed"));
                       setIsCapturingKey(false);
                     } else {
@@ -138,6 +152,11 @@ export const EditTrackDialog = ({ open, onOpenChange, onEdit, track, existingTra
             <p className={STYLES.helpText}>
               {t("track.assignedKeyDescription")}
             </p>
+            {formattedReservedKeys && (
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                {t("track.reservedKeysInfo", { keys: formattedReservedKeys })}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
