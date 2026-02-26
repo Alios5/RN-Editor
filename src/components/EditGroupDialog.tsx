@@ -43,18 +43,18 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
 
   const handleEdit = () => {
     const trimmedName = name.trim();
-    
+
     if (!trimmedName) {
       setError(t("group.errorNameRequired"));
       return;
     }
-    
-    // Vérifier si le nom existe déjà (sauf si c'est le nom actuel du groupe)
+
+    // Check if the name already exists (unless it's the current group name)
     if (existingGroupNames.includes(trimmedName) && trimmedName !== group?.name) {
       setError(t("group.errorNameExists"));
       return;
     }
-    
+
     onEdit(trimmedName);
     setError("");
     onOpenChange(false);
@@ -74,7 +74,7 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
             {t("group.editGroupDescription")}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="edit-group-name">{t("group.groupName")}</Label>
@@ -94,7 +94,7 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
           {/* Pistes dans ce groupe */}
           <div className="space-y-2">
             <Label>{t("group.tracksInGroup") || "Pistes dans ce groupe"}</Label>
-            <div 
+            <div
               className="rounded-lg border border-border p-2 min-h-[60px]"
               style={{ backgroundColor: panelColors.inputBackground() }}
             >
@@ -106,13 +106,13 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
                 <ScrollArea className="max-h-[240px]">
                   <div className="space-y-1">
                     {tracks.filter(t => t.groupId === group?.id).map(track => (
-                      <div 
+                      <div
                         key={track.id}
                         className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-secondary/50 transition-colors"
                       >
                         <div className="flex items-center gap-2">
-                          <div 
-                            className="w-3 h-3 rounded-full" 
+                          <div
+                            className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: track.color }}
                           />
                           <span className="text-sm">{track.name}</span>
@@ -138,20 +138,20 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
           {tracks.filter(t => t.groupId !== group?.id).length > 0 && (
             <div className="space-y-2">
               <Label>{t("group.availableTracks") || "Pistes disponibles"}</Label>
-              <div 
+              <div
                 className="rounded-lg border border-border p-2"
                 style={{ backgroundColor: panelColors.inputBackground() }}
               >
                 <ScrollArea className="max-h-[240px]">
                   <div className="space-y-1">
                     {tracks.filter(t => t.groupId !== group?.id).map(track => (
-                      <div 
+                      <div
                         key={track.id}
                         className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-secondary/50 transition-colors"
                       >
                         <div className="flex items-center gap-2">
-                          <div 
-                            className="w-3 h-3 rounded-full" 
+                          <div
+                            className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: track.color }}
                           />
                           <span className="text-sm">{track.name}</span>
@@ -178,7 +178,7 @@ export const EditGroupDialog = ({ open, onOpenChange, onEdit, group, existingGro
             </div>
           )}
         </div>
-        
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t("actions.cancel")}

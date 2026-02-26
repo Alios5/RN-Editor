@@ -10,6 +10,9 @@ export const useWindowShortcuts = () => {
 
   useEffect(() => {
     const handleKeyDown = async (event: KeyboardEvent) => {
+      const isDialogOpen = document.querySelector('[role="dialog"], [role="alertdialog"]') !== null;
+      if (isDialogOpen) return;
+
       // Toggle maximize: Ctrl+Shift+M
       if (matchesShortcut('toggleMaximize', event)) {
         event.preventDefault();

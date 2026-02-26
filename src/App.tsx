@@ -31,7 +31,7 @@ const App = () => {
         splash.style.opacity = '0';
         setTimeout(() => {
           splash.remove();
-          // Restaurer l'overflow du body
+          // Restore body overflow
           document.body.style.overflow = 'auto';
         }, 300);
       }
@@ -84,7 +84,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // Désactiver le menu contextuel système de Chromium/Tauri
+    // Disable Chromium/Tauri system context menu
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
     };

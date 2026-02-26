@@ -11,12 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "@/hooks/useTranslation";
-import { 
-  TRACK_PRESET_COLORS, 
-  STYLES, 
+import { useShortcuts } from "@/hooks/useShortcuts";
+import {
+  TRACK_PRESET_COLORS,
+  STYLES,
   VALIDATION,
   getColorButtonClasses,
-  truncateToMaxLength 
+  truncateToMaxLength
 } from "@/lib/designTokens";
 
 interface CreateTrackDialogProps {
@@ -34,20 +35,29 @@ export const CreateTrackDialog = ({ open, onOpenChange, onCreate, existingTrackN
   const [isCapturingKey, setIsCapturingKey] = useState(false);
   const [error, setError] = useState("");
   const { t } = useTranslation();
+  const { shortcuts } = useShortcuts();
+
+  const reservedKeys = shortcuts
+    .map(s => s.currentKey.toLowerCase())
+    .filter(k => k && !k.includes('+'));
+
+  const formattedReservedKeys = reservedKeys
+    .map(k => k.length === 1 ? k.toUpperCase() : k)
+    .join(', ');
 
   const handleCreate = () => {
     const trimmedName = name.trim();
-    
+
     if (!trimmedName) {
       setError(t("track.errorNameRequired"));
       return;
     }
-    
+
     if (existingTrackNames.includes(trimmedName)) {
       setError(t("track.errorNameExists"));
       return;
     }
-    
+
     onCreate(trimmedName, color, assignedKey || undefined);
     setName("");
     setColor("#FFFFFF");
@@ -70,7 +80,7 @@ export const CreateTrackDialog = ({ open, onOpenChange, onCreate, existingTrackN
             {t("track.noTracksDescription")}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="track-name">{t("track.trackName")}</Label>
@@ -86,7 +96,7 @@ export const CreateTrackDialog = ({ open, onOpenChange, onCreate, existingTrackN
               <p className={STYLES.errorMessage}>{error}</p>
             )}
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="assigned-key">{t("track.assignedKey")}</Label>
             <div className="flex gap-2">
@@ -99,8 +109,12 @@ export const CreateTrackDialog = ({ open, onOpenChange, onCreate, existingTrackN
                 onKeyDown={(e) => {
                   if (isCapturingKey) {
                     e.preventDefault();
-                    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-                    if (usedKeys.includes(key)) {
+                    let key = e.key.toLowerCase();
+                    if (key === ' ') key = 'space';
+                    if (reservedKeys.includes(key)) {
+                      setError(t("track.errorKeyReserved"));
+                      setIsCapturingKey(false);
+                    } else if (usedKeys.includes(key)) {
                       setError(t("track.errorKeyAlreadyUsed"));
                       setIsCapturingKey(false);
                     } else {
@@ -128,8 +142,13 @@ export const CreateTrackDialog = ({ open, onOpenChange, onCreate, existingTrackN
             <p className={STYLES.helpText}>
               {t("track.assignedKeyDescription")}
             </p>
+            {formattedReservedKeys && (
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                {t("track.reservedKeysInfo", { keys: formattedReservedKeys })}
+              </p>
+            )}
           </div>
-          
+
           <div className="space-y-2">
             <Label>{t("track.trackColor")}</Label>
             <div className="grid grid-cols-5 gap-2">
@@ -155,7 +174,7 @@ export const CreateTrackDialog = ({ open, onOpenChange, onCreate, existingTrackN
             </div>
           </div>
         </div>
-        
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t("actions.cancel")}

@@ -28,7 +28,7 @@ export interface PreviewNote {
 }
 
 /**
- * Hook pour gérer la création de notes en temps réel pendant la lecture automatique
+ * Hook to manage real-time note creation during auto-playback
  */
 export const useRealtimeNoteCreation = ({
   tracks,
@@ -41,16 +41,16 @@ export const useRealtimeNoteCreation = ({
   subRhythmSync,
   onCreateNote,
 }: RealtimeNoteCreationOptions) => {
-  // Map pour suivre les touches actuellement enfoncées
+  // Map to track currently pressed keys
   const pressedKeysRef = useRef<Map<string, PressedKey>>(new Map());
   const [isRealtimeMode, setIsRealtimeMode] = useState(false);
   const [previewNotes, setPreviewNotes] = useState<PreviewNote[]>([]);
 
-  // Le mode temps réel est actif seulement si auto-follow est activé ET la musique joue
+  // Real-time mode is active only if auto-follow is enabled AND music is playing
   useEffect(() => {
     setIsRealtimeMode(isAutoFollowPlayback && isPlaying);
-    
-    // Si on quitte le mode temps réel, créer toutes les notes des touches encore enfoncées
+
+    // If leaving real-time mode, create notes for all keys still pressed
     if (!isAutoFollowPlayback || !isPlaying) {
       const currentPressedKeys = Array.from(pressedKeysRef.current.entries());
       currentPressedKeys.forEach(([key, pressedKey]) => {
@@ -61,7 +61,7 @@ export const useRealtimeNoteCreation = ({
     }
   }, [isAutoFollowPlayback, isPlaying]);
 
-  // Mettre à jour les notes de prévisualisation en fonction du temps actuel
+  // Update preview notes based on current time
   useEffect(() => {
     if (!isRealtimeMode || pressedKeysRef.current.size === 0) {
       setPreviewNotes([]);
@@ -101,9 +101,9 @@ export const useRealtimeNoteCreation = ({
   const createLongNote = (pressedKey: PressedKey, endTime: number) => {
     const cellWidth = 24;
     const duration = endTime - pressedKey.startTime;
-    
+
     if (duration <= 0) {
-      // Si la durée est nulle ou négative, créer une note courte
+      // If duration is zero or negative, create a short note
       createShortNote(pressedKey.trackId, pressedKey.startTime);
       return;
     }
@@ -125,24 +125,24 @@ export const useRealtimeNoteCreation = ({
     if (!isRealtimeMode) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Ignorer si on est en train de taper dans un input/textarea
+      // Ignore if typing in an input/textarea
       const target = event.target as HTMLElement;
       const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
       if (isTyping) return;
 
-      // Éviter les répétitions de l'événement keydown lors d'un appui long
+      // Prevent keydown event repetition during long press
       if (event.repeat) return;
 
       const key = event.key.toLowerCase();
-      
-      // Trouver la piste assignée à cette touche
+
+      // Find the track assigned to this key
       const track = tracks.find(t => t.assignedKey?.toLowerCase() === key);
       if (!track) return;
 
-      // Empêcher le comportement par défaut
+      // Prevent default behavior
       event.preventDefault();
 
-      // Si la touche n'est pas encore enfoncée, l'enregistrer
+      // If key is not yet pressed, record it
       if (!pressedKeysRef.current.has(key)) {
         // Use standardized function for perfect consistency
         const gridPosition = timeToGridPosition(currentTime, bpm, subRhythmSync);
@@ -157,27 +157,27 @@ export const useRealtimeNoteCreation = ({
 
     const handleKeyUp = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
-      
+
       const pressedKey = pressedKeysRef.current.get(key);
       if (!pressedKey) return;
 
       event.preventDefault();
 
-      // Calculer la durée et créer la note
+      // Calculate duration and create note
       const duration = currentTime - pressedKey.startTime;
-      
+
       if (duration < 0.1) {
-        // Si l'appui est très court (< 100ms), créer une note courte
+        // If the press is very short (< 100ms), create a short note
         createShortNote(pressedKey.trackId, pressedKey.startTime);
       } else {
-        // Sinon créer une longue note
+        // Otherwise create a long note
         createLongNote(pressedKey, currentTime);
       }
 
-      // Retirer la touche de la map
+      // Remove key from the map
       pressedKeysRef.current.delete(key);
-      
-      // Mettre à jour les preview notes
+
+      // Update preview notes
       setPreviewNotes(prev => prev.filter(p => p.trackId !== pressedKey.trackId));
     };
 

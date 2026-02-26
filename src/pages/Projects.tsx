@@ -113,7 +113,7 @@ const Projects = () => {
 
   return (
     <div className="flex flex-col h-full w-full bg-background overflow-hidden">
-      {/* Header Principal */}
+      {/* Main Header */}
       <header className="border-b border-border backdrop-blur-md animate-fade-in-down" style={{ backgroundColor: panelColors.background() }}>
         <div className="w-full px-6 py-3">
           <div className="flex items-center justify-between">
@@ -151,22 +151,22 @@ const Projects = () => {
         </div>
       </header>
 
-      {/* Dialog des raccourcis */}
+      {/* Shortcuts dialog */}
       <ShortcutsDialog
         open={isShortcutsDialogOpen}
         onOpenChange={setIsShortcutsDialogOpen}
       />
 
-      {/* Éditeur de thème */}
+      {/* Theme editor */}
       <ThemeEditor
         open={isThemeEditorOpen}
         onOpenChange={setIsThemeEditorOpen}
       />
 
-      {/* Main Content avec Grid Layout */}
+      {/* Main Content with Grid Layout */}
       <div className="flex-1 overflow-hidden p-6">
         <div className="h-full grid grid-cols-12 gap-6">
-          {/* Colonne Gauche - Sections Project et Release Note */}
+          {/* Left Column - Project and Release Note Sections */}
           <div className="col-span-3 flex flex-col gap-6 overflow-hidden">
             {/* Section PROJECT */}
             <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-1 shrink-0">
@@ -183,7 +183,13 @@ const Projects = () => {
                     size="icon"
                     className="h-6 w-6 rounded-full hover:bg-primary/20"
                     title="Help"
-                    onClick={() => invoke("open_url", { url: "https://docs.rhythmnator.com/guide-launch.html#guide-project-launch" })}
+                    onClick={() => {
+                      if (isDesktop()) {
+                        invoke("open_url", { url: "https://docs.rhythmnator.com/guide-launch.html#guide-project-launch" });
+                      } else {
+                        window.open("https://docs.rhythmnator.com/guide-launch.html#guide-project-launch", "_blank");
+                      }
+                    }}
                   >
                     <FontAwesomeIcon icon={faCircleQuestion} className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
                   </Button>
@@ -218,7 +224,13 @@ const Projects = () => {
                 <Button
                   variant="ghost"
                   className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-                  onClick={() => invoke("open_url", { url: "https://docs.rhythmnator.com/" })}
+                  onClick={() => {
+                    if (isDesktop()) {
+                      invoke("open_url", { url: "https://docs.rhythmnator.com/" });
+                    } else {
+                      window.open("https://docs.rhythmnator.com/", "_blank");
+                    }
+                  }}
                 >
                   <FontAwesomeIcon icon={faFileLines} className="h-4 w-4" />
                   {t("project.documentation")}
@@ -226,7 +238,7 @@ const Projects = () => {
               </CardContent>
             </Card>
 
-            {/* Section RELEASE NOTE - prend tout l'espace restant */}
+            {/* RELEASE NOTE Section - takes all remaining space */}
             <Card className="backdrop-blur-sm shadow-sm hover-lift hover-glow animate-slide-in-left stagger-2 flex-1 flex flex-col min-h-0 overflow-hidden">
               <CardHeader className="pb-3 pt-4 shrink-0">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -278,7 +290,7 @@ const Projects = () => {
             </Card>
           </div>
 
-          {/* Colonne Droite - Section Recent Projects */}
+          {/* Right Column - Recent Projects Section */}
           <div className="col-span-9 overflow-hidden">
             <Card className="h-full backdrop-blur-sm shadow-sm hover-glow flex flex-col animate-slide-in-right stagger-1">
               <CardHeader className="pb-3 pt-4">

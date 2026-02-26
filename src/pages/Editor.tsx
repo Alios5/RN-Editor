@@ -291,6 +291,9 @@ const Editor = () => {
   // Keyboard shortcuts management
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      const isDialogOpen = document.querySelector('[role="dialog"], [role="alertdialog"]') !== null;
+      if (isDialogOpen) return;
+
       // CTRL+S to save (only if there are unsaved changes)
       if (event.ctrlKey && event.key === 's') {
         event.preventDefault();
@@ -462,6 +465,9 @@ const Editor = () => {
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isDialogOpen = document.querySelector('[role="dialog"], [role="alertdialog"]') !== null;
+      if (isDialogOpen) return;
+
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
         e.preventDefault();
         handleUndo();
@@ -520,6 +526,9 @@ const Editor = () => {
   // Keyboard shortcuts for selection
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isDialogOpen = document.querySelector('[role="dialog"], [role="alertdialog"]') !== null;
+      if (isDialogOpen) return;
+
       // Ignore shortcuts if typing in a field
       const target = e.target as HTMLElement;
       const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
@@ -2018,7 +2027,7 @@ const Editor = () => {
     setIsDetectingBPM(true);
     try {
       const { detectBPM } = await import('@/utils/bpmDetector');
-      const detectedBPM = await detectBPM(musicFilePath);
+      const detectedBPM = await detectBPM(musicFilePath, audioUrl);
       setBpm(detectedBPM);
       // History is now automatic via useEffect with debounce
     } catch (error) {
@@ -2098,6 +2107,9 @@ const Editor = () => {
   // Keyboard shortcuts for copy/paste and duplication
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isDialogOpen = document.querySelector('[role="dialog"], [role="alertdialog"]') !== null;
+      if (isDialogOpen) return;
+
       const target = e.target as HTMLElement;
       const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
 
@@ -2194,45 +2206,29 @@ const Editor = () => {
     if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
+    const scrollLeft = (container as HTMLElement).scrollLeft;
     const scrollTop = (container as HTMLElement).scrollTop;
 
-    // Détecter les notes dans le lasso (on utilise les pistes plutôt que le DOM des notes 
-    // pour pouvoir sélectionner les notes non visibles qui ont été déchargées par l'optimisation)
-    const gridElements = document.querySelectorAll('[data-track-grid]');
-    const CELL_WIDTH = 24;
+    // Détecter les notes dans le lasso
+    const noteElements = document.querySelectorAll('[data-note-block]');
 
-    gridElements.forEach((gridElem) => {
-      const trackId = gridElem.getAttribute('data-track-grid');
-      if (!trackId) return;
+    noteElements.forEach((element) => {
+      const rect = element.getBoundingClientRect();
 
-      const gridRect = gridElem.getBoundingClientRect();
+      // Convertir les positions viewport des notes en coordonnées relatives au conteneur
+      const noteLeft = rect.left - containerRect.left + scrollLeft;
+      const noteRight = rect.right - containerRect.left + scrollLeft;
+      const noteTop = rect.top - containerRect.top + scrollTop;
+      const noteBottom = rect.bottom - containerRect.top + scrollTop;
 
-      // Convertir la position Y de la piste en coordonnées relatives au conteneur lasso
-      const gridTop = gridRect.top - containerRect.top + scrollTop;
-      const gridBottom = gridRect.bottom - containerRect.top + scrollTop;
+      // Vérifier si la note intersecte le rectangle de lasso
+      const intersects = !(noteRight < minX || noteLeft > maxX || noteBottom < minY || noteTop > maxY);
 
-      // Vérifier si la piste intersecte verticalement le lasso
-      const intersectsY = !(gridBottom < minY || gridTop > maxY);
-
-      if (intersectsY) {
-        const track = tracks.find(t => t.id === trackId);
-        if (track) {
-          track.notes.forEach(note => {
-            // Position X (relative au conteneur lasso)
-            const noteLeft = startOffset + note.gridPosition * CELL_WIDTH;
-            // Ne pas oublier qu'en lasso, un chevauchement partiel suffit
-            const noteRight = noteLeft + note.gridWidth * CELL_WIDTH;
-
-            // Position Y (approximative basée sur la grille : top-2 et bottom-2)
-            const noteTop = gridTop + 8; // 0.5rem = 8px
-            const noteBottom = gridBottom - 8;
-
-            const intersects = !(noteRight < minX || noteLeft > maxX || noteBottom < minY || noteTop > maxY);
-
-            if (intersects) {
-              notesInLasso.add(`${trackId}:${note.id}`);
-            }
-          });
+      if (intersects) {
+        // Extraire trackId et noteId des attributs data
+        const noteData = element.getAttribute('data-note-id');
+        if (noteData) {
+          notesInLasso.add(noteData);
         }
       }
     });
@@ -2332,8 +2328,14 @@ const Editor = () => {
     if (project) {
       try {
         if (!isDesktop()) {
-          const count = exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
-          toast.success(`Le fichier JSON (${count} notes) a été téléchargé avec succès !`);
+          const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
+          if (count > 0) {
+            toast.success(t("editor.exportSuccessWeb", { count: String(count) }));
+          } else if (count === -1) {
+            toast.info(t("editor.exportCancelled"));
+          } else {
+            toast.error(t("editor.exportError"));
+          }
           return;
         }
 
@@ -2403,8 +2405,14 @@ const Editor = () => {
     if (project) {
       try {
         if (!isDesktop()) {
-          const count = exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
-          toast.success(`Le fichier JSON (${count} notes) a été téléchargé !`);
+          const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
+          if (count > 0) {
+            toast.success(t("editor.exportSuccessWeb", { count: String(count) }));
+          } else if (count === -1) {
+            toast.info(t("editor.exportCancelled"));
+          } else {
+            toast.error(t("editor.exportError"));
+          }
           return;
         }
 
@@ -2523,36 +2531,62 @@ const Editor = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <DropdownMenu>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <DropdownMenuTrigger asChild>
+              {isDesktop() ? (
+                <>
+                  <DropdownMenu>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="rounded-lg"
+                            >
+                              <FontAwesomeIcon icon={faDownload} className="h-5 w-5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p>{t("editor.exportTooltip")}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={handleExportJson}>
+                        {t("actions.export")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleExportJsonAs}>
+                        {t("actions.exportAs")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <Separator orientation="vertical" className="h-6 mx-1" />
+                </>
+              ) : (
+                <>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           size="icon"
+                          onClick={handleExportJson}
                           className="rounded-lg"
                         >
                           <FontAwesomeIcon icon={faDownload} className="h-5 w-5" />
                         </Button>
-                      </DropdownMenuTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>{t("editor.exportTooltip")}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleExportJson}>
-                    {t("actions.export")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleExportJsonAs}>
-                    {t("actions.exportAs")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>{t("editor.exportTooltip")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
 
-              <Separator orientation="vertical" className="h-6 mx-1" />
+                  <Separator orientation="vertical" className="h-6 mx-1" />
+                </>
+              )}
 
               {/* History controls group */}
               <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ backgroundColor: panelColors.sectionBackground() }}>
@@ -2630,12 +2664,12 @@ const Editor = () => {
           <ResizablePanel defaultSize={75} minSize={50} maxSize={80}>
             <div className="flex flex-col h-full">
               {/* Waveform Area - Zone de travail avec scroll horizontal */}
-              <div ref={scrollContainerRef} className="flex-1 p-6 overflow-x-auto overflow-y-auto overscroll-contain">
-                {/* Conteneur interne avec largeur dynamique - on ajoute startOffset pour la taille totale */}
+              <div ref={scrollContainerRef} className="flex-1 px-6 pb-6 pt-0 overflow-x-auto overflow-y-auto overscroll-contain">
+                {/* Conteneur interne avec largeur dynamique */}
                 <div
                   data-lasso-container
-                  style={{ width: `${audioMetrics.waveformWidth + startOffset}px`, minWidth: '100%' }}
-                  className="relative"
+                  style={{ width: `${audioMetrics.waveformWidth}px`, minWidth: '100%' }}
+                  className="relative pt-2"
                   onMouseDown={handleLassoMouseDown}
                   onMouseMove={handleLassoMouseMove}
                 >
@@ -2657,7 +2691,7 @@ const Editor = () => {
                   )}
 
                   <div className="space-y-6">
-                    <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm pb-4">
+                    <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm pt-6 pb-4">
                       <div className="sticky left-0 h-[32px] w-fit px-4 py-1 flex items-center mb-3 rounded-lg border border-border/30" style={{ backgroundColor: panelColors.sectionBackground() }}>
                         <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">{t("editor.waveform")}</h2>
                       </div>
@@ -2671,7 +2705,6 @@ const Editor = () => {
                           setDragSeekTime(null);
                         }}
                         width={audioMetrics.waveformWidth}
-                        startOffset={startOffset}
                       />
                     </div>
 

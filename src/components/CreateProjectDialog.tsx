@@ -57,7 +57,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onCreate }: CreateProj
       return;
     }
 
-    // Vérifier que le dossier projet est sélectionné sur desktop
+    // Check that the project folder is selected on desktop
     if (isDesktop() && !projectFolder) {
       setFolderError(t("project.folderRequired"));
       return;

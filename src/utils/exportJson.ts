@@ -20,20 +20,31 @@ interface ExportNote {
 }
 
 interface ExportData {
+  projectName: string;
   bpm: number;
-  musicDuration: number;
-  [key: string]: number | ExportNote[]; // bpm, musicDuration (number) or note lists
+  duration: number;
+  groups: {
+    [key: string]: ExportNote[];
+  };
 }
 
-export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number): number => {
+export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number): Promise<number> => {
   // 1. Organize notes by group
-  const notesByGroup: { [groupName: string]: ExportNote[] } = {
-    "Notes": []
-  };
+  const notesByGroup: { [groupName: string]: ExportNote[] } = {};
 
-  // Create categories for each group
+  // Check if there are any tracks without a group
+  const hasUngroupedTracks = tracks.some(track => !track.groupId);
+  if (hasUngroupedTracks) {
+    notesByGroup["Notes"] = [];
+  }
+
+  // Create categories for each group that actually contains tracks
   trackGroups.forEach(group => {
-    notesByGroup[group.name] = [];
+    // Only create the group if it has tracks associated with it
+    const hasTracksInGroup = tracks.some(track => track.groupId === group.id);
+    if (hasTracksInGroup) {
+      notesByGroup[group.name] = [];
+    }
   });
 
   let totalNotes = 0;
@@ -41,12 +52,12 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
   // 2. Collect and organize notes
   tracks.forEach((track, rowIndex) => {
     if (track.notes && track.notes.length > 0) {
-      const groupName = track.groupId 
-        ? trackGroups.find(g => g.id === track.groupId)?.name 
+      const groupName = track.groupId
+        ? trackGroups.find(g => g.id === track.groupId)?.name
         : null;
-      
+
       const targetCategory = groupName || "Notes";
-      
+
       track.notes.forEach(note => {
         const exportNote: ExportNote = {
           name: note.trackName,
@@ -74,16 +85,41 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
 
   // 4. Create JSON structure
   const exportData: ExportData = {
+    projectName: projectName || 'projet-sans-nom',
     bpm,
-    musicDuration: formatTimeValue(musicDuration),
-    ...nonEmptyNotesByGroup
+    duration: formatTimeValue(musicDuration),
+    groups: nonEmptyNotesByGroup
   };
 
   // 5. Create the file and trigger download
   const jsonString = JSON.stringify(exportData, null, 2);
+
+  try {
+    if ('showSaveFilePicker' in window) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: `${projectName || 'projet-sans-nom'}.json`,
+        types: [{
+          description: 'JSON Files',
+          accept: { 'application/json': ['.json'] },
+        }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(jsonString);
+      await writable.close();
+      return totalNotes;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    if (err.name !== 'AbortError') {
+      console.error(err);
+    }
+    return -1;
+  }
+
   const blob = new Blob([jsonString], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  
+
   const link = document.createElement('a');
   link.href = url;
   link.download = `${projectName || 'projet-sans-nom'}.json`;
@@ -98,13 +134,21 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
 export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number, filePath?: string): Promise<{ success: boolean; filePath?: string; count: number }> => {
   try {
     // 1. Organize notes by group
-    const notesByGroup: { [groupName: string]: ExportNote[] } = {
-      "Notes": []
-    };
+    const notesByGroup: { [groupName: string]: ExportNote[] } = {};
 
-    // Create categories for each group
+    // Check if there are any tracks without a group
+    const hasUngroupedTracks = tracks.some(track => !track.groupId);
+    if (hasUngroupedTracks) {
+      notesByGroup["Notes"] = [];
+    }
+
+    // Create categories for each group that actually contains tracks
     trackGroups.forEach(group => {
-      notesByGroup[group.name] = [];
+      // Only create the group if it has tracks associated with it
+      const hasTracksInGroup = tracks.some(track => track.groupId === group.id);
+      if (hasTracksInGroup) {
+        notesByGroup[group.name] = [];
+      }
     });
 
     let totalNotes = 0;
@@ -112,12 +156,12 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
     // 2. Collect and organize notes
     tracks.forEach((track, rowIndex) => {
       if (track.notes && track.notes.length > 0) {
-        const groupName = track.groupId 
-          ? trackGroups.find(g => g.id === track.groupId)?.name 
+        const groupName = track.groupId
+          ? trackGroups.find(g => g.id === track.groupId)?.name
           : null;
-        
+
         const targetCategory = groupName || "Notes";
-        
+
         track.notes.forEach(note => {
           const exportNote: ExportNote = {
             name: note.trackName,
@@ -145,13 +189,14 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
 
     // 4. Create JSON structure
     const exportData: ExportData = {
+      projectName: projectName || 'projet-sans-nom',
       bpm,
-      musicDuration: formatTimeValue(musicDuration),
-      ...nonEmptyNotesByGroup
+      duration: formatTimeValue(musicDuration),
+      groups: nonEmptyNotesByGroup
     };
 
     let targetPath = filePath;
-    
+
     if (!targetPath) {
       // Open the save dialog
       targetPath = await save({
@@ -163,7 +208,7 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
         ],
         defaultPath: `${projectName || 'projet-sans-nom'}.json`
       });
-      
+
       if (!targetPath) {
         return { success: false, count: totalNotes };
       }

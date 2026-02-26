@@ -2,6 +2,9 @@
  * Simple Markdown renderer for GitHub release notes.
  * Converts common Markdown syntax to HTML strings.
  */
+import { isDesktop } from "./platform";
+import { invoke } from "@tauri-apps/api/core";
+
 export function parseMarkdown(md: string): string {
     if (!md) return "";
 
@@ -82,7 +85,15 @@ function applyInlineFormatting(text: string): string {
     // Links: [text](url)
     text = text.replace(
         /\[(.+?)\]\((.+?)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>'
+        (match, p1, p2) => {
+            // For desktop, we need an onclick handler to invoke Tauri's open_url
+            // For web, a standard a tag with target="_blank" is fine
+            if (isDesktop()) {
+                return `<a href="#" onclick="window.__TAURI_INTERNALS__.invoke('open_url', { url: '${p2}' }); return false;" class="text-primary hover:underline">${p1}</a>`;
+            } else {
+                return `<a href="${p2}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">${p1}</a>`;
+            }
+        }
     );
     return text;
 }

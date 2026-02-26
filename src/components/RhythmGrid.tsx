@@ -551,14 +551,14 @@ export const RhythmGrid = ({
         style={{ width: '100%', height: '100%', display: 'block' }}
       />
 
-      {/* Notes existantes - Only render notes visible in viewport + buffer */}
+      {/* Existing notes - Only render notes visible in viewport + buffer */}
       {notes.filter(note => visibleNoteIds.has(note.id)).map((note) => {
         const noteKey = `${trackId}:${note.id}`;
         const isSelected = selectedNotes.has(noteKey);
         const isOverlapping = overlappingNotes.has(noteKey);
         const isMarkedForDeletion = markedForDeletion.has(note.id);
 
-        // Calculer la position ajustée pendant le drag global
+        // Calculate adjusted position during global drag
         const adjustedPosition = (isDraggingNotes && isSelected)
           ? note.gridPosition + dragOffset
           : note.gridPosition;
@@ -610,7 +610,7 @@ export const RhythmGrid = ({
         );
       })}
 
-      {/* Note fantôme pendant la création */}
+      {/* Ghost note during creation */}
       {ghostNote && (
         <div
           className="absolute top-2 bottom-2 bg-white/50 rounded border border-dashed border-primary pointer-events-none"
@@ -621,7 +621,7 @@ export const RhythmGrid = ({
         />
       )}
 
-      {/* Note de prévisualisation en temps réel */}
+      {/* Real-time preview note */}
       {previewNote && (
         <div
           className="absolute top-2 bottom-2 rounded border-2 border-primary pointer-events-none animate-pulse"
@@ -634,7 +634,7 @@ export const RhythmGrid = ({
         />
       )}
 
-      {/* Indicateur de cellule survolée */}
+      {/* Hovered cell indicator */}
       {showMouseIndicator && hoverCell !== null && !isCreating && !isDraggingNotes && !isResizing && editorMode === 'edit' && !isNoteMenuOpen && !isGridMenuOpen && (
         <div
           className="absolute top-0 bottom-0 pointer-events-none z-40 transition-all duration-100 ease-out"
@@ -648,7 +648,7 @@ export const RhythmGrid = ({
         />
       )}
 
-      {/* Menu contextuel pour coller */}
+      {/* Context menu for pasting */}
       {gridMenuPosition && (
         <DropdownMenu open={isGridMenuOpen} onOpenChange={handleGridMenuOpenChange}>
           <DropdownMenuTrigger asChild>

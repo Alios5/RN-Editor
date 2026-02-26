@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "RhythmNator Editor",
-    "title": "RhythmNator Editor"
+    "name": "RHYTHMNATOR EDITOR",
+    "title": "RHYTHMNATOR EDITOR"
   },
   "menu": {
     "file": "File",
@@ -111,6 +111,8 @@
     "assignedKeyDescription": "Assign a key to create notes in real-time during auto-playback",
     "pressAnyKey": "Press any key...",
     "errorKeyAlreadyUsed": "This key is already assigned to another track",
+    "errorKeyReserved": "This key is used as a shortcut",
+    "reservedKeysInfo": "Keys reserved for shortcuts: {keys}",
     "dragToReorder": "Drag to reorder"
   },
   "tools": {
@@ -262,6 +264,7 @@
     "saveProject": "Save Project",
     "exportProject": "Export Project",
     "exportSuccess": "{count} note(s) exported to {path}",
+    "exportSuccessWeb": "JSON file ({count} notes) successfully downloaded!",
     "exportCancelled": "Export cancelled",
     "exportError": "Error during export",
     "openExportFolder": "Open folder",
