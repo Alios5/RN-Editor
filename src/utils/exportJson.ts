@@ -25,7 +25,7 @@ interface ExportData {
   [key: string]: number | ExportNote[]; // bpm, musicDuration (number) or note lists
 }
 
-export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number): number => {
+export const exportToJson = async (bpm: number, tracks: Track[], trackGroups: TrackGroup[], projectName: string, musicDuration: number): Promise<number> => {
   // 1. Organize notes by group
   const notesByGroup: { [groupName: string]: ExportNote[] } = {
     "Notes": []
@@ -41,12 +41,12 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
   // 2. Collect and organize notes
   tracks.forEach((track, rowIndex) => {
     if (track.notes && track.notes.length > 0) {
-      const groupName = track.groupId 
-        ? trackGroups.find(g => g.id === track.groupId)?.name 
+      const groupName = track.groupId
+        ? trackGroups.find(g => g.id === track.groupId)?.name
         : null;
-      
+
       const targetCategory = groupName || "Notes";
-      
+
       track.notes.forEach(note => {
         const exportNote: ExportNote = {
           name: note.trackName,
@@ -81,9 +81,31 @@ export const exportToJson = (bpm: number, tracks: Track[], trackGroups: TrackGro
 
   // 5. Create the file and trigger download
   const jsonString = JSON.stringify(exportData, null, 2);
+
+  try {
+    if ('showSaveFilePicker' in window) {
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: `${projectName || 'projet-sans-nom'}.json`,
+        types: [{
+          description: 'JSON Files',
+          accept: { 'application/json': ['.json'] },
+        }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(jsonString);
+      await writable.close();
+      return totalNotes;
+    }
+  } catch (err: any) {
+    if (err.name !== 'AbortError') {
+      console.error(err);
+    }
+    return -1;
+  }
+
   const blob = new Blob([jsonString], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  
+
   const link = document.createElement('a');
   link.href = url;
   link.download = `${projectName || 'projet-sans-nom'}.json`;
@@ -112,12 +134,12 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
     // 2. Collect and organize notes
     tracks.forEach((track, rowIndex) => {
       if (track.notes && track.notes.length > 0) {
-        const groupName = track.groupId 
-          ? trackGroups.find(g => g.id === track.groupId)?.name 
+        const groupName = track.groupId
+          ? trackGroups.find(g => g.id === track.groupId)?.name
           : null;
-        
+
         const targetCategory = groupName || "Notes";
-        
+
         track.notes.forEach(note => {
           const exportNote: ExportNote = {
             name: note.trackName,
@@ -151,7 +173,7 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
     };
 
     let targetPath = filePath;
-    
+
     if (!targetPath) {
       // Open the save dialog
       targetPath = await save({
@@ -163,7 +185,7 @@ export const exportToJsonFile = async (bpm: number, tracks: Track[], trackGroups
         ],
         defaultPath: `${projectName || 'projet-sans-nom'}.json`
       });
-      
+
       if (!targetPath) {
         return { success: false, count: totalNotes };
       }

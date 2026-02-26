@@ -2328,8 +2328,14 @@ const Editor = () => {
     if (project) {
       try {
         if (!isDesktop()) {
-          const count = exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
-          toast.success(`Le fichier JSON (${count} notes) a été téléchargé avec succès !`);
+          const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
+          if (count > 0) {
+            toast.success(`Le fichier JSON (${count} notes) a été téléchargé avec succès !`);
+          } else if (count === -1) {
+            toast.info(t("editor.exportCancelled"));
+          } else {
+            toast.error(t("editor.exportError"));
+          }
           return;
         }
 
@@ -2399,8 +2405,14 @@ const Editor = () => {
     if (project) {
       try {
         if (!isDesktop()) {
-          const count = exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
-          toast.success(`Le fichier JSON (${count} notes) a été téléchargé !`);
+          const count = await exportToJson(bpm, tracks, trackGroups, project.name, audioDuration);
+          if (count > 0) {
+            toast.success(`Le fichier JSON (${count} notes) a été téléchargé !`);
+          } else if (count === -1) {
+            toast.info(t("editor.exportCancelled"));
+          } else {
+            toast.error(t("editor.exportError"));
+          }
           return;
         }
 
@@ -2519,7 +2531,7 @@ const Editor = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {isDesktop() && (
+              {isDesktop() ? (
                 <>
                   <DropdownMenu>
                     <TooltipProvider>
@@ -2549,6 +2561,28 @@ const Editor = () => {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+
+                  <Separator orientation="vertical" className="h-6 mx-1" />
+                </>
+              ) : (
+                <>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleExportJson}
+                          className="rounded-lg"
+                        >
+                          <FontAwesomeIcon icon={faDownload} className="h-5 w-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>{t("editor.exportTooltip")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
 
                   <Separator orientation="vertical" className="h-6 mx-1" />
                 </>
