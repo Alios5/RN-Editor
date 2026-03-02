@@ -2209,28 +2209,36 @@ const Editor = () => {
     const scrollLeft = (container as HTMLElement).scrollLeft;
     const scrollTop = (container as HTMLElement).scrollTop;
 
-    // Détecter les notes dans le lasso
-    const noteElements = document.querySelectorAll('[data-note-block]');
+    // Détecter les notes dans le lasso en parcourant le state plutôt que le DOM
+    // Cela permet de sélectionner les notes même si elles sont virtualisées/hors écran
+    const cellWidth = 24;
 
-    noteElements.forEach((element) => {
-      const rect = element.getBoundingClientRect();
+    tracks.forEach((track) => {
+      // Obtenir la ligne de la piste pour sa coordonnée Y. Les pistes ne sont pas virtualisées.
+      const trackGrid = document.querySelector(`[data-track-grid="${track.id}"]`);
+      if (!trackGrid) return; // Piste cachée / dans un groupe replié
 
-      // Convertir les positions viewport des notes en coordonnées relatives au conteneur
-      const noteLeft = rect.left - containerRect.left + scrollLeft;
-      const noteRight = rect.right - containerRect.left + scrollLeft;
-      const noteTop = rect.top - containerRect.top + scrollTop;
-      const noteBottom = rect.bottom - containerRect.top + scrollTop;
+      const trackRect = trackGrid.getBoundingClientRect();
 
-      // Vérifier si la note intersecte le rectangle de lasso
-      const intersects = !(noteRight < minX || noteLeft > maxX || noteBottom < minY || noteTop > maxY);
+      // Convertir en coordonnées relatives au conteneur de lasso
+      const trackTop = trackRect.top - containerRect.top + scrollTop;
+      const trackBottom = trackRect.bottom - containerRect.top + scrollTop;
+      const trackLeftOffset = trackRect.left - containerRect.left + scrollLeft;
 
-      if (intersects) {
-        // Extraire trackId et noteId des attributs data
-        const noteData = element.getAttribute('data-note-id');
-        if (noteData) {
-          notesInLasso.add(noteData);
+      track.notes?.forEach((note) => {
+        // Calcul du placement de la note
+        const noteLeft = trackLeftOffset + (note.gridPosition * cellWidth + startOffset);
+        const noteRight = noteLeft + (note.gridWidth * cellWidth);
+        const noteTop = trackTop;
+        const noteBottom = trackBottom;
+
+        // Vérifier si la note intersecte le rectangle de lasso
+        const intersects = !(noteRight < minX || noteLeft > maxX || noteBottom < minY || noteTop > maxY);
+
+        if (intersects) {
+          notesInLasso.add(`${track.id}:${note.id}`);
         }
-      }
+      });
     });
 
     // Si Ctrl était pressé, ajouter à la sélection existante
@@ -2246,7 +2254,7 @@ const Editor = () => {
     setLassoEnd(null);
     setLassoWithCtrl(false);
     lassoContainerRef.current = null;
-  }, [isLassoActive, lassoStart, lassoEnd, lassoWithCtrl, selectedNotes]);
+  }, [isLassoActive, lassoStart, lassoEnd, lassoWithCtrl, selectedNotes, tracks, startOffset]);
 
   // Lasso global mouse events
   useEffect(() => {

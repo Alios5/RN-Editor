@@ -27,7 +27,7 @@ import { isDesktop } from "@/utils/platform";
 import { saveProjectToDB, saveAudioToDB, deleteProjectFromDB } from "@/utils/indexedDB";
 
 // Import version from package.json
-const APP_VERSION = "0.3.4";
+const APP_VERSION = "0.3.5";
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);

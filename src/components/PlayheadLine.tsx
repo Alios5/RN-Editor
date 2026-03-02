@@ -25,11 +25,9 @@ export const PlayheadLine = memo(({
 
   return (
     <div
-      className="absolute top-0 w-0.5 pointer-events-none"
+      className="absolute top-[76px] bottom-0 w-0.5 pointer-events-none"
       style={{
         left: `${position}px`,
-        height: '100%',
-        minHeight: '100%',
         zIndex: 50,
         backgroundColor: 'hsl(var(--playhead-line))',
       }}
