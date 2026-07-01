@@ -845,15 +845,7 @@ const Editor = () => {
           // Save to existing file
           await saveProjectToFile(updatedProject, project.filePath);
           setHasUnsavedChanges(false); // Reset after save
-          const dirPath = await dirname(project.filePath);
-          toast.success(t("project.saveSuccess"), {
-            action: {
-              label: t("project.showPath") || "Voir le chemin",
-              onClick: () => {
-                navigator.clipboard.writeText(dirPath);
-              }
-            }
-          });
+          toast.success(t("project.saveSuccess"));
         } else if (!isDesktop()) {
           // Web: Just save to IDB
           await saveProjectToFile(updatedProject);
@@ -865,15 +857,7 @@ const Editor = () => {
           if (filePath && filePath !== "web_saved") {
             setProject({ ...updatedProject, filePath });
             setHasUnsavedChanges(false); // Reset after save
-            const dirPath = await dirname(filePath);
-            toast.success(t("project.saveAsSuccess", { path: filePath }), {
-              action: {
-                label: t("project.showPath") || "Voir le chemin",
-                onClick: () => {
-                  navigator.clipboard.writeText(dirPath);
-                }
-              }
-            });
+            toast.success(t("project.saveAsSuccess", { path: filePath }));
           }
         }
       } catch (error) {

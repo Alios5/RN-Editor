@@ -44,7 +44,7 @@ export async function detectBPM(audioFilePath: string, audioUrl?: string): Promi
 
     // Take the best candidate (first in the list)
     const bestCandidate = topCandidates[0];
-    const bpm = Math.round(bestCandidate.tempo);
+    const bpm = Math.round(bestCandidate.tempo * 100) / 100;
 
     console.log(`BPM detected: ${bpm} (confidence: ${bestCandidate.count} occurrences)`);
 

@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt, faMusic, faVolumeHigh, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
@@ -54,7 +54,66 @@ export const AudioPanel = memo(({
   showMouseIndicator,
   setShowMouseIndicator,
 }: AudioPanelProps) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+
+  // Decimal separator based on language (comma for French, period for English)
+  const decimalSeparator = language === 'fr' ? ',' : '.';
+
+  // Local string state for BPM input to support comma/period display
+  const formatBpmDisplay = useCallback((value: number): string => {
+    const str = value.toString();
+    if (language === 'fr') {
+      return str.replace('.', ',');
+    }
+    return str;
+  }, [language]);
+
+  const [bpmInput, setBpmInput] = useState<string>(formatBpmDisplay(bpm));
+
+  // Sync display when bpm changes externally (e.g. BPM detection, undo/redo)
+  useEffect(() => {
+    setBpmInput(formatBpmDisplay(bpm));
+  }, [bpm, formatBpmDisplay]);
+
+  // Validate and handle BPM input changes
+  const handleBpmInputChange = (rawValue: string) => {
+    // Allow empty input for editing
+    if (rawValue === '') {
+      setBpmInput('');
+      return;
+    }
+
+    // Accept both comma and period as decimal separator
+    // Only allow digits, one decimal separator, and max 2 decimal places
+    const normalized = rawValue.replace(',', '.');
+    const regex = /^\d*\.?\d{0,2}$/;
+    if (!regex.test(normalized)) return;
+
+    // Display with the language-appropriate separator
+    if (language === 'fr') {
+      setBpmInput(normalized.replace('.', ','));
+    } else {
+      setBpmInput(normalized);
+    }
+
+    // Parse and propagate valid numeric value
+    const numValue = parseFloat(normalized);
+    if (!isNaN(numValue) && numValue >= 0) {
+      setBpm(numValue);
+    }
+  };
+
+  // On blur, ensure display is clean
+  const handleBpmBlur = () => {
+    if (bpmInput === '' || isNaN(parseFloat(bpmInput.replace(',', '.')))) {
+      setBpmInput(formatBpmDisplay(bpm));
+      return;
+    }
+    const normalized = parseFloat(bpmInput.replace(',', '.'));
+    const rounded = Math.round(normalized * 100) / 100;
+    setBpm(rounded);
+    setBpmInput(formatBpmDisplay(rounded));
+  };
 
   return (
     <Card className="m-4 backdrop-blur-sm hover:scale-100 transition-none shadow-sm">
@@ -98,9 +157,11 @@ export const AudioPanel = memo(({
               <Label className="text-xs text-muted-foreground">{t("audio.bpm")}</Label>
               <div className="flex gap-2">
                 <Input
-                  type="number"
-                  value={bpm}
-                  onChange={(e) => setBpm(Number(e.target.value))}
+                  type="text"
+                  inputMode="decimal"
+                  value={bpmInput}
+                  onChange={(e) => handleBpmInputChange(e.target.value)}
+                  onBlur={handleBpmBlur}
                   className="h-9 flex-1"
                   style={{ backgroundColor: panelColors.inputBackground() }}
                 />
