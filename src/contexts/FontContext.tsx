@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, ReactNode, useContext } from "react
 
 // Available fonts
 export const availableFonts = [
+  { name: "Albert Sans", value: "'Albert Sans', sans-serif", googleFont: "Albert+Sans:wght@300;400;500;600;700" },
   { name: "Finlandica", value: "'Finlandica', sans-serif", googleFont: "Finlandica:wght@300;400;500;600;700" },
   { name: "Inter", value: "'Inter', sans-serif", googleFont: "Inter:wght@300;400;500;600;700" },
   { name: "Roboto", value: "'Roboto', sans-serif", googleFont: "Roboto:wght@300;400;500;700" },
@@ -35,8 +36,8 @@ interface FontContextType {
 const STORAGE_KEY = "rhythmNatorFonts";
 
 const defaultFonts: FontSettings = {
-  textFont: "Roboto",
-  titleFont: "Outfit",
+  textFont: "Albert Sans",
+  titleFont: "Albert Sans",
 };
 
 export const FontContext = createContext<FontContextType | undefined>(undefined);
