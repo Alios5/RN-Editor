@@ -349,4 +349,49 @@ export const WARM_SAND_THEME: Theme = {
   },
 };
 
-export const BUILTIN_THEMES: Theme[] = [AMETHYST_THEME, DEFAULT_THEME, LIGHT_THEME, GOLD_NIGHT_THEME, WARM_SAND_THEME, WINTER_THEME, T3_CHAT_THEME];
+export const CAFFE_LATTE_THEME: Theme = {
+  name: "Caffé Laté",
+  colors: {
+    background: "48 100% 97%",
+    foreground: "240 2% 10%",
+    card: "48 100% 97%",
+    cardForeground: "240 2% 10%",
+    popover: "48 100% 97%",
+    popoverForeground: "240 2% 10%",
+    primary: "41 100% 62%",
+    primaryForeground: "0 0% 9%",
+    secondary: "34 66% 93%",
+    secondaryForeground: "240 2% 10%",
+    muted: "47 47% 94%",
+    mutedForeground: "0 0% 45%",
+    accent: "0 0% 96%",
+    accentForeground: "240 2% 10%",
+    destructive: "352 100% 41%",
+    destructiveForeground: "0 0% 100%",
+    border: "0 0% 90%",
+    input: "0 0% 90%",
+    ring: "41 100% 62%",
+    gradientStart: "41 100% 62%",
+    gradientEnd: "30 90% 55%",
+    // Panel colors
+    panelBackground: "48 100% 97%",
+    panelBorder: "0 0% 90%",
+    panelIconBackground: "41 100% 62%",
+    panelInputBackground: "0 0% 90%",
+    panelSectionBackground: "34 66% 93%",
+    // Track colors
+    trackBorder: "0 0% 80%",
+    trackGridLine: "0 0% 85%",
+    trackMeasureLine: "41 100% 62%",
+    trackBeatPrimary: "47 47% 94%",
+    trackBeatSecondary: "48 100% 97%",
+    // Waveform colors
+    waveformColor: "41 100% 62%",
+    waveformBackground: "48 100% 97%",
+    waveformOutline: "41 100% 62%",
+    // Playhead
+    playheadLine: "41 100% 62%",
+  },
+};
+
+export const BUILTIN_THEMES: Theme[] = [AMETHYST_THEME, DEFAULT_THEME, LIGHT_THEME, CAFFE_LATTE_THEME, GOLD_NIGHT_THEME, WARM_SAND_THEME, WINTER_THEME, T3_CHAT_THEME];

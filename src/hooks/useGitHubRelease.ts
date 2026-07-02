@@ -14,6 +14,7 @@ const API_BASE = `https://api.github.com/repos/${REPO}/releases`;
 // In-memory cache
 let cache: {
     release: GitHubRelease | null;
+    allReleases: GitHubRelease[];
     latestVersion: string | null;
     latestDownloadUrl: string | null;
     updateAvailable: boolean;
@@ -52,6 +53,9 @@ export function useGitHubRelease(appVersion: string) {
     const [release, setRelease] = useState<GitHubRelease | null>(
         cache?.release ?? null
     );
+    const [allReleases, setAllReleases] = useState<GitHubRelease[]>(
+        cache?.allReleases ?? []
+    );
     const [updateAvailable, setUpdateAvailable] = useState(
         cache?.updateAvailable ?? false
     );
@@ -66,6 +70,7 @@ export function useGitHubRelease(appVersion: string) {
     useEffect(() => {
         if (cache) {
             setRelease(cache.release);
+            setAllReleases(cache.allReleases);
             setUpdateAvailable(cache.updateAvailable);
             setLatestVersion(cache.latestVersion);
             setLatestDownloadUrl(cache.latestDownloadUrl);
@@ -77,7 +82,7 @@ export function useGitHubRelease(appVersion: string) {
         const headers = { Accept: "application/vnd.github.v3+json" };
         const opts = { signal: controller.signal, headers };
 
-        // Fetch both: release for current version + latest release
+        // Fetch: release for current version, latest release, and all releases
         Promise.allSettled([
             fetch(`${API_BASE}/tags/v${appVersion}`, opts).then((r) =>
                 r.ok ? r.json() : null
@@ -85,8 +90,11 @@ export function useGitHubRelease(appVersion: string) {
             fetch(`${API_BASE}/latest`, opts).then((r) =>
                 r.ok ? r.json() : null
             ),
+            fetch(`${API_BASE}?per_page=30`, opts).then((r) =>
+                r.ok ? r.json() : null
+            ),
         ])
-            .then(([currentResult, latestResult]) => {
+            .then(([currentResult, latestResult, allResult]) => {
                 // Latest release info
                 const latestData =
                     latestResult.status === "fulfilled" ? latestResult.value : null;
@@ -97,15 +105,23 @@ export function useGitHubRelease(appVersion: string) {
                     currentResult.status === "fulfilled" ? currentResult.value : null;
                 const parsedCurrent = currentData ? parseRelease(currentData) : null;
 
+                // All releases
+                const allData =
+                    allResult.status === "fulfilled" && Array.isArray(allResult.value)
+                        ? allResult.value
+                        : [];
+                const parsedAll = allData.map((d: Record<string, unknown>) => parseRelease(d));
+
                 const hasUpdate = latestTag
                     ? isNewer(latestTag, appVersion)
                     : false;
 
-                // The release notes shown are always for the currently installed version
-                const releaseToShow = parsedCurrent;
+                // Show the latest release from GitHub (newest first from API)
+                const releaseToShow = parsedAll[0] ?? parsedCurrent;
 
                 cache = {
                     release: releaseToShow,
+                    allReleases: parsedAll,
                     latestVersion: hasUpdate ? latestTag!.replace(/^v\.?/, "") : null,
                     latestDownloadUrl: hasUpdate
                         ? (latestData?.html_url as string)
@@ -114,6 +130,7 @@ export function useGitHubRelease(appVersion: string) {
                 };
 
                 setRelease(releaseToShow);
+                setAllReleases(parsedAll);
                 setUpdateAvailable(hasUpdate);
                 setLatestVersion(cache.latestVersion);
                 setLatestDownloadUrl(cache.latestDownloadUrl);
@@ -128,6 +145,7 @@ export function useGitHubRelease(appVersion: string) {
 
     return {
         release,
+        allReleases,
         loading,
         updateAvailable,
         latestVersion,
