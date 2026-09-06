@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faFloppyDisk, faDownload, faMusic, faRotateLeft, faRotateRight, faAnglesLeft, faAnglesRight, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
+import { Bot } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useVisibleTracks } from "@/hooks/useVisibleTracks";
 import { panelColors } from "@/lib/panelColors";
@@ -44,6 +45,9 @@ import { CreateTrackDialog } from "@/components/CreateTrackDialog";
 import { EditTrackDialog } from "@/components/EditTrackDialog";
 import { AssignTrackToGroupDialog } from "@/components/AssignTrackToGroupDialog";
 import { SelectActionDialog } from "@/components/SelectActionDialog";
+import { BeatMapperModal } from "@/components/BeatMapperModal";
+import { applyAIImport } from "@/utils/applyAIImport";
+import { AIImportData } from "@/types/aiImport";
 import { TrackRow } from "@/components/TrackRow";
 import { PlayheadLine } from "@/components/PlayheadLine";
 import { CopyMusicDialog } from "@/components/CopyMusicDialog";
@@ -215,6 +219,7 @@ const Editor = () => {
   const [copiedNotes, setCopiedNotes] = useState<{ trackId: string; notes: Note[] }[]>([]);
   const [mouseGridPosition, setMouseGridPosition] = useState<{ trackId: string; cellPosition: number } | null>(null);
   const [isDetectingBPM, setIsDetectingBPM] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
 
   // History state for undo/redo
   const [history, setHistory] = useState<EditorState[]>([]);
@@ -2630,6 +2635,26 @@ const Editor = () => {
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9 rounded-lg"
+                      onClick={() => setShowAIModal(true)}
+                    >
+                      <Bot className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>{t("ai.buttonTooltip")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <Separator orientation="vertical" className="h-6 mx-1" />
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-lg"
                       onClick={() => setIsSidebarVisible(!isSidebarVisible)}
                     >
                       {isSidebarVisible ? (
@@ -3062,6 +3087,42 @@ const Editor = () => {
             : undefined
         }
         onSelect={handleSelectActionForNote}
+      />
+
+      <BeatMapperModal
+        open={showAIModal}
+        onOpenChange={setShowAIModal}
+        projectId={project?.id || ""}
+        projectName={project?.name || ""}
+        bpm={bpm}
+        rhythmSync={rhythmSync}
+        subRhythmSync={subRhythmSync}
+        audioUrl={audioUrl}
+        audioFileName={audioFileName}
+        tracks={tracks}
+        onApply={(data: AIImportData, clearExisting: boolean) => {
+          const baseTracks = clearExisting
+            ? tracks.map((t) => ({ ...t, notes: [] }))
+            : tracks;
+          const result = applyAIImport(
+            data,
+            baseTracks,
+            trackGroups,
+            specificActions,
+            bpm,
+            subRhythmSync,
+            startOffset
+          );
+          setTracks(result.tracks);
+          setTrackGroups(result.trackGroups);
+          if (result.bpm !== undefined) setBpm(result.bpm);
+          if (result.rhythmSync !== undefined) setRhythmSync(result.rhythmSync);
+          if (result.subRhythmSync !== undefined) setSubRhythmSync(result.subRhythmSync);
+          if (result.volume !== undefined) setVolume(result.volume);
+          if (result.pitch !== undefined) setPitch(result.pitch);
+          if (result.startOffset !== undefined) setStartOffset(result.startOffset);
+          setHasUnsavedChanges(true);
+        }}
       />
     </div>
   );
